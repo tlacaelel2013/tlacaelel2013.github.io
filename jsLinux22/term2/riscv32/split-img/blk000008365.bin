@@ -1,0 +1,445 @@
+RABIC RIGHT ARROWHEAD ABOVE
+collating-symbol <D08FD>  % ARABIC RIGHT ARROWHEAD ABOVE WITH DOT
+collating-symbol <D08FC>  % ARABIC DOUBLE RIGHT ARROWHEAD ABOVE
+collating-symbol <D08FB>  % ARABIC DOUBLE RIGHT ARROWHEAD ABOVE WITH DOT
+collating-symbol <D08F9>  % ARABIC LEFT ARROWHEAD BELOW
+collating-symbol <D08FA>  % ARABIC RIGHT ARROWHEAD BELOW
+collating-symbol <SUPERALEF>  % ARABIC LETTER SUPERSCRIPT ALEF
+collating-symbol <D0711>  % SYRIAC LETTER SUPERSCRIPT ALAPH
+collating-symbol <D0730>  % SYRIAC PTHAHA ABOVE
+collating-symbol <D0731>  % SYRIAC PTHAHA BELOW
+collating-symbol <D0732>  % SYRIAC PTHAHA DOTTED
+collating-symbol <D0733>  % SYRIAC ZQAPHA ABOVE
+collating-symbol <D0734>  % SYRIAC ZQAPHA BELOW
+collating-symbol <D0735>  % SYRIAC ZQAPHA DOTTED
+collating-symbol <D0736>  % SYRIAC RBASA ABOVE
+collating-symbol <D0737>  % SYRIAC RBASA BELOW
+collating-symbol <D0738>  % SYRIAC DOTTED ZLAMA HORIZONTAL
+collating-symbol <D0739>  % SYRIAC DOTTED ZLAMA ANGULAR
+collating-symbol <D073A>  % SYRIAC HBASA ABOVE
+collating-symbol <D073B>  % SYRIAC HBASA BELOW
+collating-symbol <D073C>  % SYRIAC HBASA-ESASA DOTTED
+collating-symbol <D073D>  % SYRIAC ESASA ABOVE
+collating-symbol <D073E>  % SYRIAC ESASA BELOW
+collating-symbol <D073F>  % SYRIAC RWAHA
+collating-symbol <D07EB>  % NKO COMBINING SHORT HIGH TONE
+collating-symbol <D07EC>  % NKO COMBINING SHORT LOW TONE
+collating-symbol <D07ED>  % NKO COMBINING SHORT RISING TONE
+collating-symbol <D07EE>  % NKO COMBINING LONG DESCENDING TONE
+collating-symbol <D07EF>  % NKO COMBINING LONG HIGH TONE
+collating-symbol <D07F0>  % NKO COMBINING LONG LOW TONE
+collating-symbol <D07F1>  % NKO COMBINING LONG RISING TONE
+collating-symbol <D07F2>  % NKO COMBINING NASALIZATION MARK
+collating-symbol <D07F3>  % NKO COMBINING DOUBLE DOT ABOVE
+collating-symbol <D135F>  % ETHIOPIC COMBINING GEMINATION MARK
+collating-symbol <D135E>  % ETHIOPIC COMBINING VOWEL LENGTH MARK
+collating-symbol <D135D>  % ETHIOPIC COMBINING GEMINATION AND VOWEL LENGTH MARK
+collating-symbol <DA6F0>  % BAMUM COMBINING MARK KOQNDON
+collating-symbol <DA6F1>  % BAMUM COMBINING MARK TUKWENTIS
+collating-symbol <D16AF0>  % BASSA VAH COMBINING HIGH TONE
+collating-symbol <D16AF1>  % BASSA VAH COMBINING LOW TONE
+collating-symbol <D16AF2>  % BASSA VAH COMBINING MID TONE
+collating-symbol <D16AF3>  % BASSA VAH COMBINING LOW-MID TONE
+collating-symbol <D16AF4>  % BASSA VAH COMBINING HIGH-LOW TONE
+collating-symbol <D1E944>  % ADLAM ALIF LENGTHENER
+collating-symbol <D1E94A>  % ADLAM NUKTA
+collating-symbol <D1E947>  % ADLAM HAMZA
+collating-symbol <D1E948>  % ADLAM CONSONANT MODIFIER
+collating-symbol <D1E949>  % ADLAM GEMINATE CONSONANT MODIFIER
+collating-symbol <NUKTA>  % DEVANAGARI SIGN NUKTA
+collating-symbol <CANDRABINDU>  % DEVANAGARI SIGN CANDRABINDU
+collating-symbol <ANUSVARA>  % DEVANAGARI SIGN ANUSVARA
+collating-symbol <VISARGA>  % DEVANAGARI SIGN VISARGA
+collating-symbol <D0A70>  % GURMUKHI TIPPI
+collating-symbol <D0A71>  % GURMUKHI ADDAK
+collating-symbol <D1B03>  % BALINESE SIGN SURANG
+collating-symbol <DA982>  % JAVANESE SIGN LAYAR
+collating-symbol <D1B81>  % SUNDANESE SIGN PANGLAYAR
+collating-symbol <DABEC>  % MEETEI MAYEK LUM IYEK
+collating-symbol <D10A38>  % KHAROSHTHI SIGN BAR ABOVE
+collating-symbol <D10A39>  % KHAROSHTHI SIGN CAUDA
+collating-symbol <D10A3A>  % KHAROSHTHI SIGN DOT BELOW
+collating-symbol <D111CB>  % SHARADA VOWEL MODIFIER MARK
+collating-symbol <D111CC>  % SHARADA SUTRA MARK
+collating-symbol <D0E4E>  % THAI CHARACTER YAMAKKAN
+collating-symbol <D0E47>  % THAI CHARACTER MAITAIKHU
+collating-symbol <D0E48>  % THAI CHARACTER MAI EK
+collating-symbol <D0E49>  % THAI CHARACTER MAI THO
+collating-symbol <D0E4A>  % THAI CHARACTER MAI TRI
+collating-symbol <D0E4B>  % THAI CHARACTER MAI CHATTAWA
+collating-symbol <D0E4C>  % THAI CHARACTER THANTHAKHAT
+collating-symbol <D0E4D>  % THAI CHARACTER NIKHAHIT
+collating-symbol <D0EC8>  % LAO TONE MAI EK
+collating-symbol <D0EC9>  % LAO TONE MAI THO
+collating-symbol <D0ECA>  % LAO TONE MAI TI
+collating-symbol <D0ECB>  % LAO TONE MAI CATAWA
+collating-symbol <D0ECC>  % LAO CANCELLATION MARK
+collating-symbol <D0ECD>  % LAO NIGGAHITA
+collating-symbol <DAABF>  % TAI VIET TONE MAI EK
+collating-symbol <DAAC1>  % TAI VIET TONE MAI THO
+collating-symbol <D0F39>  % TIBETAN MARK TSA -PHRU
+collating-symbol <DA92B>  % KAYAH LI TONE PLOPHU
+collating-symbol <DA92C>  % KAYAH LI TONE CALYA
+collating-symbol <DA92D>  % KAYAH LI TONE CALYA PLOPHU
+collating-symbol <D1037>  % MYANMAR SIGN DOT BELOW
+collating-symbol <D17C8>  % KHMER SIGN YUUKALEAPINTU
+collating-symbol <D17C9>  % KHMER SIGN MUUSIKATOAN
+collating-symbol <D17CA>  % KHMER SIGN TRIISAP
+collating-symbol <D1A75>  % TAI THAM SIGN TONE-1
+collating-symbol <D1A76>  % TAI THAM SIGN TONE-2
+collating-symbol <D1A77>  % TAI THAM SIGN KHUEN TONE-3
+collating-symbol <D1A78>  % TAI THAM SIGN KHUEN TONE-4
+collating-symbol <D1A79>  % TAI THAM SIGN KHUEN TONE-5
+collating-symbol <D1A7A>  % TAI THAM SIGN RA HAAM
+collating-symbol <D1A7B>  % TAI THAM SIGN MAI SAM
+collating-symbol <D1A7C>  % TAI THAM SIGN KHUEN-LUE KARAN
+collating-symbol <D1939>  % LIMBU SIGN MUKPHRENG
+collating-symbol <D193A>  % LIMBU SIGN KEMPHRENG
+collating-symbol <D193B>  % LIMBU SIGN SA-I
+collating-symbol <D16B30>  % PAHAWH HMONG MARK CIM TUB
+collating-symbol <D16B31>  % PAHAWH HMONG MARK CIM SO
+collating-symbol <D16B32>  % PAHAWH HMONG MARK CIM KES
+collating-symbol <D16B33>  % PAHAWH HMONG MARK CIM KHAV
+collating-symbol <D16B34>  % PAHAWH HMONG MARK CIM SUAM
+collating-symbol <D16B35>  % PAHAWH HMONG MARK CIM HOM
+collating-symbol <D16B36>  % PAHAWH HMONG MARK CIM TAUM
+collating-symbol <D302A>  % IDEOGRAPHIC LEVEL TONE MARK
+collating-symbol <D302B>  % IDEOGRAPHIC RISING TONE MARK
+collating-symbol <D302C>  % IDEOGRAPHIC DEPARTING TONE MARK
+collating-symbol <D302D>  % IDEOGRAPHIC ENTERING TONE MARK
+collating-symbol <D302E>  % HANGUL SINGLE DOT TONE MARK
+collating-symbol <D302F>  % HANGUL DOUBLE DOT TONE MARK
+collating-symbol <D20D0>  % COMBINING LEFT HARPOON ABOVE
+collating-symbol <D20D1>  % COMBINING RIGHT HARPOON ABOVE
+collating-symbol <D20D3>  % COMBINING SHORT VERTICAL LINE OVERLAY
+collating-symbol <D20D4>  % COMBINING ANTICLOCKWISE ARROW ABOVE
+collating-symbol <D20D5>  % COMBINING CLOCKWISE ARROW ABOVE
+collating-symbol <D20D6>  % COMBINING LEFT ARROW ABOVE
+collating-symbol <D20D7>  % COMBINING RIGHT ARROW ABOVE
+collating-symbol <D20DB>  % COMBINING THREE DOTS ABOVE
+collating-symbol <D20DC>  % COMBINING FOUR DOTS ABOVE
+collating-symbol <D20E1>  % COMBINING LEFT RIGHT ARROW ABOVE
+collating-symbol <D20E6>  % COMBINING DOUBLE VERTICAL STROKE OVERLAY
+collating-symbol <D20E7>  % COMBINING ANNUITY SYMBOL
+collating-symbol <D20E8>  % COMBINING TRIPLE UNDERDOT
+collating-symbol <D20E9>  % COMBINING WIDE BRIDGE ABOVE
+collating-symbol <D101FD>  % PHAISTOS DISC SIGN COMBINING OBLIQUE STROKE
+collating-symbol <VRNT1>  % PSEUDO-COMBINING VARIANT MARK 1
+collating-symbol <VRNT2>  % PSEUDO-COMBINING VARIANT MARK 2
+collating-symbol <VRNT3>  % PSEUDO-COMBINING VARIANT MARK 3
+collating-symbol <VRNT4>  % PSEUDO-COMBINING VARIANT MARK 4
+collating-symbol <VRNT5>  % PSEUDO-COMBINING VARIANT MARK 5
+
+% First-level collating symbols
+
+collating-symbol <S0009>..<S327F> % Alphabetics, syllabics, general symbols
+collating-symbol <S4DC0>..<S4DFF> % Yijing hexagram symbols
+collating-symbol <SA000>..<SABFF> % Alphabetics, syllabics, general symbols
+collating-symbol <SFD3E>..<SFD3F> % Ornate parentheses (Arabic)
+collating-symbol <SFBB2>..<SFBC1> % Some Symbols (Arabic)
+collating-symbol <SFDFD>          % Bismillah symbol (Arabic)
+collating-symbol <SFE45>..<SFE46> % Sesame dots
+collating-symbol <SFFFC>..<SFFFD> % Specials
+collating-symbol <SAC00>..<SD7A3> % Symbols for Hangul syllables (weights must be constructed)
+collating-symbol <SD7B0>..<SD7FB> % Hangul Jamo
+collating-symbol <RFB00>          % Symbol for first element of computed weights for Tangut ideographs and components
+collating-symbol <RFB40>..<RFB41> % Symbols for first element of computed weights for core Han unified ideographs
+collating-symbol <RFB80>          % Symbol for first element of computed weights for Han unified ideographs Ext-A
+collating-symbol <RFB84>..<RFB85> % Symbols for first element of computed weights for Han unified ideographs Ext-B, ...
+collating-symbol <RFBC0>..<RFBE1> % Symbols for first element of computed weights for unassigned characters and others
+collating-symbol <T8000>..<TFFFF> % Symbols for second element of computed weights for Han, Tangut and others
+collating-symbol <S10000>..<S12543> % Alphabetics from SMP
+collating-symbol <S13000>..<S1342F> % Alphabetics from SMP
+collating-symbol <S14400>..<S14646> % Alphabetics from SMP
+collating-symbol <S16800>..<S16FFF> % Alphabetics and symbols from SMP
+collating-symbol <S1B000>..<S1BCAF> % Alphabetics and symbols from SMP
+collating-symbol <S1D000>..<S1D37F> % Symbols from SMP
+collating-symbol <S1D800>..<S1DA8B> % Sutton SignWriting
+collating-symbol <S1E800>..<S1E95F> % Alphabetics from SMP
+collating-symbol <S1EE00>..<S1EEFF> % Symbols from SMP
+collating-symbol <S1F000>..<S1F9FF> % Symbols from SMP
+
+collating-symbol <SFFFF> % Guaranteed largest symbol value. Keep at end of this list
+
+% Convenience first level collation symbols added here
+% to make tailoring easier using rules similar to those in CLDR.
+
+collating-symbol <BEFORE-A>
+collating-symbol <AFTER-A>
+collating-symbol <BEFORE-B>
+collating-symbol <AFTER-B>
+collating-symbol <BEFORE-C>
+collating-symbol <AFTER-C>
+collating-symbol <BEFORE-D>
+collating-symbol <AFTER-D>
+collating-symbol <BEFORE-E>
+collating-symbol <AFTER-E>
+collating-symbol <BEFORE-F>
+collating-symbol <AFTER-F>
+collating-symbol <BEFORE-G>
+collating-symbol <AFTER-G>
+collating-symbol <BEFORE-H>
+collating-symbol <AFTER-H>
+collating-symbol <BEFORE-I>
+collating-symbol <AFTER-I>
+collating-symbol <BEFORE-J>
+collating-symbol <AFTER-J>
+collating-symbol <BEFORE-K>
+collating-symbol <AFTER-K>
+collating-symbol <BEFORE-L>
+collating-symbol <AFTER-L>
+collating-symbol <BEFORE-M>
+collating-symbol <AFTER-M>
+collating-symbol <BEFORE-N>
+collating-symbol <AFTER-N>
+collating-symbol <BEFORE-O>
+collating-symbol <AFTER-O>
+collating-symbol <BEFORE-P>
+collating-symbol <AFTER-P>
+collating-symbol <BEFORE-Q>
+collating-symbol <AFTER-Q>
+collating-symbol <BEFORE-R>
+collating-symbol <AFTER-R>
+collating-symbol <BEFORE-S>
+collating-symbol <AFTER-S>
+collating-symbol <BEFORE-T>
+collating-symbol <AFTER-T>
+collating-symbol <BEFORE-U>
+collating-symbol <AFTER-U>
+collating-symbol <BEFORE-V>
+collating-symbol <AFTER-V>
+collating-symbol <BEFORE-W>
+collating-symbol <AFTER-W>
+collating-symbol <BEFORE-X>
+collating-symbol <AFTER-X>
+collating-symbol <BEFORE-Y>
+collating-symbol <AFTER-Y>
+collating-symbol <BEFORE-Z>
+collating-symbol <AFTER-Z>
+collating-symbol <BEFORE-THORN>
+collating-symbol <AFTER-THORN>
+collating-symbol <BEFORE-EZH>
+collating-symbol <AFTER-EZH>
+collating-symbol <BEFORE-LATIN>
+collating-symbol <AFTER-LATIN>
+
+% Special fourth-level collating symbol
+
+collating-symbol <PLAIN> % Maximal level 4 weight
+
+collating-element <U004C_00B7> from "<U004C><U00B7>" % decomposition of LATIN CAPITAL LETTER L WITH MIDDLE DOT
+collating-element <U004C_0387> from "<U004C><U0387>" % decomposition of LATIN CAPITAL LETTER L WITH MIDDLE DOT
+collating-element <U006C_00B7> from "<U006C><U00B7>" % decomposition of LATIN SMALL LETTER L WITH MIDDLE DOT
+collating-element <U006C_0387> from "<U006C><U0387>" % decomposition of LATIN SMALL LETTER L WITH MIDDLE DOT
+collating-element <U0418_0306> from "<U0418><U0306>" % decomposition of CYRILLIC CAPITAL LETTER SHORT I
+collating-element <U0438_0306> from "<U0438><U0306>" % decomposition of CYRILLIC SMALL LETTER SHORT I
+collating-element <U0627_0653> from "<U0627><U0653>" % decomposition of ARABIC LETTER ALEF WITH MADDA ABOVE
+collating-element <U0627_0654> from "<U0627><U0654>" % decomposition of ARABIC LETTER ALEF WITH HAMZA ABOVE
+collating-element <U0648_0654> from "<U0648><U0654>" % decomposition of ARABIC LETTER WAW WITH HAMZA ABOVE
+collating-element <U0627_0655> from "<U0627><U0655>" % decomposition of ARABIC LETTER ALEF WITH HAMZA BELOW
+collating-element <U064A_0654> from "<U064A><U0654>" % decomposition of ARABIC LETTER YEH WITH HAMZA ABOVE
+collating-element <U09C7_09BE> from "<U09C7><U09BE>" % decomposition of BENGALI VOWEL SIGN O
+collating-element <U09C7_09D7> from "<U09C7><U09D7>" % decomposition of BENGALI VOWEL SIGN AU
+collating-element <U0B47_0B56> from "<U0B47><U0B56>" % decomposition of ORIYA VOWEL SIGN AI
+collating-element <U0B47_0B3E> from "<U0B47><U0B3E>" % decomposition of ORIYA VOWEL SIGN O
+collating-element <U0B47_0B57> from "<U0B47><U0B57>" % decomposition of ORIYA VOWEL SIGN AU
+collating-element <U0B92_0BD7> from "<U0B92><U0BD7>" % decomposition of TAMIL LETTER AU
+collating-element <U0BC6_0BBE> from "<U0BC6><U0BBE>" % decomposition of TAMIL VOWEL SIGN O
+collating-element <U0BC7_0BBE> from "<U0BC7><U0BBE>" % decomposition of TAMIL VOWEL SIGN OO
+collating-element <U0BC6_0BD7> from "<U0BC6><U0BD7>" % decomposition of TAMIL VOWEL SIGN AU
+collating-element <U0C46_0C56> from "<U0C46><U0C56>" % decomposition of TELUGU VOWEL SIGN AI
+collating-element <U0CBF_0CD5> from "<U0CBF><U0CD5>" % decomposition of KANNADA VOWEL SIGN II
+collating-element <U0CC6_0CD5> from "<U0CC6><U0CD5>" % decomposition of KANNADA VOWEL SIGN EE
+collating-element <U0CC6_0CD6> from "<U0CC6><U0CD6>" % decomposition of KANNADA VOWEL SIGN AI
+collating-element <U0CC6_0CC2> from "<U0CC6><U0CC2>" % decomposition of KANNADA VOWEL SIGN O
+collating-element <U0CC6_0CC2_0CD5> from "<U0CC6><U0CC2><U0CD5>" % decomposition of KANNADA VOWEL SIGN OO
+collating-element <U0CCA_0CD5> from "<U0CCA><U0CD5>" % decomposition of KANNADA VOWEL SIGN OO
+collating-element <U0D46_0D3E> from "<U0D46><U0D3E>" % decomposition of MALAYALAM VOWEL SIGN O
+collating-element <U0D47_0D3E> from "<U0D47><U0D3E>" % decomposition of MALAYALAM VOWEL SIGN OO
+collating-element <U0D46_0D57> from "<U0D46><U0D57>" % decomposition of MALAYALAM VOWEL SIGN AU
+collating-element <U0DD9_0DCA> from "<U0DD9><U0DCA>" % decomposition of SINHALA VOWEL SIGN DIGA KOMBUVA
+collating-element <U0DD9_0DCF> from "<U0DD9><U0DCF>" % decomposition of SINHALA VOWEL SIGN KOMBUVA HAA AELA-PILLA
+collating-element <U0DD9_0DCF_0DCA> from "<U0DD9><U0DCF><U0DCA>" % decomposition of SINHALA VOWEL SIGN KOMBUVA HAA DIGA AELA-PILLA
+collating-element <U0DDC_0DCA> from "<U0DDC><U0DCA>" % decomposition of SINHALA VOWEL SIGN KOMBUVA HAA DIGA AELA-PILLA
+collating-element <U0DD9_0DDF> from "<U0DD9><U0DDF>" % decomposition of SINHALA VOWEL SIGN KOMBUVA HAA GAYANUKITTA
+collating-element <U0E4D_0E32> from "<U0E4D><U0E32>" % decomposition of THAI CHARACTER SARA AM
+collating-element <U0ECD_0EB2> from "<U0ECD><U0EB2>" % decomposition of LAO VOWEL SIGN AM
+collating-element <U0F71_0F72> from "<U0F71><U0F72>" % decomposition of TIBETAN VOWEL SIGN II
+collating-element <U0F71_0F74> from "<U0F71><U0F74>" % decomposition of TIBETAN VOWEL SIGN UU
+collating-element <U0FB2_0F80> from "<U0FB2><U0F80>" % decomposition of TIBETAN VOWEL SIGN VOCALIC R
+collating-element <U0FB2_0F71_0F80> from "<U0FB2><U0F71><U0F80>" % decomposition of TIBETAN VOWEL SIGN VOCALIC RR
+collating-element <U0FB2_0F81> from "<U0FB2><U0F81>" % decomposition of TIBETAN VOWEL SIGN VOCALIC RR
+collating-element <U0FB3_0F80> from "<U0FB3><U0F80>" % decomposition of TIBETAN VOWEL SIGN VOCALIC L
+collating-element <U0FB3_0F71_0F80> from "<U0FB3><U0F71><U0F80>" % decomposition of TIBETAN VOWEL SIGN VOCALIC LL
+collating-element <U0FB3_0F81> from "<U0FB3><U0F81>" % decomposition of TIBETAN VOWEL SIGN VOCALIC LL
+collating-element <U0F71_0F80> from "<U0F71><U0F80>" % decomposition of TIBETAN VOWEL SIGN REVERSED II
+collating-element <U1025_102E> from "<U1025><U102E>" % decomposition of MYANMAR LETTER UU
+collating-element <U1B05_1B35> from "<U1B05><U1B35>" % decomposition of BALINESE LETTER AKARA TEDUNG
+collating-element <U1B07_1B35> from "<U1B07><U1B35>" % decomposition of BALINESE LETTER IKARA TEDUNG
+collating-element <U1B09_1B35> from "<U1B09><U1B35>" % decomposition of BALINESE LETTER UKARA TEDUNG
+collating-element <U1B0B_1B35> from "<U1B0B><U1B35>" % decomposition of BALINESE LETTER RA REPA TEDUNG
+collating-element <U1B0D_1B35> from "<U1B0D><U1B35>" % decomposition of BALINESE LETTER LA LENGA TEDUNG
+collating-element <U1B11_1B35> from "<U1B11><U1B35>" % decomposition of BALINESE LETTER OKARA TEDUNG
+collating-element <U1B3A_1B35> from "<U1B3A><U1B35>" % decomposition of BALINESE VOWEL SIGN RA REPA TEDUNG
+collating-element <U1B3C_1B35> from "<U1B3C><U1B35>" % decomposition of BALINESE VOWEL SIGN LA LENGA TEDUNG
+collating-element <U1B3E_1B35> from "<U1B3E><U1B35>" % decomposition of BALINESE VOWEL SIGN TALING TEDUNG
+collating-element <U1B3F_1B35> from "<U1B3F><U1B35>" % decomposition of BALINESE VOWEL SIGN TALING REPA TEDUNG
+collating-element <U1B42_1B35> from "<U1B42><U1B35>" % decomposition of BALINESE VOWEL SIGN PEPET TEDUNG
+collating-element <U11131_11127> from "<U00011131><U00011127>" % decomposition of CHAKMA VOWEL SIGN O
+collating-element <U11132_11127> from "<U00011132><U00011127>" % decomposition of CHAKMA VOWEL SIGN AU
+collating-element <U11347_1133E> from "<U00011347><U0001133E>" % decomposition of GRANTHA VOWEL SIGN OO
+collating-element <U11347_11357> from "<U00011347><U00011357>" % decomposition of GRANTHA VOWEL SIGN AU
+collating-element <U114B9_114BA> from "<U000114B9><U000114BA>" % decomposition of TIRHUTA VOWEL SIGN AI
+collating-element <U114B9_114B0> from "<U000114B9><U000114B0>" % decomposition of TIRHUTA VOWEL SIGN O
+collating-element <U114B9_114BD> from "<U000114B9><U000114BD>" % decomposition of TIRHUTA VOWEL SIGN AU
+collating-element <U115B8_115AF> from "<U000115B8><U000115AF>" % decomposition of SIDDHAM VOWEL SIGN O
+collating-element <U115B9_115AF> from "<U000115B9><U000115AF>" % decomposition of SIDDHAM VOWEL SIGN AU
+collating-element <U0E40_0E01> from "<U0E40><U0E01>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E01> from "<U0E41><U0E01>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E01> from "<U0E42><U0E01>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E01> from "<U0E43><U0E01>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E01> from "<U0E44><U0E01>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E02> from "<U0E40><U0E02>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E02> from "<U0E41><U0E02>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E02> from "<U0E42><U0E02>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E02> from "<U0E43><U0E02>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E02> from "<U0E44><U0E02>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E03> from "<U0E40><U0E03>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E03> from "<U0E41><U0E03>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E03> from "<U0E42><U0E03>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E03> from "<U0E43><U0E03>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E03> from "<U0E44><U0E03>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E04> from "<U0E40><U0E04>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E04> from "<U0E41><U0E04>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E04> from "<U0E42><U0E04>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E04> from "<U0E43><U0E04>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E04> from "<U0E44><U0E04>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E05> from "<U0E40><U0E05>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E05> from "<U0E41><U0E05>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E05> from "<U0E42><U0E05>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E05> from "<U0E43><U0E05>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E05> from "<U0E44><U0E05>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E06> from "<U0E40><U0E06>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E06> from "<U0E41><U0E06>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E06> from "<U0E42><U0E06>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E06> from "<U0E43><U0E06>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E06> from "<U0E44><U0E06>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E07> from "<U0E40><U0E07>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E07> from "<U0E41><U0E07>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E07> from "<U0E42><U0E07>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E07> from "<U0E43><U0E07>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E07> from "<U0E44><U0E07>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E08> from "<U0E40><U0E08>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E08> from "<U0E41><U0E08>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E08> from "<U0E42><U0E08>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E08> from "<U0E43><U0E08>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E08> from "<U0E44><U0E08>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E09> from "<U0E40><U0E09>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E09> from "<U0E41><U0E09>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E09> from "<U0E42><U0E09>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E09> from "<U0E43><U0E09>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E09> from "<U0E44><U0E09>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E0A> from "<U0E40><U0E0A>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E0A> from "<U0E41><U0E0A>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E0A> from "<U0E42><U0E0A>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E0A> from "<U0E43><U0E0A>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E0A> from "<U0E44><U0E0A>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E0B> from "<U0E40><U0E0B>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E0B> from "<U0E41><U0E0B>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E0B> from "<U0E42><U0E0B>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E0B> from "<U0E43><U0E0B>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E0B> from "<U0E44><U0E0B>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E0C> from "<U0E40><U0E0C>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E0C> from "<U0E41><U0E0C>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E0C> from "<U0E42><U0E0C>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E0C> from "<U0E43><U0E0C>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E0C> from "<U0E44><U0E0C>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E0D> from "<U0E40><U0E0D>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E0D> from "<U0E41><U0E0D>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E0D> from "<U0E42><U0E0D>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E0D> from "<U0E43><U0E0D>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E0D> from "<U0E44><U0E0D>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E0E> from "<U0E40><U0E0E>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E0E> from "<U0E41><U0E0E>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E0E> from "<U0E42><U0E0E>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E0E> from "<U0E43><U0E0E>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E0E> from "<U0E44><U0E0E>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E0F> from "<U0E40><U0E0F>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E0F> from "<U0E41><U0E0F>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E0F> from "<U0E42><U0E0F>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E0F> from "<U0E43><U0E0F>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E0F> from "<U0E44><U0E0F>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E10> from "<U0E40><U0E10>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E10> from "<U0E41><U0E10>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E10> from "<U0E42><U0E10>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E10> from "<U0E43><U0E10>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E10> from "<U0E44><U0E10>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E11> from "<U0E40><U0E11>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E11> from "<U0E41><U0E11>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E11> from "<U0E42><U0E11>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E11> from "<U0E43><U0E11>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E11> from "<U0E44><U0E11>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E12> from "<U0E40><U0E12>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E12> from "<U0E41><U0E12>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E12> from "<U0E42><U0E12>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E12> from "<U0E43><U0E12>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E12> from "<U0E44><U0E12>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E13> from "<U0E40><U0E13>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E13> from "<U0E41><U0E13>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E13> from "<U0E42><U0E13>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E13> from "<U0E43><U0E13>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E13> from "<U0E44><U0E13>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E14> from "<U0E40><U0E14>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E14> from "<U0E41><U0E14>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E14> from "<U0E42><U0E14>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E14> from "<U0E43><U0E14>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E14> from "<U0E44><U0E14>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E15> from "<U0E40><U0E15>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E15> from "<U0E41><U0E15>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E15> from "<U0E42><U0E15>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E15> from "<U0E43><U0E15>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E15> from "<U0E44><U0E15>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E16> from "<U0E40><U0E16>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E16> from "<U0E41><U0E16>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E16> from "<U0E42><U0E16>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E16> from "<U0E43><U0E16>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E16> from "<U0E44><U0E16>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E17> from "<U0E40><U0E17>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E17> from "<U0E41><U0E17>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E17> from "<U0E42><U0E17>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E17> from "<U0E43><U0E17>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E17> from "<U0E44><U0E17>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E18> from "<U0E40><U0E18>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E18> from "<U0E41><U0E18>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E18> from "<U0E42><U0E18>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E18> from "<U0E43><U0E18>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E18> from "<U0E44><U0E18>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E19> from "<U0E40><U0E19>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E19> from "<U0E41><U0E19>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E19> from "<U0E42><U0E19>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E19> from "<U0E43><U0E19>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E19> from "<U0E44><U0E19>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E1A> from "<U0E40><U0E1A>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E1A> from "<U0E41><U0E1A>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E1A> from "<U0E42><U0E1A>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E1A> from "<U0E43><U0E1A>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E1A> from "<U0E44><U0E1A>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E1B> from "<U0E40><U0E1B>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E1B> from "<U0E41><U0E1B>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E1B> from "<U0E42><U0E1B>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E1B> from "<U0E43><U0E1B>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E1B> from "<U0E44><U0E1B>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E1C> from "<U0E40><U0E1C>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E1C> from "<U0E41><U0E1C>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E1C> from "<U0E42><U0E1C>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E1C> from "<U0E43><U0E1C>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E1C> from "<U0E44><U0E1C>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E1D> from "<U0E40><U0E1D>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E1D> from "<U0E41><U0E1D>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E1D> from "<U0E42><U0E1D>" % collation-element for reordered Thai syllable
+collating-element <U0E43_0E1D> from "<U0E43><U0E1D>" % collation-element for reordered Thai syllable
+collating-element <U0E44_0E1D> from "<U0E44><U0E1D>" % collation-element for reordered Thai syllable
+collating-element <U0E40_0E1E> from "<U0E40><U0E1E>" % collation-element for reordered Thai syllable
+collating-element <U0E41_0E1E> from "<U0E41><U0E1E>" % collation-element for reordered Thai syllable
+collating-element <U0E42_0E1E> from "<U0E42><U0E1E>" % collation-element for reordered Thai syllable
+collating

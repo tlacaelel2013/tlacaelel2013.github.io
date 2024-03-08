@@ -1,0 +1,820 @@
+    { this->_M_assign_dispatch(__l.begin(), __l.end(), __false_type()); }
+#endif
+
+      /// Get a copy of the memory allocation object.
+      allocator_type
+      get_allocator() const _GLIBCXX_NOEXCEPT
+      { return allocator_type(_Base::_M_get_Node_allocator()); }
+
+      // iterators
+      /**
+       *  Returns a read/write iterator that points to the first element in the
+       *  %list.  Iteration is done in ordinary element order.
+       */
+      iterator
+      begin() _GLIBCXX_NOEXCEPT
+      { return iterator(this->_M_impl._M_node._M_next); }
+
+      /**
+       *  Returns a read-only (constant) iterator that points to the
+       *  first element in the %list.  Iteration is done in ordinary
+       *  element order.
+       */
+      const_iterator
+      begin() const _GLIBCXX_NOEXCEPT
+      { return const_iterator(this->_M_impl._M_node._M_next); }
+
+      /**
+       *  Returns a read/write iterator that points one past the last
+       *  element in the %list.  Iteration is done in ordinary element
+       *  order.
+       */
+      iterator
+      end() _GLIBCXX_NOEXCEPT
+      { return iterator(&this->_M_impl._M_node); }
+
+      /**
+       *  Returns a read-only (constant) iterator that points one past
+       *  the last element in the %list.  Iteration is done in ordinary
+       *  element order.
+       */
+      const_iterator
+      end() const _GLIBCXX_NOEXCEPT
+      { return const_iterator(&this->_M_impl._M_node); }
+
+      /**
+       *  Returns a read/write reverse iterator that points to the last
+       *  element in the %list.  Iteration is done in reverse element
+       *  order.
+       */
+      reverse_iterator
+      rbegin() _GLIBCXX_NOEXCEPT
+      { return reverse_iterator(end()); }
+
+      /**
+       *  Returns a read-only (constant) reverse iterator that points to
+       *  the last element in the %list.  Iteration is done in reverse
+       *  element order.
+       */
+      const_reverse_iterator
+      rbegin() const _GLIBCXX_NOEXCEPT
+      { return const_reverse_iterator(end()); }
+
+      /**
+       *  Returns a read/write reverse iterator that points to one
+       *  before the first element in the %list.  Iteration is done in
+       *  reverse element order.
+       */
+      reverse_iterator
+      rend() _GLIBCXX_NOEXCEPT
+      { return reverse_iterator(begin()); }
+
+      /**
+       *  Returns a read-only (constant) reverse iterator that points to one
+       *  before the first element in the %list.  Iteration is done in reverse
+       *  element order.
+       */
+      const_reverse_iterator
+      rend() const _GLIBCXX_NOEXCEPT
+      { return const_reverse_iterator(begin()); }
+
+#if __cplusplus >= 201103L
+      /**
+       *  Returns a read-only (constant) iterator that points to the
+       *  first element in the %list.  Iteration is done in ordinary
+       *  element order.
+       */
+      const_iterator
+      cbegin() const noexcept
+      { return const_iterator(this->_M_impl._M_node._M_next); }
+
+      /**
+       *  Returns a read-only (constant) iterator that points one past
+       *  the last element in the %list.  Iteration is done in ordinary
+       *  element order.
+       */
+      const_iterator
+      cend() const noexcept
+      { return const_iterator(&this->_M_impl._M_node); }
+
+      /**
+       *  Returns a read-only (constant) reverse iterator that points to
+       *  the last element in the %list.  Iteration is done in reverse
+       *  element order.
+       */
+      const_reverse_iterator
+      crbegin() const noexcept
+      { return const_reverse_iterator(end()); }
+
+      /**
+       *  Returns a read-only (constant) reverse iterator that points to one
+       *  before the first element in the %list.  Iteration is done in reverse
+       *  element order.
+       */
+      const_reverse_iterator
+      crend() const noexcept
+      { return const_reverse_iterator(begin()); }
+#endif
+
+      // [23.2.2.2] capacity
+      /**
+       *  Returns true if the %list is empty.  (Thus begin() would equal
+       *  end().)
+       */
+      _GLIBCXX_NODISCARD bool
+      empty() const _GLIBCXX_NOEXCEPT
+      { return this->_M_impl._M_node._M_next == &this->_M_impl._M_node; }
+
+      /**  Returns the number of elements in the %list.  */
+      size_type
+      size() const _GLIBCXX_NOEXCEPT
+      { return _M_node_count(); }
+
+      /**  Returns the size() of the largest possible %list.  */
+      size_type
+      max_size() const _GLIBCXX_NOEXCEPT
+      { return _Node_alloc_traits::max_size(_M_get_Node_allocator()); }
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief Resizes the %list to the specified number of elements.
+       *  @param __new_size Number of elements the %list should contain.
+       *
+       *  This function will %resize the %list to the specified number
+       *  of elements.  If the number is smaller than the %list's
+       *  current size the %list is truncated, otherwise default
+       *  constructed elements are appended.
+       */
+      void
+      resize(size_type __new_size);
+
+      /**
+       *  @brief Resizes the %list to the specified number of elements.
+       *  @param __new_size Number of elements the %list should contain.
+       *  @param __x Data with which new elements should be populated.
+       *
+       *  This function will %resize the %list to the specified number
+       *  of elements.  If the number is smaller than the %list's
+       *  current size the %list is truncated, otherwise the %list is
+       *  extended and new elements are populated with given data.
+       */
+      void
+      resize(size_type __new_size, const value_type& __x);
+#else
+      /**
+       *  @brief Resizes the %list to the specified number of elements.
+       *  @param __new_size Number of elements the %list should contain.
+       *  @param __x Data with which new elements should be populated.
+       *
+       *  This function will %resize the %list to the specified number
+       *  of elements.  If the number is smaller than the %list's
+       *  current size the %list is truncated, otherwise the %list is
+       *  extended and new elements are populated with given data.
+       */
+      void
+      resize(size_type __new_size, value_type __x = value_type());
+#endif
+
+      // element access
+      /**
+       *  Returns a read/write reference to the data at the first
+       *  element of the %list.
+       */
+      reference
+      front() _GLIBCXX_NOEXCEPT
+      { return *begin(); }
+
+      /**
+       *  Returns a read-only (constant) reference to the data at the first
+       *  element of the %list.
+       */
+      const_reference
+      front() const _GLIBCXX_NOEXCEPT
+      { return *begin(); }
+
+      /**
+       *  Returns a read/write reference to the data at the last element
+       *  of the %list.
+       */
+      reference
+      back() _GLIBCXX_NOEXCEPT
+      {
+	iterator __tmp = end();
+	--__tmp;
+	return *__tmp;
+      }
+
+      /**
+       *  Returns a read-only (constant) reference to the data at the last
+       *  element of the %list.
+       */
+      const_reference
+      back() const _GLIBCXX_NOEXCEPT
+      {
+	const_iterator __tmp = end();
+	--__tmp;
+	return *__tmp;
+      }
+
+      // [23.2.2.3] modifiers
+      /**
+       *  @brief  Add data to the front of the %list.
+       *  @param  __x  Data to be added.
+       *
+       *  This is a typical stack operation.  The function creates an
+       *  element at the front of the %list and assigns the given data
+       *  to it.  Due to the nature of a %list this operation can be
+       *  done in constant time, and does not invalidate iterators and
+       *  references.
+       */
+      void
+      push_front(const value_type& __x)
+      { this->_M_insert(begin(), __x); }
+
+#if __cplusplus >= 201103L
+      void
+      push_front(value_type&& __x)
+      { this->_M_insert(begin(), std::move(__x)); }
+
+      template<typename... _Args>
+#if __cplusplus > 201402L
+	reference
+#else
+	void
+#endif
+	emplace_front(_Args&&... __args)
+	{
+	  this->_M_insert(begin(), std::forward<_Args>(__args)...);
+#if __cplusplus > 201402L
+	  return front();
+#endif
+	}
+#endif
+
+      /**
+       *  @brief  Removes first element.
+       *
+       *  This is a typical stack operation.  It shrinks the %list by
+       *  one.  Due to the nature of a %list this operation can be done
+       *  in constant time, and only invalidates iterators/references to
+       *  the element being removed.
+       *
+       *  Note that no data is returned, and if the first element's data
+       *  is needed, it should be retrieved before pop_front() is
+       *  called.
+       */
+      void
+      pop_front() _GLIBCXX_NOEXCEPT
+      { this->_M_erase(begin()); }
+
+      /**
+       *  @brief  Add data to the end of the %list.
+       *  @param  __x  Data to be added.
+       *
+       *  This is a typical stack operation.  The function creates an
+       *  element at the end of the %list and assigns the given data to
+       *  it.  Due to the nature of a %list this operation can be done
+       *  in constant time, and does not invalidate iterators and
+       *  references.
+       */
+      void
+      push_back(const value_type& __x)
+      { this->_M_insert(end(), __x); }
+
+#if __cplusplus >= 201103L
+      void
+      push_back(value_type&& __x)
+      { this->_M_insert(end(), std::move(__x)); }
+
+      template<typename... _Args>
+#if __cplusplus > 201402L
+	reference
+#else
+	void
+#endif
+	emplace_back(_Args&&... __args)
+	{
+	  this->_M_insert(end(), std::forward<_Args>(__args)...);
+#if __cplusplus > 201402L
+	return back();
+#endif
+	}
+#endif
+
+      /**
+       *  @brief  Removes last element.
+       *
+       *  This is a typical stack operation.  It shrinks the %list by
+       *  one.  Due to the nature of a %list this operation can be done
+       *  in constant time, and only invalidates iterators/references to
+       *  the element being removed.
+       *
+       *  Note that no data is returned, and if the last element's data
+       *  is needed, it should be retrieved before pop_back() is called.
+       */
+      void
+      pop_back() _GLIBCXX_NOEXCEPT
+      { this->_M_erase(iterator(this->_M_impl._M_node._M_prev)); }
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Constructs object in %list before specified iterator.
+       *  @param  __position  A const_iterator into the %list.
+       *  @param  __args  Arguments.
+       *  @return  An iterator that points to the inserted data.
+       *
+       *  This function will insert an object of type T constructed
+       *  with T(std::forward<Args>(args)...) before the specified
+       *  location.  Due to the nature of a %list this operation can
+       *  be done in constant time, and does not invalidate iterators
+       *  and references.
+       */
+      template<typename... _Args>
+	iterator
+	emplace(const_iterator __position, _Args&&... __args);
+
+      /**
+       *  @brief  Inserts given value into %list before specified iterator.
+       *  @param  __position  A const_iterator into the %list.
+       *  @param  __x  Data to be inserted.
+       *  @return  An iterator that points to the inserted data.
+       *
+       *  This function will insert a copy of the given value before
+       *  the specified location.  Due to the nature of a %list this
+       *  operation can be done in constant time, and does not
+       *  invalidate iterators and references.
+       */
+      iterator
+      insert(const_iterator __position, const value_type& __x);
+#else
+      /**
+       *  @brief  Inserts given value into %list before specified iterator.
+       *  @param  __position  An iterator into the %list.
+       *  @param  __x  Data to be inserted.
+       *  @return  An iterator that points to the inserted data.
+       *
+       *  This function will insert a copy of the given value before
+       *  the specified location.  Due to the nature of a %list this
+       *  operation can be done in constant time, and does not
+       *  invalidate iterators and references.
+       */
+      iterator
+      insert(iterator __position, const value_type& __x);
+#endif
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Inserts given rvalue into %list before specified iterator.
+       *  @param  __position  A const_iterator into the %list.
+       *  @param  __x  Data to be inserted.
+       *  @return  An iterator that points to the inserted data.
+       *
+       *  This function will insert a copy of the given rvalue before
+       *  the specified location.  Due to the nature of a %list this
+       *  operation can be done in constant time, and does not
+       *  invalidate iterators and references.
+	*/
+      iterator
+      insert(const_iterator __position, value_type&& __x)
+      { return emplace(__position, std::move(__x)); }
+
+      /**
+       *  @brief  Inserts the contents of an initializer_list into %list
+       *          before specified const_iterator.
+       *  @param  __p  A const_iterator into the %list.
+       *  @param  __l  An initializer_list of value_type.
+       *  @return  An iterator pointing to the first element inserted
+       *           (or __position).
+       *
+       *  This function will insert copies of the data in the
+       *  initializer_list @a l into the %list before the location
+       *  specified by @a p.
+       *
+       *  This operation is linear in the number of elements inserted and
+       *  does not invalidate iterators and references.
+       */
+      iterator
+      insert(const_iterator __p, initializer_list<value_type> __l)
+      { return this->insert(__p, __l.begin(), __l.end()); }
+#endif
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Inserts a number of copies of given data into the %list.
+       *  @param  __position  A const_iterator into the %list.
+       *  @param  __n  Number of elements to be inserted.
+       *  @param  __x  Data to be inserted.
+       *  @return  An iterator pointing to the first element inserted
+       *           (or __position).
+       *
+       *  This function will insert a specified number of copies of the
+       *  given data before the location specified by @a position.
+       *
+       *  This operation is linear in the number of elements inserted and
+       *  does not invalidate iterators and references.
+       */
+      iterator
+      insert(const_iterator __position, size_type __n, const value_type& __x);
+#else
+      /**
+       *  @brief  Inserts a number of copies of given data into the %list.
+       *  @param  __position  An iterator into the %list.
+       *  @param  __n  Number of elements to be inserted.
+       *  @param  __x  Data to be inserted.
+       *
+       *  This function will insert a specified number of copies of the
+       *  given data before the location specified by @a position.
+       *
+       *  This operation is linear in the number of elements inserted and
+       *  does not invalidate iterators and references.
+       */
+      void
+      insert(iterator __position, size_type __n, const value_type& __x)
+      {
+	list __tmp(__n, __x, get_allocator());
+	splice(__position, __tmp);
+      }
+#endif
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Inserts a range into the %list.
+       *  @param  __position  A const_iterator into the %list.
+       *  @param  __first  An input iterator.
+       *  @param  __last   An input iterator.
+       *  @return  An iterator pointing to the first element inserted
+       *           (or __position).
+       *
+       *  This function will insert copies of the data in the range [@a
+       *  first,@a last) into the %list before the location specified by
+       *  @a position.
+       *
+       *  This operation is linear in the number of elements inserted and
+       *  does not invalidate iterators and references.
+       */
+      template<typename _InputIterator,
+	       typename = std::_RequireInputIter<_InputIterator>>
+	iterator
+	insert(const_iterator __position, _InputIterator __first,
+	       _InputIterator __last);
+#else
+      /**
+       *  @brief  Inserts a range into the %list.
+       *  @param  __position  An iterator into the %list.
+       *  @param  __first  An input iterator.
+       *  @param  __last   An input iterator.
+       *
+       *  This function will insert copies of the data in the range [@a
+       *  first,@a last) into the %list before the location specified by
+       *  @a position.
+       *
+       *  This operation is linear in the number of elements inserted and
+       *  does not invalidate iterators and references.
+       */
+      template<typename _InputIterator>
+	void
+	insert(iterator __position, _InputIterator __first,
+	       _InputIterator __last)
+	{
+	  list __tmp(__first, __last, get_allocator());
+	  splice(__position, __tmp);
+	}
+#endif
+
+      /**
+       *  @brief  Remove element at given position.
+       *  @param  __position  Iterator pointing to element to be erased.
+       *  @return  An iterator pointing to the next element (or end()).
+       *
+       *  This function will erase the element at the given position and thus
+       *  shorten the %list by one.
+       *
+       *  Due to the nature of a %list this operation can be done in
+       *  constant time, and only invalidates iterators/references to
+       *  the element being removed.  The user is also cautioned that
+       *  this function only erases the element, and that if the element
+       *  is itself a pointer, the pointed-to memory is not touched in
+       *  any way.  Managing the pointer is the user's responsibility.
+       */
+      iterator
+#if __cplusplus >= 201103L
+      erase(const_iterator __position) noexcept;
+#else
+      erase(iterator __position);
+#endif
+
+      /**
+       *  @brief  Remove a range of elements.
+       *  @param  __first  Iterator pointing to the first element to be erased.
+       *  @param  __last  Iterator pointing to one past the last element to be
+       *                erased.
+       *  @return  An iterator pointing to the element pointed to by @a last
+       *           prior to erasing (or end()).
+       *
+       *  This function will erase the elements in the range @a
+       *  [first,last) and shorten the %list accordingly.
+       *
+       *  This operation is linear time in the size of the range and only
+       *  invalidates iterators/references to the element being removed.
+       *  The user is also cautioned that this function only erases the
+       *  elements, and that if the elements themselves are pointers, the
+       *  pointed-to memory is not touched in any way.  Managing the pointer
+       *  is the user's responsibility.
+       */
+      iterator
+#if __cplusplus >= 201103L
+      erase(const_iterator __first, const_iterator __last) noexcept
+#else
+      erase(iterator __first, iterator __last)
+#endif
+      {
+	while (__first != __last)
+	  __first = erase(__first);
+	return __last._M_const_cast();
+      }
+
+      /**
+       *  @brief  Swaps data with another %list.
+       *  @param  __x  A %list of the same element and allocator types.
+       *
+       *  This exchanges the elements between two lists in constant
+       *  time.  Note that the global std::swap() function is
+       *  specialized such that std::swap(l1,l2) will feed to this
+       *  function.
+       *
+       *  Whether the allocators are swapped depends on the allocator traits.
+       */
+      void
+      swap(list& __x) _GLIBCXX_NOEXCEPT
+      {
+	__detail::_List_node_base::swap(this->_M_impl._M_node,
+					__x._M_impl._M_node);
+
+	size_t __xsize = __x._M_get_size();
+	__x._M_set_size(this->_M_get_size());
+	this->_M_set_size(__xsize);
+
+	_Node_alloc_traits::_S_on_swap(this->_M_get_Node_allocator(),
+				       __x._M_get_Node_allocator());
+      }
+
+      /**
+       *  Erases all the elements.  Note that this function only erases
+       *  the elements, and that if the elements themselves are
+       *  pointers, the pointed-to memory is not touched in any way.
+       *  Managing the pointer is the user's responsibility.
+       */
+      void
+      clear() _GLIBCXX_NOEXCEPT
+      {
+	_Base::_M_clear();
+	_Base::_M_init();
+      }
+
+      // [23.2.2.4] list operations
+      /**
+       *  @brief  Insert contents of another %list.
+       *  @param  __position  Iterator referencing the element to insert before.
+       *  @param  __x  Source list.
+       *
+       *  The elements of @a __x are inserted in constant time in front of
+       *  the element referenced by @a __position.  @a __x becomes an empty
+       *  list.
+       *
+       *  Requires this != @a __x.
+       */
+      void
+#if __cplusplus >= 201103L
+      splice(const_iterator __position, list&& __x) novŒ  wŒ  xŒ  yŒ  zŒ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              except
+#else
+      splice(iterator __position, list& __x)
+#endif
+      {
+	if (!__x.empty())
+	  {
+	    _M_check_equal_allocators(__x);
+
+	    this->_M_transfer(__position._M_const_cast(),
+			      __x.begin(), __x.end());
+
+	    this->_M_inc_size(__x._M_get_size());
+	    __x._M_set_size(0);
+	  }
+      }
+
+#if __cplusplus >= 201103L
+      void
+      splice(const_iterator __position, list& __x) noexcept
+      { splice(__position, std::move(__x)); }
+#endif
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Insert element from another %list.
+       *  @param  __position  Const_iterator referencing the element to
+       *                      insert before.
+       *  @param  __x  Source list.
+       *  @param  __i  Const_iterator referencing the element to move.
+       *
+       *  Removes the element in list @a __x referenced by @a __i and
+       *  inserts it into the current list before @a __position.
+       */
+      void
+      splice(const_iterator __position, list&& __x, const_iterator __i) noexcept
+#else
+      /**
+       *  @brief  Insert element from another %list.
+       *  @param  __position  Iterator referencing the element to insert before.
+       *  @param  __x  Source list.
+       *  @param  __i  Iterator referencing the element to move.
+       *
+       *  Removes the element in list @a __x referenced by @a __i and
+       *  inserts it into the current list before @a __position.
+       */
+      void
+      splice(iterator __position, list& __x, iterator __i)
+#endif
+      {
+	iterator __j = __i._M_const_cast();
+	++__j;
+	if (__position == __i || __position == __j)
+	  return;
+
+	if (this != std::__addressof(__x))
+	  _M_check_equal_allocators(__x);
+
+	this->_M_transfer(__position._M_const_cast(),
+			  __i._M_const_cast(), __j);
+
+	this->_M_inc_size(1);
+	__x._M_dec_size(1);
+      }
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Insert element from another %list.
+       *  @param  __position  Const_iterator referencing the element to
+       *                      insert before.
+       *  @param  __x  Source list.
+       *  @param  __i  Const_iterator referencing the element to move.
+       *
+       *  Removes the element in list @a __x referenced by @a __i and
+       *  inserts it into the current list before @a __position.
+       */
+      void
+      splice(const_iterator __position, list& __x, const_iterator __i) noexcept
+      { splice(__position, std::move(__x), __i); }
+#endif
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Insert range from another %list.
+       *  @param  __position  Const_iterator referencing the element to
+       *                      insert before.
+       *  @param  __x  Source list.
+       *  @param  __first  Const_iterator referencing the start of range in x.
+       *  @param  __last  Const_iterator referencing the end of range in x.
+       *
+       *  Removes elements in the range [__first,__last) and inserts them
+       *  before @a __position in constant time.
+       *
+       *  Undefined if @a __position is in [__first,__last).
+       */
+      void
+      splice(const_iterator __position, list&& __x, const_iterator __first,
+	     const_iterator __last) noexcept
+#else
+      /**
+       *  @brief  Insert range from another %list.
+       *  @param  __position  Iterator referencing the element to insert before.
+       *  @param  __x  Source list.
+       *  @param  __first  Iterator referencing the start of range in x.
+       *  @param  __last  Iterator referencing the end of range in x.
+       *
+       *  Removes elements in the range [__first,__last) and inserts them
+       *  before @a __position in constant time.
+       *
+       *  Undefined if @a __position is in [__first,__last).
+       */
+      void
+      splice(iterator __position, list& __x, iterator __first,
+	     iterator __last)
+#endif
+      {
+	if (__first != __last)
+	  {
+	    if (this != std::__addressof(__x))
+	      _M_check_equal_allocators(__x);
+
+	    size_t __n = _S_distance(__first, __last);
+	    this->_M_inc_size(__n);
+	    __x._M_dec_size(__n);
+
+	    this->_M_transfer(__position._M_const_cast(),
+			      __first._M_const_cast(),
+			      __last._M_const_cast());
+	  }
+      }
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Insert range from another %list.
+       *  @param  __position  Const_iterator referencing the element to
+       *                      insert before.
+       *  @param  __x  Source list.
+       *  @param  __first  Const_iterator referencing the start of range in x.
+       *  @param  __last  Const_iterator referencing the end of range in x.
+       *
+       *  Removes elements in the range [__first,__last) and inserts them
+       *  before @a __position in constant time.
+       *
+       *  Undefined if @a __position is in [__first,__last).
+       */
+      void
+      splice(const_iterator __position, list& __x, const_iterator __first,
+	     const_iterator __last) noexcept
+      { splice(__position, std::move(__x), __first, __last); }
+#endif
+
+    private:
+#if __cplusplus > 201703L
+# define __cpp_lib_list_remove_return_type 201806L
+      typedef size_type __remove_return_type;
+# define _GLIBCXX_LIST_REMOVE_RETURN_TYPE_TAG \
+      __attribute__((__abi_tag__("__cxx20")))
+#else
+      typedef void __remove_return_type;
+# define _GLIBCXX_LIST_REMOVE_RETURN_TYPE_TAG
+#endif
+    public:
+
+      /**
+       *  @brief  Remove all elements equal to value.
+       *  @param  __value  The value to remove.
+       *
+       *  Removes every element in the list equal to @a value.
+       *  Remaining elements stay in list order.  Note that this
+       *  function only erases the elements, and that if the elements
+       *  themselves are pointers, the pointed-to memory is not
+       *  touched in any way.  Managing the pointer is the user's
+       *  responsibility.
+       */
+      _GLIBCXX_LIST_REMOVE_RETURN_TYPE_TAG
+      __remove_return_type
+      remove(const _Tp& __value);
+
+      /**
+       *  @brief  Remove all elements satisfying a predicate.
+       *  @tparam  _Predicate  Unary predicate function or object.
+       *
+       *  Removes every element in the list for which the predicate
+       *  returns true.  Remaining elements stay in list order.  Note
+       *  that this function only erases the elements, and that if the
+       *  elements themselves are pointers, the pointed-to memory is
+       *  not touched in any way.  Managing the pointer is the user's
+       *  responsibility.
+       */
+      template<typename _Predicate>
+	__remove_return_type
+	remove_if(_Predicate);
+
+      /**
+       *  @brief  Remove consecutive duplicate elements.
+       *
+       *  For each consecutive set of elements with the same value,
+       *  remove all but the first one.  Remaining elements stay in
+       *  list order.  Note that this function only erases the
+       *  elements, and that if the elements themselves are pointers,
+       *  the pointed-to memory is not touched in any way.  Managing
+       *  the pointer is the user's responsibility.
+       */
+      _GLIBCXX_LIST_REMOVE_RETURN_TYPE_TAG
+      __remove_return_type
+      unique();
+
+      /**
+       *  @brief  Remove consecutive elements satisfying a predicate.
+       *  @tparam _BinaryPredicate  Binary predicate function or object.
+       *
+       *  For each consecutive set of elements [first,last) that
+       *  satisfy predicate(first,i) where i is an iterator in
+       *  [first,last), remove all but the first one.  Remaining
+       *  elements stay in list order.  Note that this function only
+       *  erases the elements, and that if the elements themselves are
+       *  pointers, the pointed-to memory is not touched in any way.
+       *  Managing the pointer is the user's responsibility.
+       */
+      template<typename _BinaryPredicate>
+	__remove_return_type
+	unique(_BinaryPredicate);
+
+#undef _GLIBCXX_LIST_REMOVE_RETURN_TYPE_TAG
+
+      /**
+       *  @brief  Merge sorted lists.
+       *  @param  __x  Sorted list to merge.
+       *
+       *  Assumes that both @a __x and this list are sorted according to
+       *  operator<().  Merges elements of @a __x into this list in
+       *  sorted order, leaving @a __x empty when complete.  Elements in
+       *  this list precede e

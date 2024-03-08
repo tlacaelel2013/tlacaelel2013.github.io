@@ -1,0 +1,1013 @@
+Iterator __mid2 = std::__uninitialized_move_a(__first1, __last1,
+							    __first2,
+							    __alloc);
+      __try
+	{
+	  std::__uninitialized_fill_a(__mid2, __last2, __x, __alloc);
+	}
+      __catch(...)
+	{
+	  std::_Destroy(__first2, __mid2, __alloc);
+	  __throw_exception_again;
+	}
+    }
+
+#if __cplusplus >= 201103L
+  // Extensions: __uninitialized_default, __uninitialized_default_n,
+  // __uninitialized_default_a, __uninitialized_default_n_a.
+
+  template<bool _TrivialValueType>
+    struct __uninitialized_default_1
+    {
+      template<typename _ForwardIterator>
+        static void
+        __uninit_default(_ForwardIterator __first, _ForwardIterator __last)
+        {
+	  _ForwardIterator __cur = __first;
+	  __try
+	    {
+	      for (; __cur != __last; ++__cur)
+		std::_Construct(std::__addressof(*__cur));
+	    }
+	  __catch(...)
+	    {
+	      std::_Destroy(__first, __cur);
+	      __throw_exception_again;
+	    }
+	}
+    };
+
+  template<>
+    struct __uninitialized_default_1<true>
+    {
+      template<typename _ForwardIterator>
+        static void
+        __uninit_default(_ForwardIterator __first, _ForwardIterator __last)
+        {
+	  typedef typename iterator_traits<_ForwardIterator>::value_type
+	    _ValueType;
+
+	  std::fill(__first, __last, _ValueType());
+	}
+    };
+
+  template<bool _TrivialValueType>
+    struct __uninitialized_default_n_1
+    {
+      template<typename _ForwardIterator, typename _Size>
+        static _ForwardIterator
+        __uninit_default_n(_ForwardIterator __first, _Size __n)
+        {
+	  _ForwardIterator __cur = __first;
+	  __try
+	    {
+	      for (; __n > 0; --__n, (void) ++__cur)
+		std::_Construct(std::__addressof(*__cur));
+	      return __cur;
+	    }
+	  __catch(...)
+	    {
+	      std::_Destroy(__first, __cur);
+	      __throw_exception_again;
+	    }
+	}
+    };
+
+  template<>
+    struct __uninitialized_default_n_1<true>
+    {
+      template<typename _ForwardIterator, typename _Size>
+        static _ForwardIterator
+        __uninit_default_n(_ForwardIterator __first, _Size __n)
+        {
+	  typedef typename iterator_traits<_ForwardIterator>::value_type
+	    _ValueType;
+
+	  return std::fill_n(__first, __n, _ValueType());
+	}
+    };
+
+  // __uninitialized_default
+  // Fills [first, last) with std::distance(first, last) default
+  // constructed value_types(s).
+  template<typename _ForwardIterator>
+    inline void
+    __uninitialized_default(_ForwardIterator __first,
+			    _ForwardIterator __last)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::value_type
+	_ValueType;
+      // trivial types can have deleted assignment
+      const bool __assignable = is_copy_assignable<_ValueType>::value;
+
+      std::__uninitialized_default_1<__is_trivial(_ValueType)
+				     && __assignable>::
+	__uninit_default(__first, __last);
+    }
+
+  // __uninitialized_default_n
+  // Fills [first, first + n) with n default constructed value_type(s).
+  template<typename _ForwardIterator, typename _Size>
+    inline _ForwardIterator
+    __uninitialized_default_n(_ForwardIterator __first, _Size __n)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::value_type
+	_ValueType;
+      // trivial types can have deleted assignment
+      const bool __assignable = is_copy_assignable<_ValueType>::value;
+
+      return __uninitialized_default_n_1<__is_trivial(_ValueType)
+				       && __assignable>::
+	__uninit_default_n(__first, __n);
+    }
+
+
+  // __uninitialized_default_a
+  // Fills [first, last) with std::distance(first, last) default
+  // constructed value_types(s), constructed with the allocator alloc.
+  template<typename _ForwardIterator, typename _Allocator>
+    void
+    __uninitialized_default_a(_ForwardIterator __first,
+			      _ForwardIterator __last,
+			      _Allocator& __alloc)
+    {
+      _ForwardIterator __cur = __first;
+      __try
+	{
+	  typedef __gnu_cxx::__alloc_traits<_Allocator> __traits;
+	  for (; __cur != __last; ++__cur)
+	    __traits::construct(__alloc, std::__addressof(*__cur));
+	}
+      __catch(...)
+	{
+	  std::_Destroy(__first, __cur, __alloc);
+	  __throw_exception_again;
+	}
+    }
+
+  template<typename _ForwardIterator, typename _Tp>
+    inline void
+    __uninitialized_default_a(_ForwardIterator __first,
+			      _ForwardIterator __last,
+			      allocator<_Tp>&)
+    { std::__uninitialized_default(__first, __last); }
+
+
+  // __uninitialized_default_n_a
+  // Fills [first, first + n) with n default constructed value_types(s),
+  // constructed with the allocator alloc.
+  template<typename _ForwardIterator, typename _Size, typename _Allocator>
+    _ForwardIterator
+    __uninitialized_default_n_a(_ForwardIterator __first, _Size __n, 
+				_Allocator& __alloc)
+    {
+      _ForwardIterator __cur = __first;
+      __try
+	{
+	  typedef __gnu_cxx::__alloc_traits<_Allocator> __traits;
+	  for (; __n > 0; --__n, (void) ++__cur)
+	    __traits::construct(__alloc, std::__addressof(*__cur));
+	  return __cur;
+	}
+      __catch(...)
+	{
+	  std::_Destroy(__first, __cur, __alloc);
+	  __throw_exception_again;
+	}
+    }
+
+  template<typename _ForwardIterator, typename _Size, typename _Tp>
+    inline _ForwardIterator
+    __uninitialized_default_n_a(_ForwardIterator __first, _Size __n, 
+				allocator<_Tp>&)
+    { return std::__uninitialized_default_n(__first, __n); }
+
+  template<bool _TrivialValueType>
+    struct __uninitialized_default_novalue_1
+    {
+      template<typename _ForwardIterator>
+	static void
+	__uninit_default_novalue(_ForwardIterator __first,
+				 _ForwardIterator __last)
+	{
+	  _ForwardIterator __cur = __first;
+	  __try
+	    {
+	      for (; __cur != __last; ++__cur)
+		std::_Construct_novalue(std::__addressof(*__cur));
+	    }
+	  __catch(...)
+	    {
+	      std::_Destroy(__first, __cur);
+	      __throw_exception_again;
+	    }
+	}
+    };
+
+  template<>
+    struct __uninitialized_default_novalue_1<true>
+    {
+      template<typename _ForwardIterator>
+        static void
+        __uninit_default_novalue(_ForwardIterator __first,
+				 _ForwardIterator __last)
+	{
+	}
+    };
+
+  template<bool _TrivialValueType>
+    struct __uninitialized_default_novalue_n_1
+    {
+      template<typename _ForwardIterator, typename _Size>
+	static _ForwardIterator
+	__uninit_default_novalue_n(_ForwardIterator __first, _Size __n)
+	{
+	  _ForwardIterator __cur = __first;
+	  __try
+	    {
+	      for (; __n > 0; --__n, (void) ++__cur)
+		std::_Construct_novalue(std::__addressof(*__cur));
+	      return __cur;
+	    }
+	  __catch(...)
+	    {
+	      std::_Destroy(__first, __cur);
+	      __throw_exception_again;
+	    }
+	}
+    };
+
+  template<>
+    struct __uninitialized_default_novalue_n_1<true>
+    {
+      template<typename _ForwardIterator, typename _Size>
+	static _ForwardIterator
+	__uninit_default_novalue_n(_ForwardIterator __first, _Size __n)
+	{ return std::next(__first, __n); }
+    };
+
+  // __uninitialized_default_novalue
+  // Fills [first, last) with std::distance(first, last) default-initialized
+  // value_types(s).
+  template<typename _ForwardIterator>
+    inline void
+    __uninitialized_default_novalue(_ForwardIterator __first,
+				    _ForwardIterator __last)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::value_type
+	_ValueType;
+
+      std::__uninitialized_default_novalue_1<
+	is_trivially_default_constructible<_ValueType>::value>::
+	__uninit_default_novalue(__first, __last);
+    }
+
+  // __uninitialized_default_n
+  // Fills [first, first + n) with n default-initialized value_type(s).
+  template<typename _ForwardIterator, typename _Size>
+    inline _ForwardIterator
+    __uninitialized_default_novalue_n(_ForwardIterator __first, _Size __n)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::value_type
+	_ValueType;
+
+      return __uninitialized_default_novalue_n_1<
+	is_trivially_default_constructible<_ValueType>::value>::
+	__uninit_default_novalue_n(__first, __n);
+    }
+
+  template<typename _InputIterator, typename _Size,
+	   typename _ForwardIterator>
+    _ForwardIterator
+    __uninitialized_copy_n(_InputIterator __first, _Size __n,
+			   _ForwardIterator __result, input_iterator_tag)
+    {
+      _ForwardIterator __cur = __result;
+      __try
+	{
+	  for (; __n > 0; --__n, (void) ++__first, ++__cur)
+	    std::_Construct(std::__addressof(*__cur), *__first);
+	  return __cur;
+	}
+      __catch(...)
+	{
+	  std::_Destroy(__result, __cur);
+	  __throw_exception_again;
+	}
+    }
+
+  template<typename _RandomAccessIterator, typename _Size,
+	   typename _ForwardIterator>
+    inline _ForwardIterator
+    __uninitialized_copy_n(_RandomAccessIterator __first, _Size __n,
+			   _ForwardIterator __result,
+			   random_access_iterator_tag)
+    { return std::uninitialized_copy(__first, __first + __n, __result); }
+
+  template<typename _InputIterator, typename _Size,
+	   typename _ForwardIterator>
+    pair<_InputIterator, _ForwardIterator>
+    __uninitialized_copy_n_pair(_InputIterator __first, _Size __n,
+			   _ForwardIterator __result, input_iterator_tag)
+    {
+      _ForwardIterator __cur = __result;
+      __try
+	{
+	  for (; __n > 0; --__n, (void) ++__first, ++__cur)
+	    std::_Construct(std::__addressof(*__cur), *__first);
+	  return {__first, __cur};
+	}
+      __catch(...)
+	{
+	  std::_Destroy(__result, __cur);
+	  __throw_exception_again;
+	}
+    }
+
+  template<typename _RandomAccessIterator, typename _Size,
+	   typename _ForwardIterator>
+    inline pair<_RandomAccessIterator, _ForwardIterator>
+    __uninitialized_copy_n_pair(_RandomAccessIterator __first, _Size __n,
+			   _ForwardIterator __result,
+			   random_access_iterator_tag)
+    {
+      auto __second_res = uninitialized_copy(__first, __first + __n, __result);
+      auto __first_res = std::next(__first, __n);
+      return {__first_res, __second_res};
+    }
+
+  /**
+   *  @brief Copies the range [first,first+n) into result.
+   *  @param  __first  An input iterator.
+   *  @param  __n      The number of elements to copy.
+   *  @param  __result An output iterator.
+   *  @return  __result + __n
+   *
+   *  Like copy_n(), but does not require an initialized output range.
+  */
+  template<typename _InputIterator, typename _Size, typename _ForwardIterator>
+    inline _ForwardIterator
+    uninitialized_copy_n(_InputIterator __first, _Size __n,
+			 _ForwardIterator __result)
+    { return std::__uninitialized_copy_n(__first, __n, __result,
+					 std::__iterator_category(__first)); }
+
+  template<typename _InputIterator, typename _Size, typename _ForwardIterator>
+    inline pair<_InputIterator, _ForwardIterator>
+    __uninitialized_copy_n_pair(_InputIterator __first, _Size __n,
+			      _ForwardIterator __result)
+    {
+      return
+	std::__uninitialized_copy_n_pair(__first, __n, __result,
+					 std::__iterator_category(__first));
+    }
+
+#endif
+
+#if __cplusplus >= 201703L
+# define __cpp_lib_raw_memory_algorithms 201606L
+
+  template <typename _ForwardIterator>
+    inline void
+    uninitialized_default_construct(_ForwardIterator __first,
+				    _ForwardIterator __last)
+    {
+      __uninitialized_default_novalue(__first, __last);
+    }
+
+  template <typename _ForwardIterator, typename _Size>
+    inline _ForwardIterator
+    uninitialized_default_construct_n(_ForwardIterator __first, _Size __count)
+    {
+      return __uninitialized_default_novalue_n(__first, __count);
+    }
+
+  template <typename _ForwardIterator>
+    inline void
+    uninitialized_value_construct(_ForwardIterator __first,
+				  _ForwardIterator __last)
+    {
+      return __uninitialized_default(__first, __last);
+    }
+
+  template <typename _ForwardIterator, typename _Size>
+    inline _ForwardIterator
+    uninitialized_value_construct_n(_ForwardIterator __first, _Size __count)
+    {
+      return __uninitialized_default_n(__first, __count);
+    }
+
+  template <typename _InputIterator, typename _ForwardIterator>
+    inline _ForwardIterator
+    uninitialized_move(_InputIterator __first, _InputIterator __last,
+		       _ForwardIterator __result)
+    {
+      return std::uninitialized_copy
+	(_GLIBCXX_MAKE_MOVE_ITERATOR(__first),
+	 _GLIBCXX_MAKE_MOVE_ITERATOR(__last), __result);
+    }
+
+  template <typename _InputIterator, typename _Size, typename _ForwardIterator>
+    inline pair<_InputIterator, _ForwardIterator>
+    uninitialized_move_n(_InputIterator __first, _Size __count,
+			 _ForwardIterator __result)
+    {
+      auto __res = std::__uninitialized_copy_n_pair
+	(_GLIBCXX_MAKE_MOVE_ITERATOR(__first),
+	 __count, __result);
+      return {__res.first.base(), __res.second};
+    }
+#endif // C++17
+
+#if __cplusplus >= 201103L
+  template<typename _Tp, typename _Up, typename _Allocator>
+    inline void
+    __relocate_object_a(_Tp* __dest, _Up* __orig, _Allocator& __alloc)
+    noexcept(noexcept(std::allocator_traits<_Allocator>::construct(__alloc,
+			 __dest, std::move(*__orig)))
+	     && noexcept(std::allocator_traits<_Allocator>::destroy(
+			    __alloc, std::__addressof(*__orig))))
+    {
+      typedef std::allocator_traits<_Allocator> __traits;
+      __traits::construct(__alloc, __dest, std::move(*__orig));
+      __traits::destroy(__alloc, std::__addressof(*__orig));
+    }
+
+  // This class may be specialized for specific types.
+  // Also known as is_trivially_relocatable.
+  template<typename _Tp, typename = void>
+    struct __is_bitwise_relocatable
+    : is_trivial<_Tp> { };
+
+  template <typename _Tp, typename _Up>
+    inline __enable_if_t<std::__is_bitwise_relocatable<_Tp>::value, _Tp*>
+    __relocate_a_1(_Tp* __first, _Tp* __last,
+		   _Tp* __result, allocator<_Up>&) noexcept
+    {
+      ptrdiff_t __count = __last - __first;
+      if (__count > 0)
+	__builtin_memmove(__result, __first, __count * sizeof(_Tp));
+      return __result + __count;
+    }
+
+  template <typename _InputIterator, typename _ForwardIterator,
+	    typename _Allocator>
+    inline _ForwardIterator
+    __relocate_a_1(_InputIterator __first, _InputIterator __last,
+		   _ForwardIterator __result, _Allocator& __alloc)
+    noexcept(noexcept(std::__relocate_object_a(std::addressof(*__result),
+					       std::addressof(*__first),
+					       __alloc)))
+    {
+      typedef typename iterator_traits<_InputIterator>::value_type
+	_ValueType;
+      typedef typename iterator_traits<_ForwardIterator>::value_type
+	_ValueType2;
+      static_assert(std::is_same<_ValueType, _ValueType2>::value,
+	  "relocation is only possible for values of the same type");
+      _ForwardIterator __cur = __result;
+      for (; __first != __last; ++__first, (void)++__cur)
+	std::__relocate_object_a(std::__addressof(*__cur),
+				 std::__addressof(*__first), __alloc);
+      return __cur;
+    }
+
+  template <typename _InputIterator, typename _ForwardIterator,
+	    typename _Allocator>
+    inline _ForwardIterator
+    __relocate_a(_InputIterator __first, _InputIterator __last,
+		 _ForwardIterator __result, _Allocator& __alloc)
+    noexcept(noexcept(__relocate_a_1(std::__niter_base(__first),
+				     std::__niter_base(__last),
+				     std::__niter_base(__result), __alloc)))
+    {
+      return __relocate_a_1(std::__niter_base(__first),
+			    std::__niter_base(__last),
+			    std::__niter_base(__result), __alloc);
+    }
+#endif
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace
+
+#endif /* _STL_UNINITIALIZED_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // Vector implementation -*- C++ -*-
+
+// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/*
+ *
+ * Copyright (c) 1994
+ * Hewlett-Packard Company
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Hewlett-Packard Company makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ *
+ *
+ * Copyright (c) 1996
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Silicon Graphics makes no
+ * representations about the suitability of this  software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
+
+/** @file bits/stl_vector.h
+ *  This is an internal header file, included by other library headers.
+ *  Do not attempt to use it directly. @headername{vector}
+ */
+
+#ifndef _STL_VECTOR_H
+#define _STL_VECTOR_H 1
+
+#include <bits/stl_iterator_base_funcs.h>
+#include <bits/functexcept.h>
+#include <bits/concept_check.h>
+#if __cplusplus >= 201103L
+#include <initializer_list>
+#endif
+
+#include <debug/assertions.h>
+
+#if _GLIBCXX_SANITIZE_STD_ALLOCATOR && _GLIBCXX_SANITIZE_VECTOR
+extern "C" void
+__sanitizer_annotate_contiguous_container(const void*, const void*,
+					  const void*, const void*);
+#endif
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+_GLIBCXX_BEGIN_NAMESPACE_CONTAINER
+
+  /// See bits/stl_deque.h's _Deque_base for an explanation.
+  template<typename _Tp, typename _Alloc>
+    struct _Vector_base
+    {
+      typedef typename __gnu_cxx::__alloc_traits<_Alloc>::template
+	rebind<_Tp>::other _Tp_alloc_type;
+      typedef typename __gnu_cxx::__alloc_traits<_Tp_alloc_type>::pointer
+       	pointer;
+
+      struct _Vector_impl_data
+      {
+	pointer _M_start;
+	pointer _M_finish;
+	pointer _M_end_of_storage;
+
+	_Vector_impl_data() _GLIBCXX_NOEXCEPT
+	: _M_start(), _M_finish(), _M_end_of_storage()
+	{ }
+
+#if __cplusplus >= 201103L
+	_Vector_impl_data(_Vector_impl_data&& __x) noexcept
+	: _M_start(__x._M_start), _M_finish(__x._M_finish),
+	  _M_end_of_storage(__x._M_end_of_storage)
+	{ __x._M_start = __x._M_finish = __x._M_end_of_storage = pointer(); }
+#endif
+
+	void
+	_M_copy_data(_Vector_impl_data const& __x) _GLIBCXX_NOEXCEPT
+	{
+	  _M_start = __x._M_start;
+	  _M_finish = __x._M_finish;
+	  _M_end_of_storage = __x._M_end_of_storage;
+	}
+
+	void
+	_M_swap_data(_Vector_impl_data& __x) _GLIBCXX_NOEXCEPT
+	{
+	  // Do not use std::swap(_M_start, __x._M_start), etc as it loses
+	  // information used by TBAA.
+	  _Vector_impl_data __tmp;
+	  __tmp._M_copy_data(*this);
+	  _M_copy_data(__x);
+	  __x._M_copy_data(__tmp);
+	}
+      };
+
+      struct _Vector_impl
+	: public _Tp_alloc_type, public _Vector_impl_data
+      {
+	_Vector_impl() _GLIBCXX_NOEXCEPT_IF(
+	    is_nothrow_default_constructible<_Tp_alloc_type>::value)
+	: _Tp_alloc_type()
+	{ }
+
+	_Vector_impl(_Tp_alloc_type const& __a) _GLIBCXX_NOEXCEPT
+	: _Tp_alloc_type(__a)
+	{ }
+
+#if __cplusplus >= 201103L
+	// Not defaulted, to enforce noexcept(true) even when
+	// !is_nothrow_move_constructible<_Tp_alloc_type>.
+	_Vector_impl(_Vector_impl&& __x) noexcept
+	: _Tp_alloc_type(std::move(__x)), _Vector_impl_data(std::move(__x))
+	{ }
+
+	_Vector_impl(_Tp_alloc_type&& __a) noexcept
+	: _Tp_alloc_type(std::move(__a))
+	{ }
+
+	_Vector_impl(_Tp_alloc_type&& __a, _Vector_impl&& __rv) noexcept
+	: _Tp_alloc_type(std::move(__a)), _Vector_impl_data(std::move(__rv))
+	{ }
+#endif
+
+#if _GLIBCXX_SANITIZE_STD_ALLOCATOR && _GLIBCXX_SANITIZE_VECTOR
+	template<typename = _Tp_alloc_type>
+	  struct _Asan
+	  {
+	    typedef typename __gnu_cxx::__alloc_traits<_Tp_alloc_type>
+	      ::size_type size_type;
+
+	    static void _S_shrink(_Vector_impl&, size_type) { }
+	    static void _S_on_dealloc(_Vector_impl&) { }
+
+	    typedef _Vector_impl& _Reinit;
+
+	    struct _Grow
+	    {
+	      _Grow(_Vector_impl&, size_type) { }
+	      void _M_grew(size_type) { }
+	    };
+	  };
+
+	// Enable ASan annotations for memory obtained from std::allocator.
+	template<typename _Up>
+	  struct _Asan<allocator<_Up> >
+	  {
+	    typedef typename __gnu_cxx::__alloc_traits<_Tp_alloc_type>
+	      ::size_type size_type;
+
+	    // Adjust ASan annotation for [_M_start, _M_end_of_storage) to
+	    // mark end of valid region as __curr instead of __prev.
+	    static void
+	    _S_adjust(_Vector_impl& __impl, pointer __prev, pointer __curr)
+	    {
+	      __sanitizer_annotate_contiguous_container(__impl._M_start,
+		  __impl._M_end_of_storage, __prev, __curr);
+	    }
+
+	    static void
+	    _S_grow(_Vector_impl& __impl, size_type __n)
+	    { _S_adjust(__impl, __impl._M_finish, __impl._M_finish + __n); }
+
+	    static void
+	    _S_shrink(_Vector_impl& __impl, size_type __n)
+	    { _S_adjust(__impl, __impl._M_finish + __n, __impl._M_finish); }
+
+	    static void
+	    _S_on_dealloc(_Vector_impl& __impl)
+	    {
+	      if (__impl._M_start)
+		_S_adjust(__impl, __impl._M_finish, __impl._M_end_of_storage);
+	    }
+
+	    // Used on reallocation to tell ASan unused capacity is invalid.
+	    struct _Reinit
+	    {
+	      explicit _Reinit(_Vector_impl& __impl) : _M_impl(__impl)
+	      {
+		// Mark unused capacity as valid again before deallocating it.
+		_S_on_dealloc(_M_impl);
+	      }
+
+	      ~_Reinit()
+	      {
+		// Mark unused capacity as invalid after reallocation.
+		if (_M_impl._M_start)
+		  _S_adjust(_M_impl, _M_impl._M_end_of_storage,
+			    _M_impl._M_finish);
+	      }
+
+	      _Vector_impl& _M_impl;
+
+#if __cplusplus >= 201103L
+	      _Reinit(const _Reinit&) = delete;
+	      _Reinit& operator=(const _Reinit&) = delete;
+#endif
+	    };
+
+	    // Tell ASan when unused capacity is initialized to be valid.
+	    struct _Grow
+	    {
+	      _Grow(_Vector_impl& __impl, size_type __n)
+	      : _M_impl(__impl), _M_n(__n)
+	      { _S_grow(_M_impl, __n); }
+
+	      ~_Grow() { if (_M_n) _S_shrink(_M_impl, _M_n); }
+
+	      void _M_grew(size_type __n) { _M_n -= __n; }
+
+#if __cplusplus >= 201103L
+	      _Grow(const _Grow&) = delete;
+	      _Grow& operator=(const _Grow&) = delete;
+#endif
+	    private:
+	      _Vector_impl& _M_impl;
+	      size_type _M_n;
+	    };
+	  };
+
+#define _GLIBCXX_ASAN_ANNOTATE_REINIT \
+  typename _Base::_Vector_impl::template _Asan<>::_Reinit const \
+	__attribute__((__unused__)) __reinit_guard(this->_M_impl)
+#define _GLIBCXX_ASAN_ANNOTATE_GROW(n) \
+  typename _Base::_Vector_impl::template _Asan<>::_Grow \
+	__attribute__((__unused__)) __grow_guard(this->_M_impl, (n))
+#define _GLIBCXX_ASAN_ANNOTATE_GREW(n) __grow_guard._M_grew(n)
+#define _GLIBCXX_ASAN_ANNOTATE_SHRINK(n) \
+  _Base::_Vector_impl::template _Asan<>::_S_shrink(this->_M_impl, n)
+#define _GLIBCXX_ASAN_ANNOTATE_BEFORE_DEALLOC \
+  _Base::_Vector_impl::template _Asan<>::_S_on_dealloc(this->_M_impl)
+#else // ! (_GLIBCXX_SANITIZE_STD_ALLOCATOR && _GLIBCXX_SANITIZE_VECTOR)
+#define _GLIBCXX_ASAN_ANNOTATE_REINIT
+#define _GLIBCXX_ASAN_ANNOTATE_GROW(n)
+#define _GLIBCXX_ASAN_ANNOTATE_GREW(n)
+#define _GLIBCXX_ASAN_ANNOTATE_SHRINK(n)
+#define _GLIBCXX_ASAN_ANNOTATE_BEFORE_DEALLOC
+#endif // _GLIBCXX_SANITIZE_STD_ALLOCATOR && _GLIBCXX_SANITIZE_VECTOR
+      };
+
+    public:
+      typedef _Alloc allocator_type;
+
+      _Tp_alloc_type&
+      _M_get_Tp_allocator() _GLIBCXX_NOEXCEPT
+      { return this->_M_impl; }
+
+      const _Tp_alloc_type&
+      _M_get_Tp_allocator() const _GLIBCXX_NOEXCEPT
+      { return this->_M_impl; }
+
+      allocator_type
+      get_allocator() const _GLIBCXX_NOEXCEPT
+      { return allocator_type(_M_get_Tp_allocator()); }
+
+#if __cplusplus >= 201103L
+      _Vector_base() = default;
+#else
+      _Vector_base() { }
+#endif
+
+      _Vector_base(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      : _M_impl(__a) { }
+
+      // Kept for ABI compatibility.
+#if !_GLIBCXX_INLINE_VERSION
+      _Vector_base(size_t __n)
+      : _M_impl()
+      { _M_create_storage(__n); }
+#endif
+
+      _Vector_base(size_t __n, const allocator_type& __a)
+      : _M_impl(__a)
+      { _M_create_storage(__n); }
+
+#if __cplusplus >= 201103L
+      _Vector_base(_Vector_base&&) = default;
+
+      // Kept for ABI compatibility.
+# if !_GLIBCXX_INLINE_VERSION
+      _Vector_base(_Tp_alloc_type&& __a) noexcept
+      : _M_impl(std::move(__a)) { }
+
+      _Vector_base(_Vector_base&& __x, const allocator_type& __a)
+      : _M_impl(__a)
+      {
+	if (__x.get_allocator() == __a)
+	  this->_M_impl._M_swap_data(__x._M_impl);
+	else
+	  {
+	    size_t __n = __x._M_impl._M_finish - __x._M_impl._M_start;
+	    _M_create_storage(__n);
+	  }
+      }
+# endif
+
+      _Vector_base(const allocator_type& __a, _Vector_base&& __x)
+      : _M_impl(_Tp_alloc_type(__a), std::move(__x._M_impl))
+      { }
+#endif
+
+      ~_Vector_base() _GLIBCXX_NOEXCEPT
+      {
+	_M_deallocate(_M_impl._M_start,
+		      _M_impl._M_end_of_storage - _M_impl._M_start);
+      }
+
+    public:
+      _Vector_impl _M_impl;
+
+      pointer
+      _M_allocate(size_t __n)
+      {
+	typedef __gnu_cxx::__alloc_traits<_Tp_alloc_type> _Tr;
+	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+      }
+
+      void
+      _M_deallocate(pointer __p, size_t __n)
+      {
+	typedef __gnu_cxx::__alloc_traits<_Tp_alloc_type> _Tr;
+	if (__p)
+	  _Tr::deallocate(_M_impl, __p, __n);
+      }
+
+    protected:
+      void
+      _M_create_storage(size_t __n)
+      {
+	this->_M_impl._M_start = this->_M_allocate(__n);
+	this->_M_impl._M_finish = this->_M_impl._M_start;
+	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+      }
+    };
+
+  /**
+   *  @brief A standard container which offers fixed time access to
+   *  individual elements in any order.
+   *
+   *  @ingroup sequences
+   *
+   *  @tparam _Tp  Type of element.
+   *  @tparam _Alloc  Allocator type, defaults to allocator<_Tp>.
+   *
+   *  Meets the requirements of a <a href="tables.html#65">container</a>, a
+   *  <a href="tables.html#66">reversible container</a>, and a
+   *  <a href="tables.html#67">sequence</a>, including the
+   *  <a href="tables.html#68">optional sequence requirements</a> with the
+   *  %exception of @c push_front and @c pop_front.
+   *
+   *  In some terminology a %vector can be described as a dynamic
+   *  C-style array, it offers fast and efficient access to individual
+   *  elements in any order and saves the user from worrying about
+   *  memory and size allocation.  Subscripting ( @c [] ) access is
+   *  also provided as with C-style arrays.
+  */
+  template<typename _Tp, typename _Alloc = std::allocator<_Tp> >
+    class vector : protected _Vector_base<_Tp, _Alloc>
+    {
+#ifdef _GLIBCXX_CONCEPT_CHECKS
+      // Concept requirements.
+      typedef typename _Alloc::value_type		_Alloc_value_type;
+# if __cplusplus < 201103L
+      __glibcxx_class_requires(_Tp, _SGIAssignableConcept)
+# endif
+      __glibcxx_class_requires2(_Tp, _Alloc_value_type, _SameTypeConcept)
+#endif
+
+#if __cplusplus >= 201103L
+      static_assert(is_same<typename remove_cv<_Tp>::type, _Tp>::value,
+	  "std::vector must have a non-const, non-volatile value_type");
+# ifdef __STRICT_ANSI__
+      static_assert(is_same<typename _Alloc::value_type, _Tp>::value,
+	  "std::vector must have the same value_type as its allocator");
+# endif
+#endif
+
+      typedef _Vector_base<_Tp, _Alloc>			_Base;
+      typedef typename _Base::_Tp_alloc_type		_Tp_alloc_type;
+      typedef __gnu_cxx::__alloc_traits<_Tp_alloc_type>	_Alloc_traits;
+
+    public:
+      typedef _Tp					value_type;
+      typedef typename _Base::pointer			pointer;
+      typedef typename _Alloc_traits::const_pointer	const_pointer;
+      typedef typename _Alloc_traits::reference		reference;
+      typedef typename _Alloc_traits::const_reference	const_reference;
+      typedef __gnu_cxx::__normal_iterator<pointer, vector> iterator;
+      typedef __gnu_cxx::__normal_iterator<const_pointer, vector>
+      const_iterator;
+      typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
+      typedef std::reverse_iterator<iterator>		reverse_iterator;
+      typedef size_t					size_type;
+      typedef ptrdiff_t					difference_type;
+      typedef _Alloc					allocator_type;
+
+    private:
+#if __cplusplus >= 201103L
+      static constexpr bool
+      _S_nothrow_relocate(true_type)
+      {
+	return noexcept(std::__relocate_a(std::declval<pointer>(),
+					  std::declval<pointer>(),
+					  std::declval<pointer>(),
+					  std::declval<_Tp_alloc_type&>()));
+      }
+
+      static constexpr bool
+      _S_nothrow_relocate(false_type)
+      { return false; }
+
+      static constexpr bool
+      _S_use_relocate()
+      {
+	// Instantiating std::__relocate_a might cause an error outside the
+	// immediate context (in __relocate_object_a's noexcept-specifier),
+	// so only do it if we know the type can be move-inserted into *this.
+	return _S_nothrow_relocate(__is_move_insertable<_Tp_alloc_type>{});
+      }
+
+      static pointer
+      _S_do_relocate(pointer __first, pointer __last, pointer __result,
+		     _Tp_alloc_type& __alloc, true_type) noexcept
+      {
+	return std::__relocate_a(__first, __last, __result, __alloc);
+      }
+
+      static pointer
+      _S_do_relocate(pointer, pointer, pointer __result,
+		     _Tp_alloc_type&, false_type) noexcept
+      { return __result; }
+
+      static pointer
+      _S_relocate(pointer __first, pointer __last, pointer __result,
+		  _Tp_alloc_type& __alloc) noexcept
+      {
+	using __do_it = __bool_constant<_S_use_relocate()>;
+	return _S_do_relocate(__first, __last, __result, __alloc, __do_it{});
+      }
+#endif // C++11
+
+    protected:
+      using _Base::_M_allocate;
+      using _Base::_M_deallocate;
+      using _Base::_M_impl;
+      using _Base::_M_get_Tp_allocator;
+
+    public:
+      // [23.2.4.1] construct/copy/destroy
+      // (assign() and get_allocator() are also listed in this section)
+
+      /**
+       *  @brief  Creates a %vector with no elements.
+       */
+#if __cplusplus >= 201103L
+      vector() = default;
+#else
+      vector() { }
+#endif
+
+      /**
+       *  @brief  Creates a %vector with no elements.
+       *  @param  __a  An allocator object.
+       */
+      explicit
+      vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      : _Base(__a) { }
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Creates a %vector with default constructed elements.
+       *  @param  __n  The number of elements to initially create.
+       *  @param  __a  An allocator.
+       *
+       *  This constructor fills the %vector with @a __n default
+       *  constructed elements.
+       */
+      explicit
+      vector(size_type __n, const allocator_type& __a = allocator_type())
+      : _Base(_S_check_init_len(__n, __a), __a)
+      { _M_default_initialize(__n); }
+
+      /**
+       *  @brief  Creates a %vector with copies of an exemplar element.
+       *  @param  __n  The number of elements to initially create.
+       *  @param  __value  An element to copy.
+       *  @param  __a  An allocator.
+       *
+       *  This constructor fills the %vector with @a __n copies of @a __value.
+       */
+      vector(size_type __n, const value_type& __value,
+	     const allocat

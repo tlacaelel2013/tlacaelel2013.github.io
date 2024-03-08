@@ -1,0 +1,1083 @@
+value, "implementation bug");
+
+      constexpr size_t __nbits = __CHAR_BIT__ * sizeof(_Tp);
+
+      if _GLIBCXX17_CONSTEXPR (__nbits <= 16)
+	{
+	  return __value > 077777u ? 6u
+	    : __value > 07777u ? 5u
+	    : __value > 0777u ? 4u
+	    : __value > 077u ? 3u
+	    : __value > 07u ? 2u
+	    : 1u;
+	}
+      else
+	return __to_chars_len(__value, 8);
+    }
+
+  // Generic implementation for arbitrary bases.
+  template<typename _Tp>
+    to_chars_result
+    __to_chars(char* __first, char* __last, _Tp __val, int __base) noexcept
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      to_chars_result __res;
+
+      const unsigned __len = __to_chars_len(__val, __base);
+
+      if (__builtin_expect((__last - __first) < __len, 0))
+	{
+	  __res.ptr = __last;
+	  __res.ec = errc::value_too_large;
+	  return __res;
+	}
+
+      unsigned __pos = __len - 1;
+
+      static constexpr char __digits[]
+	= "0123456789abcdefghijklmnopqrstuvwxyz";
+
+      while (__val >= __base)
+	{
+	  auto const __quo = __val / __base;
+	  auto const __rem = __val % __base;
+	  __first[__pos--] = __digits[__rem];
+	  __val = __quo;
+	}
+      *__first = __digits[__val];
+
+      __res.ptr = __first + __len;
+      __res.ec = {};
+      return __res;
+    }
+
+  template<typename _Tp>
+    __integer_to_chars_result_type<_Tp>
+    __to_chars_16(char* __first, char* __last, _Tp __val) noexcept
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      to_chars_result __res;
+
+      const unsigned __len = __to_chars_len(__val, 0x10);
+
+      if (__builtin_expect((__last - __first) < __len, 0))
+	{
+	  __res.ptr = __last;
+	  __res.ec = errc::value_too_large;
+	  return __res;
+	}
+
+      static constexpr char __digits[513] =
+	"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+	"202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f"
+	"404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f"
+	"606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f"
+	"808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+	"a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebf"
+	"c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedf"
+	"e0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff";
+      unsigned __pos = __len - 1;
+      while (__val >= 0x100)
+	{
+	  auto const __num = (__val % 0x100) * 2;
+	  __val /= 0x100;
+	  __first[__pos] = __digits[__num + 1];
+	  __first[__pos - 1] = __digits[__num];
+	  __pos -= 2;
+	}
+      if (__val >= 0x10)
+	{
+	  auto const __num = __val * 2;
+	  __first[__pos] = __digits[__num + 1];
+	  __first[__pos - 1] = __digits[__num];
+	}
+      else
+	__first[__pos] = "0123456789abcdef"[__val];
+      __res.ptr = __first + __len;
+      __res.ec = {};
+      return __res;
+    }
+
+  template<typename _Tp>
+    __integer_to_chars_result_type<_Tp>
+    __to_chars_10(char* __first, char* __last, _Tp __val) noexcept
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      to_chars_result __res;
+
+      const unsigned __len = __to_chars_len(__val, 10);
+
+      if (__builtin_expect((__last - __first) < __len, 0))
+	{
+	  __res.ptr = __last;
+	  __res.ec = errc::value_too_large;
+	  return __res;
+	}
+
+      static constexpr char __digits[201] =
+	"0001020304050607080910111213141516171819"
+	"2021222324252627282930313233343536373839"
+	"4041424344454647484950515253545556575859"
+	"6061626364656667686970717273747576777879"
+	"8081828384858687888990919293949596979899";
+      unsigned __pos = __len - 1;
+      while (__val >= 100)
+	{
+	  auto const __num = (__val % 100) * 2;
+	  __val /= 100;
+	  __first[__pos] = __digits[__num + 1];
+	  __first[__pos - 1] = __digits[__num];
+	  __pos -= 2;
+	}
+      if (__val >= 10)
+	{
+	  auto const __num = __val * 2;
+	  __first[__pos] = __digits[__num + 1];
+	  __first[__pos - 1] = __digits[__num];
+	}
+      else
+	__first[__pos] = '0' + __val;
+      __res.ptr = __first + __len;
+      __res.ec = {};
+      return __res;
+    }
+
+  template<typename _Tp>
+    __integer_to_chars_result_type<_Tp>
+    __to_chars_8(char* __first, char* __last, _Tp __val) noexcept
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      to_chars_result __res;
+
+      const unsigned __len = __to_chars_len_8(__val);
+
+      if (__builtin_expect((__last - __first) < __len, 0))
+	{
+	  __res.ptr = __last;
+	  __res.ec = errc::value_too_large;
+	  return __res;
+	}
+
+      static constexpr char __digits[129] =
+	"00010203040506071011121314151617"
+	"20212223242526273031323334353637"
+	"40414243444546475051525354555657"
+	"60616263646566677071727374757677";
+      unsigned __pos = __len - 1;
+      while (__val >= 0100)
+	{
+	  auto const __num = (__val % 0100) * 2;
+	  __val /= 0100;
+	  __first[__pos] = __digits[__num + 1];
+	  __first[__pos - 1] = __digits[__num];
+	  __pos -= 2;
+	}
+      if (__val >= 010)
+	{
+	  auto const __num = __val * 2;
+	  __first[__pos] = __digits[__num + 1];
+	  __first[__pos - 1] = __digits[__num];
+	}
+      else
+	__first[__pos] = '0' + __val;
+      __res.ptr = __first + __len;
+      __res.ec = {};
+      return __res;
+    }
+
+  template<typename _Tp>
+    __integer_to_chars_result_type<_Tp>
+    __to_chars_2(char* __first, char* __last, _Tp __val) noexcept
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      to_chars_result __res;
+
+      const unsigned __len = __to_chars_len_2(__val);
+
+      if (__builtin_expect((__last - __first) < __len, 0))
+	{
+	  __res.ptr = __last;
+	  __res.ec = errc::value_too_large;
+	  return __res;
+	}
+
+      unsigned __pos = __len - 1;
+
+      while (__pos)
+	{
+	  __first[__pos--] = '0' + (__val & 1);
+	  __val >>= 1;
+	}
+      *__first = '0' + (__val & 1);
+
+      __res.ptr = __first + __len;
+      __res.ec = {};
+      return __res;
+    }
+
+} // namespace __detail
+
+  template<typename _Tp>
+    __detail::__integer_to_chars_result_type<_Tp>
+    to_chars(char* __first, char* __last, _Tp __value, int __base = 10)
+    {
+      __glibcxx_assert(2 <= __base && __base <= 36);
+
+      using _Up = __detail::__unsigned_least_t<_Tp>;
+      _Up __unsigned_val = __value;
+
+      if (__value == 0 && __first != __last)
+	{
+	  *__first = '0';
+	  return { __first + 1, errc{} };
+	}
+
+      if _GLIBCXX17_CONSTEXPR (std::is_signed<_Tp>::value)
+	if (__value < 0)
+	  {
+	    if (__builtin_expect(__first != __last, 1))
+	      *__first++ = '-';
+	    __unsigned_val = _Up(~__value) + _Up(1);
+	  }
+
+      switch (__base)
+      {
+      case 16:
+	return __detail::__to_chars_16(__first, __last, __unsigned_val);
+      case 10:
+	return __detail::__to_chars_10(__first, __last, __unsigned_val);
+      case 8:
+	return __detail::__to_chars_8(__first, __last, __unsigned_val);
+      case 2:
+	return __detail::__to_chars_2(__first, __last, __unsigned_val);
+      default:
+	return __detail::__to_chars(__first, __last, __unsigned_val, __base);
+      }
+    }
+
+namespace __detail
+{
+  template<typename _Tp>
+    bool
+    __raise_and_add(_Tp& __val, int __base, unsigned char __c)
+    {
+      if (__builtin_mul_overflow(__val, __base, &__val)
+	  || __builtin_add_overflow(__val, __c, &__val))
+	return false;
+      return true;
+    }
+
+  /// std::from_chars implementation for integers in base 2.
+  template<typename _Tp>
+    bool
+    __from_chars_binary(const char*& __first, const char* __last, _Tp& __val)
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      const ptrdiff_t __len = __last - __first;
+      ptrdiff_t __i = 0;
+      while (__i < __len && __first[__i] == '0')
+	++__i;
+      const ptrdiff_t __leading_zeroes = __i;
+
+      while (__i < __len)
+	{
+	  const unsigned char __c = (unsigned)__first[__i] - '0';
+	  if (__c < 2)
+	    __val = (__val << 1) | __c;
+	  else
+	    break;
+	  __i++;
+	}
+      __first += __i;
+      return (__i - __leading_zeroes) <= (sizeof(_Tp) * __CHAR_BIT__);
+    }
+
+  /// std::from_chars implementation for integers in bases 3 to 10.
+  template<typename _Tp>
+    bool
+    __from_chars_digit(const char*& __first, const char* __last, _Tp& __val,
+		       int __base)
+    {
+      static_assert(is_integral<_Tp>::value, "implementation bug");
+      static_assert(is_unsigned<_Tp>::value, "implementation bug");
+
+      auto __matches = [__base](char __c) {
+	  return '0' <= __c && __c <= ('0' + (__base - 1));
+      };
+
+      while (__first != __last)
+	{
+	  const char __c = *__first;
+	  if (__matches(__c))
+	  {
+	    if (!__raise_and_add(__val, __base, __c - '0'))
+	      {
+		while (++__first != __last && __matches(*__first))
+		  ;
+		return false;
+	      }
+	    __first++;
+	  }
+	  else
+	    return true;
+	}
+      return true;
+    }
+
+  constexpr unsigned char
+  __from_chars_alpha_to_num(char __c)
+  {
+    switch (__c)
+    {
+    case 'a':
+    case 'A':
+      return 10;
+    case 'b':
+    case 'B':
+      return 11;
+    case 'c':
+    case 'C':
+      return 12;
+    case 'd':
+    case 'D':
+      return 13;
+    case 'e':
+    case 'E':
+      return 14;
+    case 'f':
+    case 'F':
+      return 15;
+    case 'g':
+    case 'G':
+      return 16;
+    case 'h':
+    case 'H':
+      return 17;
+    case 'i':
+    case 'I':
+      return 18;
+    case 'j':
+    case 'J':
+      return 19;
+    case 'k':
+    case 'K':
+      return 20;
+    case 'l':
+    case 'L':
+      return 21;
+    case 'm':
+    case 'M':
+      return 22;
+    case 'n':
+    case 'N':
+      return 23;
+    case 'o':
+    case 'O':
+      return 24;
+    case 'p':
+    case 'P':
+      return 25;
+    case 'q':
+    case 'Q':
+      return 26;
+    case 'r':
+    case 'R':
+      return 27;
+    case 's':
+    case 'S':
+      return 28;
+    case 't':
+    case 'T':
+      return 29;
+    case 'u':
+    case 'U':
+      return 30;
+    case 'v':
+    case 'V':
+      return 31;
+    case 'w':
+    case 'W':
+      return 32;
+    case 'x':
+    case 'X':
+      return 33;
+    case 'y':
+    case 'Y':
+      return 34;
+    case 'z':
+    case 'Z':
+      return 35;
+    }
+    return std::numeric_limits<unsigned char>::max();
+  }
+
+  /// std::from_chars implementation for integers in bases 11 to 26.
+  template<typename _Tp>
+    bool
+    __from_chars_alnum(const char*& __first, const char* __last, _Tp& __val,
+		       int __base)
+    {
+      bool __valid = true;
+      while (__first != __last)
+	{
+	  unsigned char __c = *__first;
+	  if (std::isdigit(__c))
+	    __c -= '0';
+	  else
+	    {
+	      __c = __from_chars_alpha_to_num(__c);
+	      if (__c >= __base)
+		break;
+	    }
+
+	  if (__builtin_expect(__valid, 1))
+	    __valid = __raise_and_add(__val, __base, __c);
+	  __first++;
+	}
+      return __valid;
+    }
+
+  template<typename _Tp>
+    using __integer_from_chars_result_type
+      = enable_if_t<__is_int_to_chars_type<_Tp>::value, from_chars_result>;
+
+} // namespace __detail
+
+  /// std::from_chars for integral types.
+  template<typename _Tp>
+    __detail::__integer_from_chars_result_type<_Tp>
+    from_chars(const char* __first, const char* __last, _Tp& __value,
+	       int __base = 10)
+    {
+      __glibcxx_assert(2 <= __base && __base <= 36);
+
+      from_chars_result __res{__first, {}};
+
+      int __sign = 1;
+      if _GLIBCXX17_CONSTEXPR (std::is_signed<_Tp>::value)
+	if (__first != __last && *__first == '-')
+	  {
+	    __sign = -1;
+	    ++__first;
+	  }
+
+      using _Up = __detail::__unsigned_least_t<_Tp>;
+      _Up __val = 0;
+
+      const auto __start = __first;
+      bool __valid;
+      if (__base == 2)
+	__valid = __detail::__from_chars_binary(__first, __last, __val);
+      else if (__base <= 10)
+	__valid = __detail::__from_chars_digit(__first, __last, __val, __base);
+      else
+	__valid = __detail::__from_chars_alnum(__first, __last, __val, __base);
+
+      if (__builtin_expect(__first == __start, 0))
+	__res.ec = errc::invalid_argument;
+      else
+	{
+	  __res.ptr = __first;
+	  if (!__valid)
+	    __res.ec = errc::result_out_of_range;
+	  else
+	    {
+	      if _GLIBCXX17_CONSTEXPR (std::is_signed<_Tp>::value)
+		{
+		  _Tp __tmp;
+		  if (__builtin_mul_overflow(__val, __sign, &__tmp))
+		    __res.ec = errc::result_out_of_range;
+		  else
+		    __value = __tmp;
+		}
+	      else
+		{
+		  if _GLIBCXX17_CONSTEXPR
+		    (numeric_limits<_Up>::max() > numeric_limits<_Tp>::max())
+		    {
+		      if (__val > numeric_limits<_Tp>::max())
+			__res.ec = errc::result_out_of_range;
+		      else
+			__value = __val;
+		    }
+		  else
+		    __value = __val;
+		}
+	    }
+	}
+      return __res;
+    }
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+#endif // C++14
+#endif // _GLIBCXX_CHARCONV
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            // <chrono> -*- C++ -*-
+
+// Copyright (C) 2008-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file include/chrono
+ *  This is a Standard C++ Library header.
+ */
+
+#ifndef _GLIBCXX_CHRONO
+#define _GLIBCXX_CHRONO 1
+
+#pragma GCC system_header
+
+#if __cplusplus < 201103L
+# include <bits/c++0x_warning.h>
+#else
+
+#include <ratio>
+#include <type_traits>
+#include <limits>
+#include <ctime>
+#include <bits/parse_numbers.h> // for literals support.
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+  /**
+   * @defgroup chrono Time
+   * @ingroup utilities
+   *
+   * Classes and functions for time.
+   * @{
+   */
+
+  /** @namespace std::chrono
+   *  @brief ISO C++ 2011 entities sub-namespace for time and date.
+   */
+  namespace chrono
+  {
+    template<typename _Rep, typename _Period = ratio<1>>
+      struct duration;
+
+    template<typename _Clock, typename _Dur = typename _Clock::duration>
+      struct time_point;
+  }
+
+  // 20.11.4.3 specialization of common_type (for duration, sfinae-friendly)
+
+  template<typename _CT, typename _Period1, typename _Period2>
+    struct __duration_common_type_wrapper
+    {
+    private:
+      typedef __static_gcd<_Period1::num, _Period2::num> __gcd_num;
+      typedef __static_gcd<_Period1::den, _Period2::den> __gcd_den;
+      typedef typename _CT::type __cr;
+      typedef ratio<__gcd_num::value,
+        (_Period1::den / __gcd_den::value) * _Period2::den> __r;
+    public:
+      typedef __success_type<chrono::duration<__cr, __r>> type;
+    };
+
+  template<typename _Period1, typename _Period2>
+    struct __duration_common_type_wrapper<__failure_type, _Period1, _Period2>
+    { typedef __failure_type type; };
+
+  template<typename _Rep1, typename _Period1, typename _Rep2, typename _Period2>
+    struct common_type<chrono::duration<_Rep1, _Period1>,
+             chrono::duration<_Rep2, _Period2>>
+    : public __duration_common_type_wrapper<typename __member_type_wrapper<
+             common_type<_Rep1, _Rep2>>::type, _Period1, _Period2>::type
+    { };
+
+  // 20.11.4.3 specialization of common_type (for time_point, sfinae-friendly)
+
+  template<typename _CT, typename _Clock>
+    struct __timepoint_common_type_wrapper
+    {
+      typedef __success_type<chrono::time_point<_Clock, typename _CT::type>>
+        type;
+    };
+
+  template<typename _Clock>
+    struct __timepoint_common_type_wrapper<__failure_type, _Clock>
+    { typedef __failure_type type; };
+
+  template<typename _Clock, typename _Duration1, typename _Duration2>
+    struct common_type<chrono::time_point<_Clock, _Duration1>,
+             chrono::time_point<_Clock, _Duration2>>
+    : public __timepoint_common_type_wrapper<typename __member_type_wrapper<
+             common_type<_Duration1, _Duration2>>::type, _Clock>::type
+    { };
+
+  namespace chrono
+  {
+    // Primary template for duration_cast impl.
+    template<typename _ToDur, typename _CF, typename _CR,
+	     bool _NumIsOne = false, bool _DenIsOne = false>
+      struct __duration_cast_impl
+      {
+	template<typename _Rep, typename _Period>
+	  static constexpr _ToDur
+	  __cast(const duration<_Rep, _Period>& __d)
+	  {
+	    typedef typename _ToDur::rep			__to_rep;
+	    return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count())
+	      * static_cast<_CR>(_CF::num)
+	      / static_cast<_CR>(_CF::den)));
+	  }
+      };
+
+    template<typename _ToDur, typename _CF, typename _CR>
+      struct __duration_cast_impl<_ToDur, _CF, _CR, true, true>
+      {
+	template<typename _Rep, typename _Period>
+	  static constexpr _ToDur
+	  __cast(const duration<_Rep, _Period>& __d)
+	  {
+	    typedef typename _ToDur::rep			__to_rep;
+	    return _ToDur(static_cast<__to_rep>(__d.count()));
+	  }
+      };
+
+    template<typename _ToDur, typename _CF, typename _CR>
+      struct __duration_cast_impl<_ToDur, _CF, _CR, true, false>
+      {
+	template<typename _Rep, typename _Period>
+	  static constexpr _ToDur
+	  __cast(const duration<_Rep, _Period>& __d)
+	  {
+	    typedef typename _ToDur::rep			__to_rep;
+	    return _ToDur(static_cast<__to_rep>(
+	      static_cast<_CR>(__d.count()) / static_cast<_CR>(_CF::den)));
+	  }
+      };
+
+    template<typename _ToDur, typename _CF, typename _CR>
+      struct __duration_cast_impl<_ToDur, _CF, _CR, false, true>
+      {
+	template<typename _Rep, typename _Period>
+	  static constexpr _ToDur
+	  __cast(const duration<_Rep, _Period>& __d)
+	  {
+	    typedef typename _ToDur::rep			__to_rep;
+	    return _ToDur(static_cast<__to_rep>(
+	      static_cast<_CR>(__d.count()) * static_cast<_CR>(_CF::num)));
+	  }
+      };
+
+    template<typename _Tp>
+      struct __is_duration
+      : std::false_type
+      { };
+
+    template<typename _Rep, typename _Period>
+      struct __is_duration<duration<_Rep, _Period>>
+      : std::true_type
+      { };
+
+    template<typename _Tp>
+      using __enable_if_is_duration
+	= typename enable_if<__is_duration<_Tp>::value, _Tp>::type;
+
+    template<typename _Tp>
+      using __disable_if_is_duration
+	= typename enable_if<!__is_duration<_Tp>::value, _Tp>::type;
+
+    /// duration_cast
+    template<typename _ToDur, typename _Rep, typename _Period>
+      constexpr __enable_if_is_duration<_ToDur>
+      duration_cast(const duration<_Rep, _Period>& __d)
+      {
+	typedef typename _ToDur::period				__to_period;
+	typedef typename _ToDur::rep				__to_rep;
+	typedef ratio_divide<_Period, __to_period> 		__cf;
+	typedef typename common_type<__to_rep, _Rep, intmax_t>::type
+	  							__cr;
+	typedef  __duration_cast_impl<_ToDur, __cf, __cr,
+				      __cf::num == 1, __cf::den == 1> __dc;
+	return __dc::__cast(__d);
+      }
+
+    /// treat_as_floating_point
+    template<typename _Rep>
+      struct treat_as_floating_point
+      : is_floating_point<_Rep>
+      { };
+
+#if __cplusplus > 201402L
+    template <typename _Rep>
+      inline constexpr bool treat_as_floating_point_v =
+        treat_as_floating_point<_Rep>::value;
+#endif // C++17
+
+#if __cplusplus >= 201703L
+# define __cpp_lib_chrono 201611
+
+    template<typename _ToDur, typename _Rep, typename _Period>
+      constexpr __enable_if_is_duration<_ToDur>
+      floor(const duration<_Rep, _Period>& __d)
+      {
+	auto __to = chrono::duration_cast<_ToDur>(__d);
+	if (__to > __d)
+	  return __to - _ToDur{1};
+	return __to;
+      }
+
+    template<typename _ToDur, typename _Rep, typename _Period>
+      constexpr __enable_if_is_duration<_ToDur>
+      ceil(const duration<_Rep, _Period>& __d)
+      {
+	auto __to = chrono::duration_cast<_ToDur>(__d);
+	if (__to < __d)
+	  return __to + _ToDur{1};
+	return __to;
+      }
+
+    template <typename _ToDur, typename _Rep, typename _Period>
+      constexpr enable_if_t<
+	__and_<__is_duration<_ToDur>,
+	       __not_<treat_as_floating_point<typename _ToDur::rep>>>::value,
+	_ToDur>
+      round(const duration<_Rep, _Period>& __d)
+      {
+	_ToDur __t0 = chrono::floor<_ToDur>(__d);
+	_ToDur __t1 = __t0 + _ToDur{1};
+	auto __diff0 = __d - __t0;
+	auto __diff1 = __t1 - __d;
+	if (__diff0 == __diff1)
+	{
+	    if (__t0.count() & 1)
+		return __t1;
+	    return __t0;
+	}
+	else if (__diff0 < __diff1)
+	    return __t0;
+	return __t1;
+      }
+
+    template<typename _Rep, typename _Period>
+      constexpr
+      enable_if_t<numeric_limits<_Rep>::is_signed, duration<_Rep, _Period>>
+      abs(duration<_Rep, _Period> __d)
+      {
+	if (__d >= __d.zero())
+	  return __d;
+	return -__d;
+      }
+#endif // C++17
+
+    /// duration_values
+    template<typename _Rep>
+      struct duration_values
+      {
+	static constexpr _Rep
+	zero() noexcept
+	{ return _Rep(0); }
+
+	static constexpr _Rep
+	max() noexcept
+	{ return numeric_limits<_Rep>::max(); }
+
+	static constexpr _Rep
+	min() noexcept
+	{ return numeric_limits<_Rep>::lowest(); }
+      };
+
+    template<typename _Tp>
+      struct __is_ratio
+      : std::false_type
+      { };
+
+    template<intmax_t _Num, intmax_t _Den>
+      struct __is_ratio<ratio<_Num, _Den>>
+      : std::true_type
+      { };
+
+    /// duration
+    template<typename _Rep, typename _Period>
+      struct duration
+      {
+      private:
+	template<typename _Rep2>
+	  using __is_float = treat_as_floating_point<_Rep2>;
+
+	// _Period2 is an exact multiple of _Period
+	template<typename _Period2>
+	  using __is_harmonic
+	    = __bool_constant<ratio_divide<_Period2, _Period>::den == 1>;
+
+      public:
+
+	typedef _Rep						rep;
+	typedef _Period 					period;
+
+	static_assert(!__is_duration<_Rep>::value, "rep cannot be a duration");
+	static_assert(__is_ratio<_Period>::value,
+		      "period must be a specialization of ratio");
+	static_assert(_Period::num > 0, "period must be positive");
+
+	// 20.11.5.1 construction / copy / destroy
+	constexpr duration() = default;
+
+	duration(const duration&) = default;
+
+	// _GLIBCXX_RESOLVE_LIB_DEFECTS
+	// 3050. Conversion specification problem in chrono::duration
+	template<typename _Rep2, typename = _Require<
+		 is_convertible<const _Rep2&, rep>,
+		 __or_<__is_float<rep>, __not_<__is_float<_Rep2>>>>>
+	  constexpr explicit duration(const _Rep2& __rep)
+	  : __r(static_cast<rep>(__rep)) { }
+
+	template<typename _Rep2, typename _Period2, typename = _Require<
+		 __or_<__is_float<rep>,
+		       __and_<__is_harmonic<_Period2>,
+			      __not_<__is_float<_Rep2>>>>>>
+	  constexpr duration(const duration<_Rep2, _Period2>& __d)
+	  : __r(duration_cast<duration>(__d).count()) { }
+
+	~duration() = default;
+	duration& operator=(const duration&) = default;
+
+	// 20.11.5.2 observer
+	constexpr rep
+	count() const
+	{ return __r; }
+
+	// 20.11.5.3 arithmetic
+	constexpr duration
+	operator+() const
+	{ return *this; }
+
+	constexpr duration
+	operator-() const
+	{ return duration(-__r); }
+
+	_GLIBCXX17_CONSTEXPR duration&
+	operator++()
+	{
+	  ++__r;
+	  return *this;
+	}
+
+	_GLIBCXX17_CONSTEXPR duration
+	operator++(int)
+	{ return duration(__r++); }
+
+	_GLIBCXX17_CONSTEXPR duration&
+	operator--()
+	{
+	  --__r;
+	  return *this;
+	}
+
+	_GLIBCXX17_CONSTEXPR duration
+	operator--(int)
+	{ return duration(__r--); }
+
+	_GLIBCXX17_CONSTEXPR duration&
+	operator+=(const duration& __d)
+	{
+	  __r += __d.count();
+	  return *this;
+	}
+
+	_GLIBCXX17_CONSTEXPR duration&
+	operator-=(const duration& __d)
+	{
+	  __r -= __d.count();
+	  return *this;
+	}
+
+	_GLIBCXX17_CONSTEXPR duration&
+	operator*=(const rep& __rhs)
+	{
+	  __r *= __rhs;
+	  return *this;
+	}
+
+	_GLIBCXX17_CONSTEXPR duration&
+	operator/=(const rep& __rhs)
+	{
+	  __r /= __rhs;
+	  return *this;
+	}
+
+	// DR 934.
+	template<typename _Rep2 = rep>
+	  _GLIBCXX17_CONSTEXPR
+	  typename enable_if<!treat_as_floating_point<_Rep2>::value,
+			     duration&>::type
+	  operator%=(const rep& __rhs)
+	  {
+	    __r %= __rhs;
+	    return *this;
+	  }
+
+	template<typename _Rep2 = rep>
+	  _GLIBCXX17_CONSTEXPR
+	  typename enable_if<!treat_as_floating_point<_Rep2>::value,
+			     duration&>::type
+	  operator%=(const duration& __d)
+	  {
+	    __r %= __d.count();
+	    return *this;
+	  }
+
+	// 20.11.5.4 special values
+	static constexpr duration
+	zero() noexcept
+	{ return duration(duration_values<rep>::zero()); }
+
+	static constexpr duration
+	min() noexcept
+	{ return duration(duration_values<rep>::min()); }
+
+	static constexpr duration
+	max() noexcept
+	{ return duration(duration_values<rep>::max()); }
+
+      private:
+	rep __r;
+      };
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr typename common_type<duration<_Rep1, _Period1>,
+				     duration<_Rep2, _Period2>>::type
+      operator+(const duration<_Rep1, _Period1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<__dur1,__dur2>::type	__cd;
+	return __cd(__cd(__lhs).count() + __cd(__rhs).count());
+      }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr typename common_type<duration<_Rep1, _Period1>,
+				     duration<_Rep2, _Period2>>::type
+      operator-(const duration<_Rep1, _Period1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<__dur1,__dur2>::type	__cd;
+	return __cd(__cd(__lhs).count() - __cd(__rhs).count());
+      }
+
+    // SFINAE helper to obtain common_type<_Rep1, _Rep2> only if _Rep2
+    // is implicitly convertible to it.
+    // _GLIBCXX_RESOLVE_LIB_DEFECTS
+    // 3050. Conversion specification problem in chrono::duration constructor
+    template<typename _Rep1, typename _Rep2,
+	     typename _CRep = typename common_type<_Rep1, _Rep2>::type>
+      using __common_rep_t = typename
+	enable_if<is_convertible<const _Rep2&, _CRep>::value, _CRep>::type;
+
+    template<typename _Rep1, typename _Period, typename _Rep2>
+      constexpr duration<__common_rep_t<_Rep1, _Rep2>, _Period>
+      operator*(const duration<_Rep1, _Period>& __d, const _Rep2& __s)
+      {
+	typedef duration<typename common_type<_Rep1, _Rep2>::type, _Period>
+	  __cd;
+	return __cd(__cd(__d).count() * __s);
+      }
+
+    template<typename _Rep1, typename _Rep2, typename _Period>
+      constexpr duration<__common_rep_t<_Rep2, _Rep1>, _Period>
+      operator*(const _Rep1& __s, const duration<_Rep2, _Period>& __d)
+      { return __d * __s; }
+
+    template<typename _Rep1, typename _Period, typename _Rep2>
+      constexpr
+      duration<__common_rep_t<_Rep1, __disable_if_is_duration<_Rep2>>, _Period>
+      operator/(const duration<_Rep1, _Period>& __d, const _Rep2& __s)
+      {
+	typedef duration<typename common_type<_Rep1, _Rep2>::type, _Period>
+	  __cd;
+	return __cd(__cd(__d).count() / __s);
+      }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr typename common_type<_Rep1, _Rep2>::type
+      operator/(const duration<_Rep1, _Period1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<__dur1,__dur2>::type	__cd;
+	return __cd(__lhs).count() / __cd(__rhs).count();
+      }
+
+    // DR 934.
+    template<typename _Rep1, typename _Period, typename _Rep2>
+      constexpr
+      duration<__common_rep_t<_Rep1, __disable_if_is_duration<_Rep2>>, _Period>
+      operator%(const duration<_Rep1, _Period>& __d, const _Rep2& __s)
+      {
+	typedef duration<typename common_type<_Rep1, _Rep2>::type, _Period>
+	  __cd;
+	return __cd(__cd(__d).count() % __s);
+      }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr typename common_type<duration<_Rep1, _Period1>,
+				     duration<_Rep2, _Period2>>::type
+      operator%(const duration<_Rep1, _Period1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<__dur1,__dur2>::type	__cd;
+	return __cd(__cd(__lhs).count() % __cd(__rhs).count());
+      }
+
+    // comparisons
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr bool
+      operator==(const duration<_Rep1, _Period1>& __lhs,
+		 const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<__dur1,__dur2>::type	__ct;
+	return __ct(__lhs).count() == __ct(__rhs).count();
+      }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr bool
+      

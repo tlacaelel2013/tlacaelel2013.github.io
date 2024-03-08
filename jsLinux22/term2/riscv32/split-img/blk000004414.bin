@@ -1,0 +1,840 @@
+n the range [__pos,__pos + __n1)
+       *  from this string.  In place, the characters of @a __s are
+       *  inserted.  If @a __pos is beyond end of string, out_of_range
+       *  is thrown.  If the length of result exceeds max_size(),
+       *  length_error is thrown.  The value of the string doesn't
+       *  change if an error is thrown.
+      */
+      basic_string&
+      replace(size_type __pos, size_type __n1, const _CharT* __s)
+      {
+	__glibcxx_requires_string(__s);
+	return this->replace(__pos, __n1, __s, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Replace characters with multiple characters.
+       *  @param __pos  Index of first character to replace.
+       *  @param __n1  Number of characters to be replaced.
+       *  @param __n2  Number of characters to insert.
+       *  @param __c  Character to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::out_of_range  If @a __pos > size().
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [pos,pos + n1) from this
+       *  string.  In place, @a __n2 copies of @a __c are inserted.
+       *  If @a __pos is beyond end of string, out_of_range is thrown.
+       *  If the length of result exceeds max_size(), length_error is
+       *  thrown.  The value of the string doesn't change if an error
+       *  is thrown.
+      */
+      basic_string&
+      replace(size_type __pos, size_type __n1, size_type __n2, _CharT __c)
+      { return _M_replace_aux(_M_check(__pos, "basic_string::replace"),
+			      _M_limit(__pos, __n1), __n2, __c); }
+
+      /**
+       *  @brief  Replace range of characters with string.
+       *  @param __i1  Iterator referencing start of range to replace.
+       *  @param __i2  Iterator referencing end of range to replace.
+       *  @param __str  String value to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [__i1,__i2).  In place,
+       *  the value of @a __str is inserted.  If the length of result
+       *  exceeds max_size(), length_error is thrown.  The value of
+       *  the string doesn't change if an error is thrown.
+      */
+      basic_string&
+      replace(iterator __i1, iterator __i2, const basic_string& __str)
+      { return this->replace(__i1, __i2, __str._M_data(), __str.size()); }
+
+      /**
+       *  @brief  Replace range of characters with C substring.
+       *  @param __i1  Iterator referencing start of range to replace.
+       *  @param __i2  Iterator referencing end of range to replace.
+       *  @param __s  C string value to insert.
+       *  @param __n  Number of characters from s to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [__i1,__i2).  In place,
+       *  the first @a __n characters of @a __s are inserted.  If the
+       *  length of result exceeds max_size(), length_error is thrown.
+       *  The value of the string doesn't change if an error is
+       *  thrown.
+      */
+      basic_string&
+      replace(iterator __i1, iterator __i2, const _CharT* __s, size_type __n)
+      {
+	_GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				 && __i2 <= _M_iend());
+	return this->replace(__i1 - _M_ibegin(), __i2 - __i1, __s, __n);
+      }
+
+      /**
+       *  @brief  Replace range of characters with C string.
+       *  @param __i1  Iterator referencing start of range to replace.
+       *  @param __i2  Iterator referencing end of range to replace.
+       *  @param __s  C string value to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [__i1,__i2).  In place,
+       *  the characters of @a __s are inserted.  If the length of
+       *  result exceeds max_size(), length_error is thrown.  The
+       *  value of the string doesn't change if an error is thrown.
+      */
+      basic_string&
+      replace(iterator __i1, iterator __i2, const _CharT* __s)
+      {
+	__glibcxx_requires_string(__s);
+	return this->replace(__i1, __i2, __s, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Replace range of characters with multiple characters
+       *  @param __i1  Iterator referencing start of range to replace.
+       *  @param __i2  Iterator referencing end of range to replace.
+       *  @param __n  Number of characters to insert.
+       *  @param __c  Character to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [__i1,__i2).  In place,
+       *  @a __n copies of @a __c are inserted.  If the length of
+       *  result exceeds max_size(), length_error is thrown.  The
+       *  value of the string doesn't change if an error is thrown.
+      */
+      basic_string&
+      replace(iterator __i1, iterator __i2, size_type __n, _CharT __c)
+      {
+	_GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				 && __i2 <= _M_iend());
+	return _M_replace_aux(__i1 - _M_ibegin(), __i2 - __i1, __n, __c);
+      }
+
+      /**
+       *  @brief  Replace range of characters with range.
+       *  @param __i1  Iterator referencing start of range to replace.
+       *  @param __i2  Iterator referencing end of range to replace.
+       *  @param __k1  Iterator referencing start of range to insert.
+       *  @param __k2  Iterator referencing end of range to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [__i1,__i2).  In place,
+       *  characters in the range [__k1,__k2) are inserted.  If the
+       *  length of result exceeds max_size(), length_error is thrown.
+       *  The value of the string doesn't change if an error is
+       *  thrown.
+      */
+      template<class _InputIterator>
+        basic_string&
+        replace(iterator __i1, iterator __i2,
+		_InputIterator __k1, _InputIterator __k2)
+        {
+	  _GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				   && __i2 <= _M_iend());
+	  __glibcxx_requires_valid_range(__k1, __k2);
+	  typedef typename std::__is_integer<_InputIterator>::__type _Integral;
+	  return _M_replace_dispatch(__i1, __i2, __k1, __k2, _Integral());
+	}
+
+      // Specializations for the common case of pointer and iterator:
+      // useful to avoid the overhead of temporary buffering in _M_replace.
+      basic_string&
+      replace(iterator __i1, iterator __i2, _CharT* __k1, _CharT* __k2)
+      {
+	_GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				 && __i2 <= _M_iend());
+	__glibcxx_requires_valid_range(__k1, __k2);
+	return this->replace(__i1 - _M_ibegin(), __i2 - __i1,
+			     __k1, __k2 - __k1);
+      }
+
+      basic_string&
+      replace(iterator __i1, iterator __i2,
+	      const _CharT* __k1, const _CharT* __k2)
+      {
+	_GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				 && __i2 <= _M_iend());
+	__glibcxx_requires_valid_range(__k1, __k2);
+	return this->replace(__i1 - _M_ibegin(), __i2 - __i1,
+			     __k1, __k2 - __k1);
+      }
+
+      basic_string&
+      replace(iterator __i1, iterator __i2, iterator __k1, iterator __k2)
+      {
+	_GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				 && __i2 <= _M_iend());
+	__glibcxx_requires_valid_range(__k1, __k2);
+	return this->replace(__i1 - _M_ibegin(), __i2 - __i1,
+			     __k1.base(), __k2 - __k1);
+      }
+
+      basic_string&
+      replace(iterator __i1, iterator __i2,
+	      const_iterator __k1, const_iterator __k2)
+      {
+	_GLIBCXX_DEBUG_PEDASSERT(_M_ibegin() <= __i1 && __i1 <= __i2
+				 && __i2 <= _M_iend());
+	__glibcxx_requires_valid_range(__k1, __k2);
+	return this->replace(__i1 - _M_ibegin(), __i2 - __i1,
+			     __k1.base(), __k2 - __k1);
+      }
+
+#if __cplusplus >= 201103L
+      /**
+       *  @brief  Replace range of characters with initializer_list.
+       *  @param __i1  Iterator referencing start of range to replace.
+       *  @param __i2  Iterator referencing end of range to replace.
+       *  @param __l  The initializer_list of characters to insert.
+       *  @return  Reference to this string.
+       *  @throw  std::length_error  If new length exceeds @c max_size().
+       *
+       *  Removes the characters in the range [__i1,__i2).  In place,
+       *  characters in the range [__k1,__k2) are inserted.  If the
+       *  length of result exceeds max_size(), length_error is thrown.
+       *  The value of the string doesn't change if an error is
+       *  thrown.
+      */
+      basic_string& replace(iterator __i1, iterator __i2,
+			    initializer_list<_CharT> __l)
+      { return this->replace(__i1, __i2, __l.begin(), __l.end()); }
+#endif // C++11
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Replace range of characters with string_view.
+       *  @param __pos  The position to replace at.
+       *  @param __n    The number of characters to replace.
+       *  @param __svt  The object convertible to string_view to insert.
+       *  @return  Reference to this string.
+      */
+      template<typename _Tp>
+	_If_sv<_Tp, basic_string&>
+	replace(size_type __pos, size_type __n, const _Tp& __svt)
+	{
+	  __sv_type __sv = __svt;
+	  return this->replace(__pos, __n, __sv.data(), __sv.size());
+	}
+
+      /**
+       *  @brief  Replace range of characters with string_view.
+       *  @param __pos1  The position to replace at.
+       *  @param __n1    The number of characters to replace.
+       *  @param __svt   The object convertible to string_view to insert from.
+       *  @param __pos2  The position in the string_view to insert from.
+       *  @param __n2    The number of characters to insert.
+       *  @return  Reference to this string.
+      */
+      template<typename _Tp>
+        _If_sv<_Tp, basic_string&>
+        replace(size_type __pos1, size_type __n1, const _Tp& __svt,
+		size_type __pos2, size_type __n2 = npos)
+	{
+	  __sv_type __sv = __svt;
+	  return this->replace(__pos1, __n1,
+	      __sv.data()
+	      + std::__sv_check(__sv.size(), __pos2, "basic_string::replace"),
+	      std::__sv_limit(__sv.size(), __pos2, __n2));
+	}
+
+      /**
+       *  @brief  Replace range of characters with string_view.
+       *  @param __i1    An iterator referencing the start position
+          to replace at.
+       *  @param __i2    An iterator referencing the end position
+          for the replace.
+       *  @param __svt   The object convertible to string_view to insert from.
+       *  @return  Reference to this string.
+      */
+      template<typename _Tp>
+	_If_sv<_Tp, basic_string&>
+	replace(const_iterator __i1, const_iterator __i2, const _Tp& __svt)
+	{
+	  __sv_type __sv = __svt;
+	  return this->replace(__i1 - begin(), __i2 - __i1, __sv);
+	}
+#endif // C++17
+
+    private:
+      template<class _Integer>
+	basic_string&
+	_M_replace_dispatch(iterator __i1, iterator __i2, _Integer __n,
+			    _Integer __val, __true_type)
+        { return _M_replace_aux(__i1 - _M_ibegin(), __i2 - __i1, __n, __val); }
+
+      template<class _InputIterator>
+	basic_string&
+	_M_replace_dispatch(iterator __i1, iterator __i2, _InputIterator __k1,
+			    _InputIterator __k2, __false_type);
+
+      basic_string&
+      _M_replace_aux(size_type __pos1, size_type __n1, size_type __n2,
+		     _CharT __c);
+
+      basic_string&
+      _M_replace_safe(size_type __pos1, size_type __n1, const _CharT* __s,
+		      size_type __n2);
+
+      // _S_construct_aux is used to implement the 21.3.1 para 15 which
+      // requires special behaviour if _InIter is an integral type
+      template<class _InIterator>
+        static _CharT*
+        _S_construct_aux(_InIterator __beg, _InIterator __end,
+			 const _Alloc& __a, __false_type)
+	{
+          typedef typename iterator_traits<_InIterator>::iterator_category _Tag;
+          return _S_construct(__beg, __end, __a, _Tag());
+	}
+
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 438. Ambiguity in the "do the right thing" clause
+      template<class _Integer>
+        static _CharT*
+        _S_construct_aux(_Integer __beg, _Integer __end,
+			 const _Alloc& __a, __true_type)
+        { return _S_construct_aux_2(static_cast<size_type>(__beg),
+				    __end, __a); }
+
+      static _CharT*
+      _S_construct_aux_2(size_type __req, _CharT __c, const _Alloc& __a)
+      { return _S_construct(__req, __c, __a); }
+
+      template<class _InIterator>
+        static _CharT*
+        _S_construct(_InIterator __beg, _InIterator __end, const _Alloc& __a)
+	{
+	  typedef typename std::__is_integer<_InIterator>::__type _Integral;
+	  return _S_construct_aux(__beg, __end, __a, _Integral());
+        }
+
+      // For Input Iterators, used in istreambuf_iterators, etc.
+      template<class _InIterator>
+        static _CharT*
+         _S_construct(_InIterator __beg, _InIterator __end, const _Alloc& __a,
+		      input_iterator_tag);
+
+      // For forward_iterators up to random_access_iterators, used for
+      // string::iterator, _CharT*, etc.
+      template<class _FwdIterator>
+        static _CharT*
+        _S_construct(_FwdIterator __beg, _FwdIterator __end, const _Alloc& __a,
+		     forward_iterator_tag);
+
+      static _CharT*
+      _S_construct(size_type __req, _CharT __c, const _Alloc& __a);
+
+    public:
+
+      /**
+       *  @brief  Copy substring into C string.
+       *  @param __s  C string to copy value into.
+       *  @param __n  Number of characters to copy.
+       *  @param __pos  Index of first character to copy.
+       *  @return  Number of characters actually copied
+       *  @throw  std::out_of_range  If __pos > size().
+       *
+       *  Copies up to @a __n characters starting at @a __pos into the
+       *  C string @a __s.  If @a __pos is %greater than size(),
+       *  out_of_range is thrown.
+      */
+      size_type
+      copy(_CharT* __s, size_type __n, size_type __pos = 0) const;
+
+      /**
+       *  @brief  Swap contents with another string.
+       *  @param __s  String to swap with.
+       *
+       *  Exchanges the contents of this string with that of @a __s in constant
+       *  time.
+      */
+      void
+      swap(basic_string& __s)
+      _GLIBCXX_NOEXCEPT_IF(allocator_traits<_Alloc>::is_always_equal::value);
+
+      // String operations:
+      /**
+       *  @brief  Return const pointer to null-terminated contents.
+       *
+       *  This is a handle to internal data.  Do not modify or dire things may
+       *  happen.
+      */
+      const _CharT*
+      c_str() const _GLIBCXX_NOEXCEPT
+      { return _M_data(); }
+
+      /**
+       *  @brief  Return const pointer to contents.
+       *
+       *  This is a pointer to internal data.  It is undefined to modify
+       *  the contents through the returned pointer. To get a pointer that
+       *  allows modifying the contents use @c &str[0] instead,
+       *  (or in C++17 the non-const @c str.data() overload).
+      */
+      const _CharT*
+      data() const _GLIBCXX_NOEXCEPT
+      { return _M_data(); }
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Return non-const pointer to contents.
+       *
+       *  This is a pointer to the character sequence held by the string.
+       *  Modifying the characters in the sequence is allowed.
+      */
+      _CharT*
+      data() noexcept
+      {
+	_M_leak();
+	return _M_data();
+      }
+#endif
+
+      /**
+       *  @brief  Return copy of allocator used to construct this string.
+      */
+      allocator_type
+      get_allocator() const _GLIBCXX_NOEXCEPT
+      { return _M_dataplus; }
+
+      /**
+       *  @brief  Find position of a C substring.
+       *  @param __s  C string to locate.
+       *  @param __pos  Index of character to search from.
+       *  @param __n  Number of characters from @a s to search for.
+       *  @return  Index of start of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for the first @a
+       *  __n characters in @a __s within this string.  If found,
+       *  returns the index where it begins.  If not found, returns
+       *  npos.
+      */
+      size_type
+      find(const _CharT* __s, size_type __pos, size_type __n) const
+      _GLIBCXX_NOEXCEPT;
+
+      /**
+       *  @brief  Find position of a string.
+       *  @param __str  String to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of start of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for value of @a __str within
+       *  this string.  If found, returns the index where it begins.  If not
+       *  found, returns npos.
+      */
+      size_type
+      find(const basic_string& __str, size_type __pos = 0) const
+      _GLIBCXX_NOEXCEPT
+      { return this->find(__str.data(), __pos, __str.size()); }
+
+      /**
+       *  @brief  Find position of a C string.
+       *  @param __s  C string to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of start of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for the value of @a
+       *  __s within this string.  If found, returns the index where
+       *  it begins.  If not found, returns npos.
+      */
+      size_type
+      find(const _CharT* __s, size_type __pos = 0) const _GLIBCXX_NOEXCEPT
+      {
+	__glibcxx_requires_string(__s);
+	return this->find(__s, __pos, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Find position of a character.
+       *  @param __c  Character to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for @a __c within
+       *  this string.  If found, returns the index where it was
+       *  found.  If not found, returns npos.
+      */
+      size_type
+      find(_CharT __c, size_type __pos = 0) const _GLIBCXX_NOEXCEPT;
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Find position of a string_view.
+       *  @param __svt  The object convertible to string_view to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of start of first occurrence.
+      */
+      template<typename _Tp>
+	_If_sv<_Tp, size_type>
+	find(const _Tp& __svt, size_type __pos = 0) const
+	noexcept(is_same<_Tp, __sv_type>::value)
+	{
+	  __sv_type __sv = __svt;
+	  return this->find(__sv.data(), __pos, __sv.size());
+	}
+#endif // C++17
+
+      /**
+       *  @brief  Find last position of a string.
+       *  @param __str  String to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of start of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for value of @a
+       *  __str within this string.  If found, returns the index where
+       *  it begins.  If not found, returns npos.
+      */
+      size_type
+      rfind(const basic_string& __str, size_type __pos = npos) const
+      _GLIBCXX_NOEXCEPT
+      { return this->rfind(__str.data(), __pos, __str.size()); }
+
+      /**
+       *  @brief  Find last position of a C substring.
+       *  @param __s  C string to locate.
+       *  @param __pos  Index of character to search back from.
+       *  @param __n  Number of characters from s to search for.
+       *  @return  Index of start of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for the first @a
+       *  __n characters in @a __s within this string.  If found,
+       *  returns the index where it begins.  If not found, returns
+       *  npos.
+      */
+      size_type
+      rfind(const _CharT* __s, size_type __pos, size_type __n) const
+      _GLIBCXX_NOEXCEPT;
+
+      /**
+       *  @brief  Find last position of a C string.
+       *  @param __s  C string to locate.
+       *  @param __pos  Index of character to start search at (default end).
+       *  @return  Index of start of  last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for the value of
+       *  @a __s within this string.  If found, returns the index
+       *  where it begins.  If not found, returns npos.
+      */
+      size_type
+      rfind(const _CharT* __s, size_type __pos = npos) const _GLIBCXX_NOEXCEPT
+      {
+	__glibcxx_requires_string(__s);
+	return this->rfind(__s, __pos, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Find last position of a character.
+       *  @param __c  Character to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for @a __c within
+       *  this string.  If found, returns the index where it was
+       *  found.  If not found, returns npos.
+      */
+      size_type
+      rfind(_CharT __c, size_type __pos = npos) const _GLIBCXX_NOEXCEPT;
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Find last position of a string_view.
+       *  @param __svt  The object convertible to string_view to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of start of last occurrence.
+      */
+      template<typename _Tp>
+	_If_sv<_Tp, size_type>
+	rfind(const _Tp& __svt, size_type __pos = npos) const
+	noexcept(is_same<_Tp, __sv_type>::value)
+	{
+	  __sv_type __sv = __svt;
+	  return this->rfind(__sv.data(), __pos, __sv.size());
+	}
+#endif // C++17
+
+      /**
+       *  @brief  Find position of a character of string.
+       *  @param __str  String containing characters to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for one of the
+       *  characters of @a __str within this string.  If found,
+       *  returns the index where it was found.  If not found, returns
+       *  npos.
+      */
+      size_type
+      find_first_of(const basic_string& __str, size_type __pos = 0) const
+      _GLIBCXX_NOEXCEPT
+      { return this->find_first_of(__str.data(), __pos, __str.size()); }
+
+      /**
+       *  @brief  Find position of a character of C substring.
+       *  @param __s  String containing characters to locate.
+       *  @param __pos  Index of character to search from.
+       *  @param __n  Number of characters from s to search for.
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for one of the
+       *  first @a __n characters of @a __s within this string.  If
+       *  found, returns the index where it was found.  If not found,
+       *  returns npos.
+      */
+      size_type
+      find_first_of(const _CharT* __s, size_type __pos, size_type __n) const
+      _GLIBCXX_NOEXCEPT;
+
+      /**
+       *  @brief  Find position of a character of C string.
+       *  @param __s  String containing characters to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for one of the
+       *  characters of @a __s within this string.  If found, returns
+       *  the index where it was found.  If not found, returns npos.
+      */
+      size_type
+      find_first_of(const _CharT* __s, size_type __pos = 0) const
+      _GLIBCXX_NOEXCEPT
+      {
+	__glibcxx_requires_string(__s);
+	return this->find_first_of(__s, __pos, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Find position of a character.
+       *  @param __c  Character to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for the character
+       *  @a __c within this string.  If found, returns the index
+       *  where it was found.  If not found, returns npos.
+       *
+       *  Note: equivalent to find(__c, __pos).
+      */
+      size_type
+      find_first_of(_CharT __c, size_type __pos = 0) const _GLIBCXX_NOEXCEPT
+      { return this->find(__c, __pos); }
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Find position of a character of a string_view.
+       *  @param __svt  An object convertible to string_view containing
+       *                characters to locate.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+      */
+      template<typename _Tp>
+	_If_sv<_Tp, size_type>
+	find_first_of(const _Tp& __svt, size_type __pos = 0) const
+	noexcept(is_same<_Tp, __sv_type>::value)
+	{
+	  __sv_type __sv = __svt;
+	  return this->find_first_of(__sv.data(), __pos, __sv.size());
+	}
+#endif // C++17
+
+      /**
+       *  @brief  Find last position of a character of string.
+       *  @param __str  String containing characters to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for one of the
+       *  characters of @a __str within this string.  If found,
+       *  returns the index where it was found.  If not found, returns
+       *  npos.
+      */
+      size_type
+      find_last_of(const basic_string& __str, size_type __pos = npos) const
+      _GLIBCXX_NOEXCEPT
+      { return this->find_last_of(__str.data(), __pos, __str.size()); }
+
+      /**
+       *  @brief  Find last position of a character of C substring.
+       *  @param __s  C string containing characters to locate.
+       *  @param __pos  Index of character to search back from.
+       *  @param __n  Number of characters from s to search for.
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for one of the
+       *  first @a __n characters of @a __s within this string.  If
+       *  found, returns the index where it was found.  If not found,
+       *  returns npos.
+      */
+      size_type
+      find_last_of(const _CharT* __s, size_type __pos, size_type __n) const
+      _GLIBCXX_NOEXCEPT;
+
+      /**
+       *  @brief  Find last position of a character of C string.
+       *  @param __s  C string containing characters to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for one of the
+       *  characters of @a __s within this string.  If found, returns
+       *  the index where it was found.  If not found, returns npos.
+      */
+      size_type
+      find_last_of(const _CharT* __s, size_type __pos = npos) const
+      _GLIBCXX_NOEXCEPT
+      {
+	__glibcxx_requires_string(__s);
+	return this->find_last_of(__s, __pos, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Find last position of a character.
+       *  @param __c  Character to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for @a __c within
+       *  this string.  If found, returns the index where it was
+       *  found.  If not found, returns npos.
+       *
+       *  Note: equivalent to rfind(__c, __pos).
+      */
+      size_type
+      find_last_of(_CharT __c, size_type __pos = npos) const _GLIBCXX_NOEXCEPT
+      { return this->rfind(__c, __pos); }
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Find last position of a character of string.
+       *  @param __svt  An object convertible to string_view containing
+       *                characters to locate.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of last occurrence.
+      */
+      template<typename _Tp>
+	_If_sv<_Tp, size_type>
+	find_last_of(const _Tp& __svt, size_type __pos = npos) const
+	noexcept(is_same<_Tp, __sv_type>::value)
+	{
+	  __sv_type __sv = __svt;
+	  return this->find_last_of(__sv.data(), __pos, __sv.size());
+	}
+#endif // C++17
+
+      /**
+       *  @brief  Find position of a character not in string.
+       *  @param __str  String containing characters to avoid.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for a character not contained
+       *  in @a __str within this string.  If found, returns the index where it
+       *  was found.  If not found, returns npos.
+      */
+      size_type
+      find_first_not_of(const basic_string& __str, size_type __pos = 0) const
+      _GLIBCXX_NOEXCEPT
+      { return this->find_first_not_of(__str.data(), __pos, __str.size()); }
+
+      /**
+       *  @brief  Find position of a character not in C substring.
+       *  @param __s  C string containing characters to avoid.
+       *  @param __pos  Index of character to search from.
+       *  @param __n  Number of characters from __s to consider.
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for a character not
+       *  contained in the first @a __n characters of @a __s within
+       *  this string.  If found, returns the index where it was
+       *  found.  If not found, returns npos.
+      */
+      size_type
+      find_first_not_of(const _CharT* __s, size_type __pos,
+			size_type __n) const _GLIBCXX_NOEXCEPT;
+
+      /**
+       *  @brief  Find position of a character not in C string.
+       *  @param __s  C string containing characters to avoid.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for a character not
+       *  contained in @a __s within this string.  If found, returns
+       *  the index where it was found.  If not found, returns npos.
+      */
+      size_type
+      find_first_not_of(const _CharT* __s, size_type __pos = 0) const
+      _GLIBCXX_NOEXCEPT
+      {
+	__glibcxx_requires_string(__s);
+	return this->find_first_not_of(__s, __pos, traits_type::length(__s));
+      }
+
+      /**
+       *  @brief  Find position of a different character.
+       *  @param __c  Character to avoid.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       *
+       *  Starting from @a __pos, searches forward for a character
+       *  other than @a __c within this string.  If found, returns the
+       *  index where it was found.  If not found, returns npos.
+      */
+      size_type
+      find_first_not_of(_CharT __c, size_type __pos = 0) const
+      _GLIBCXX_NOEXCEPT;
+
+#if __cplusplus >= 201703L
+      /**
+       *  @brief  Find position of a character not in a string_view.
+       *  @param __svt  An object convertible to string_view containing
+       *                characters to avoid.
+       *  @param __pos  Index of character to search from (default 0).
+       *  @return  Index of first occurrence.
+       */
+      template<typename _Tp>
+	_If_sv<_Tp, size_type>
+	find_first_not_of(const _Tp& __svt, size_type __pos = 0) const
+	noexcept(is_same<_Tp, __sv_type>::value)
+	{
+	  __sv_type __sv = __svt;
+	  return this->find_first_not_of(__sv.data(), __pos, __sv.size());
+	}
+#endif // C++17
+
+      /**
+       *  @brief  Find last position of a character not in string.
+       *  @param __str  String containing characters to avoid.
+       *  @param __pos  Index of character to search back from (default end).
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for a character
+       *  not contained in @a __str within this string.  If found,
+       *  returns the index where it was found.  If not found, returns
+       *  npos.
+      */
+      size_type
+      find_last_not_of(const basic_string& __str, size_type __pos = npos) const
+      _GLIBCXX_NOEXCEPT
+      { return this->find_last_not_of(__str.data(), __pos, __str.size()); }
+
+      /**
+       *  @brief  Find last position of a character not in C substring.
+       *  @param __s  C string containing characters to avoid.
+       *  @param __pos  Index of character to search back from.
+       *  @param __n  Number of characters from s to consider.
+       *  @return  Index of last occurrence.
+       *
+       *  Starting from @a __pos, searches backward for a character not
+       *  contained in the first @a __n characters of @a __s within this string.
+       *  If found, returns the index where it was found.  If not found,
+       *  returns npos.
+      */
+      size_type
+      find_last_not

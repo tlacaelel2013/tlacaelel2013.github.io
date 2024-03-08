@@ -1,0 +1,608 @@
+
+type _netent struct { n_name *int8; n_aliases **int8; n_addrtype int32; n_net uint32; }
+const _sizeof_netent = 16
+func ___h_errno_location () *int32 __asm__("__h_errno_location")
+func _herror (*int8) __asm__("herror")
+func _hstrerror (int32) *int8 __asm__("hstrerror")
+type _hostent struct { h_name *int8; h_aliases **int8; h_addrtype int32; h_length int32; h_addr_list **int8; }
+const _sizeof_hostent = 20
+func _sethostent (int32) __asm__("sethostent")
+func _endhostent () __asm__("endhostent")
+func _gethostent () *_hostent __asm__("gethostent")
+func _gethostbyaddr (*byte, uint32, int32) *_hostent __asm__("gethostbyaddr")
+func _gethostbyname (*int8) *_hostent __asm__("gethostbyname")
+func _gethostbyname2 (*int8, int32) *_hostent __asm__("gethostbyname2")
+func _gethostent_r (*_hostent, *int8, uint32, **_hostent, *int32) int32 __asm__("gethostent_r")
+func _gethostbyaddr_r (*byte, uint32, int32, *_hostent, *int8, uint32, **_hostent, *int32) int32 __asm__("gethostbyaddr_r")
+func _gethostbyname_r (*int8, *_hostent, *int8, uint32, **_hostent, *int32) int32 __asm__("gethostbyname_r")
+func _gethostbyname2_r (*int8, int32, *_hostent, *int8, uint32, **_hostent, *int32) int32 __asm__("gethostbyname2_r")
+func _setnetent (int32) __asm__("setnetent")
+func _endnetent () __asm__("endnetent")
+func _getnetent () *_netent __asm__("getnetent")
+func _getnetbyaddr (uint32, int32) *_netent __asm__("getnetbyaddr")
+func _getnetbyname (*int8) *_netent __asm__("getnetbyname")
+func _getnetent_r (*_netent, *int8, uint32, **_netent, *int32) int32 __asm__("getnetent_r")
+func _getnetbyaddr_r (uint32, int32, *_netent, *int8, uint32, **_netent, *int32) int32 __asm__("getnetbyaddr_r")
+func _getnetbyname_r (*int8, *_netent, *int8, uint32, **_netent, *int32) int32 __asm__("getnetbyname_r")
+type _servent struct { s_name *int8; s_aliases **int8; s_port int32; s_proto *int8; }
+const _sizeof_servent = 16
+func _setservent (int32) __asm__("setservent")
+func _endservent () __asm__("endservent")
+func _getservent () *_servent __asm__("getservent")
+func _getservbyname (*int8, *int8) *_servent __asm__("getservbyname")
+func _getservbyport (int32, *int8) *_servent __asm__("getservbyport")
+func _getservent_r (*_servent, *int8, uint32, **_servent) int32 __asm__("getservent_r")
+func _getservbyname_r (*int8, *int8, *_servent, *int8, uint32, **_servent) int32 __asm__("getservbyname_r")
+func _getservbyport_r (int32, *int8, *_servent, *int8, uint32, **_servent) int32 __asm__("getservbyport_r")
+type _protoent struct { p_name *int8; p_aliases **int8; p_proto int32; }
+const _sizeof_protoent = 12
+func _setprotoent (int32) __asm__("setprotoent")
+func _endprotoent () __asm__("endprotoent")
+func _getprotoent () *_protoent __asm__("getprotoent")
+func _getprotobyname (*int8) *_protoent __asm__("getprotobyname")
+func _getprotobynumber (int32) *_protoent __asm__("getprotobynumber")
+func _getprotoent_r (*_protoent, *int8, uint32, **_protoent) int32 __asm__("getprotoent_r")
+func _getprotobyname_r (*int8, *_protoent, *int8, uint32, **_protoent) int32 __asm__("getprotobyname_r")
+func _getprotobynumber_r (int32, *_protoent, *int8, uint32, **_protoent) int32 __asm__("getprotobynumber_r")
+func _setnetgrent (*int8) int32 __asm__("setnetgrent")
+func _endnetgrent () __asm__("endnetgrent")
+func _getnetgrent (**int8, **int8, **int8) int32 __asm__("getnetgrent")
+func _innetgr (*int8, *int8, *int8, *int8) int32 __asm__("innetgr")
+func _getnetgrent_r (**int8, **int8, **int8, *int8, uint32) int32 __asm__("getnetgrent_r")
+func _rcmd (**int8, uint16, *int8, *int8, *int8, *int32) int32 __asm__("rcmd")
+func _rcmd_af (**int8, uint16, *int8, *int8, *int8, *int32, uint16) int32 __asm__("rcmd_af")
+func _rexec (**int8, int32, *int8, *int8, *int8, *int32) int32 __asm__("rexec")
+func _rexec_af (**int8, int32, *int8, *int8, *int8, *int32, uint16) int32 __asm__("rexec_af")
+func _ruserok (*int8, int32, *int8, *int8) int32 __asm__("ruserok")
+func _ruserok_af (*int8, int32, *int8, *int8, uint16) int32 __asm__("ruserok_af")
+func _rresvport (*int32) int32 __asm__("rresvport")
+func _rresvport_af (*int32, uint16) int32 __asm__("rresvport_af")
+type _addrinfo struct { ai_flags int32; ai_family int32; ai_socktype int32; ai_protocol int32; ai_addrlen uint32; ai_addr *_sockaddr; ai_canonname *int8; ai_next *_addrinfo; }
+const _sizeof_addrinfo = 32
+type _gaicb struct { ar_name *int8; ar_service *int8; ar_request *_addrinfo; ar_result *_addrinfo; __return int32; __unused [4+1]int32; }
+const _sizeof_gaicb = 40
+func _getaddrinfo (*int8, *int8, *_addrinfo, **_addrinfo) int32 __asm__("getaddrinfo")
+func _freeaddrinfo (*_addrinfo) __asm__("freeaddrinfo")
+func _gai_strerror (int32) *int8 __asm__("gai_strerror")
+func _getnameinfo (*_sockaddr, uint32, *int8, uint32, *int8, uint32, uint32) int32 __asm__("getnameinfo")
+func _getaddrinfo_a (int32, **_gaicb, int32, *_sigevent) int32 __asm__("getaddrinfo_a")
+func _gai_suspend (**_gaicb, int32, *_timespec) int32 __asm__("gai_suspend")
+func _gai_error (*_gaicb) int32 __asm__("gai_error")
+func _gai_cancel (*_gaicb) int32 __asm__("gai_cancel")
+type _passwd struct { pw_name *int8; pw_passwd *int8; pw_uid uint32; pw_gid uint32; pw_gecos *int8; pw_dir *int8; pw_shell *int8; }
+const _sizeof_passwd = 28
+type _FILE struct { }
+func _setpwent () __asm__("setpwent")
+func _endpwent () __asm__("endpwent")
+func _getpwent () *_passwd __asm__("getpwent")
+func _fgetpwent (*_FILE) *_passwd __asm__("fgetpwent")
+func _putpwent (*_passwd, *_FILE) int32 __asm__("putpwent")
+func _getpwuid (uint32) *_passwd __asm__("getpwuid")
+func _getpwnam (*int8) *_passwd __asm__("getpwnam")
+func _getpwent_r (*_passwd, *int8, uint32, **_passwd) int32 __asm__("getpwent_r")
+func _getpwuid_r (uint32, *_passwd, *int8, uint32, **_passwd) int32 __asm__("getpwuid_r")
+func _getpwnam_r (*int8, *_passwd, *int8, uint32, **_passwd) int32 __asm__("getpwnam_r")
+func _fgetpwent_r (*_FILE, *_passwd, *int8, uint32, **_passwd) int32 __asm__("fgetpwent_r")
+func _getpw (uint32, *int8) int32 __asm__("getpw")
+type _group struct { gr_name *int8; gr_passwd *int8; gr_gid uint32; gr_mem **int8; }
+const _sizeof_group = 16
+func _setgrent () __asm__("setgrent")
+func _endgrent () __asm__("endgrent")
+func _getgrent () *_group __asm__("getgrent")
+func _fgetgrent (*_FILE) *_group __asm__("fgetgrent")
+func _putgrent (*_group, *_FILE) int32 __asm__("putgrent")
+func _getgrgid (uint32) *_group __asm__("getgrgid")
+func _getgrnam (*int8) *_group __asm__("getgrnam")
+func _getgrent_r (*_group, *int8, uint32, **_group) int32 __asm__("getgrent_r")
+func _getgrgid_r (uint32, *_group, *int8, uint32, **_group) int32 __asm__("getgrgid_r")
+func _getgrnam_r (*int8, *_group, *int8, uint32, **_group) int32 __asm__("getgrnam_r")
+func _fgetgrent_r (*_FILE, *_group, *int8, uint32, **_group) int32 __asm__("fgetgrent_r")
+func _setgroups (uint32, *uint32) int32 __asm__("setgroups")
+func _getgrouplist (*int8, uint32, *uint32, *int32) int32 __asm__("getgrouplist")
+func _initgroups (*int8, uint32) int32 __asm__("initgroups")
+type _sock_filter struct { code uint16; jt uint8; jf uint8; k uint32; }
+const _sizeof_sock_filter = 8
+type _sock_fprog struct { len uint16; filter *_sock_filter; }
+const _sizeof_sock_fprog = 8
+type _tun_pi struct { flags uint16; proto uint16; }
+const _sizeof_tun_pi = 4
+type ___kernel_sockaddr_storage struct { ss_family uint16; __data [125+1]int8; Godump_0_align [0]int32; }
+const _sizeof___kernel_sockaddr_storage = 128
+type _sockaddr_nl struct { nl_family uint16; nl_pad uint16; nl_pid uint32; nl_groups uint32; }
+const _sizeof_sockaddr_nl = 12
+type _nlmsghdr struct { nlmsg_len uint32; nlmsg_type uint16; nlmsg_flags uint16; nlmsg_seq uint32; nlmsg_pid uint32; }
+const _sizeof_nlmsghdr = 16
+type _nlmsgerr struct { error int32; msg _nlmsghdr; }
+const _sizeof_nlmsgerr = 20
+type _nl_pktinfo struct { group uint32; }
+const _sizeof_nl_pktinfo = 4
+type _nlattr struct { nla_len uint16; nla_type uint16; }
+const _sizeof_nlattr = 4
+type _pt_regs struct { psr uint32; pc uint32; npc uint32; y uint32; u_regs [15+1]uint32; }
+const _sizeof_pt_regs = 80
+type _reg_window struct { locals [7+1]uint32; ins [7+1]uint32; }
+const _sizeof_reg_window = 64
+type _sparc_stackf struct { locals [7+1]uint32; ins [5+1]uint32; fp *_sparc_stackf; callers_pc uint32; structptr *int8; xargs [5+1]uint32; xxargs [0+1]uint32; }
+const _sizeof_sparc_stackf = 96
+type _rtattr struct { rta_len uint16; rta_type uint16; }
+const _sizeof_rtattr = 4
+type _rtmsg struct { rtm_family uint8; rtm_dst_len uint8; rtm_src_len uint8; rtm_tos uint8; rtm_table uint8; rtm_protocol uint8; rtm_scope uint8; rtm_type uint8; rtm_flags uint32; }
+const _sizeof_rtmsg = 12
+type _rtnexthop struct { rtnh_len uint16; rtnh_flags uint8; rtnh_hops uint8; rtnh_ifindex int32; }
+const _sizeof_rtnexthop = 8
+type _rta_cacheinfo struct { rta_clntref uint32; rta_lastuse uint32; rta_expires int32; rta_error uint32; rta_used uint32; rta_id uint32; rta_ts uint32; rta_tsage uint32; }
+const _sizeof_rta_cacheinfo = 32
+type _rta_session struct { proto uint8; pad1 uint8; pad2 uint16; u struct { ports struct { sport uint16; dport uint16; }; Godump_0_align [0]int32; }; }
+const _sizeof_rta_session = 8
+type _ifaddrmsg struct { ifa_family uint8; ifa_prefixlen uint8; ifa_flags uint8; ifa_scope uint8; ifa_index int32; }
+const _sizeof_ifaddrmsg = 8
+type _ifa_cacheinfo struct { ifa_prefered uint32; ifa_valid uint32; cstamp uint32; tstamp uint32; }
+const _sizeof_ifa_cacheinfo = 16
+type _ndmsg struct { ndm_family uint8; ndm_pad1 uint8; ndm_pad2 uint16; ndm_ifindex int32; ndm_state uint16; ndm_flags uint8; ndm_type uint8; }
+const _sizeof_ndmsg = 12
+type _nda_cacheinfo struct { ndm_confirmed uint32; ndm_used uint32; ndm_updated uint32; ndm_refcnt uint32; }
+const _sizeof_nda_cacheinfo = 16
+type _ndt_stats struct { ndts_allocs uint64; ndts_destroys uint64; ndts_hash_grows uint64; ndts_res_failed uint64; ndts_lookups uint64; ndts_hits uint64; ndts_rcv_probes_mcast uint64; ndts_rcv_probes_ucast uint64; ndts_periodic_gc_runs uint64; ndts_forced_gc_runs uint64; }
+const _sizeof_ndt_stats = 80
+type _ndtmsg struct { ndtm_family uint8; ndtm_pad1 uint8; ndtm_pad2 uint16; }
+const _sizeof_ndtmsg = 4
+type _ndt_config struct { ndtc_key_len uint16; ndtc_entry_size uint16; ndtc_entries uint32; ndtc_last_flush uint32; ndtc_last_rand uint32; ndtc_hash_rnd uint32; ndtc_hash_mask uint32; ndtc_hash_chain_gc uint32; ndtc_proxy_qlen uint32; }
+const _sizeof_ndt_config = 32
+type _rtgenmsg struct { rtgen_family uint8; }
+const _sizeof_rtgenmsg = 1
+type _ifinfomsg struct { ifi_family uint8; __ifi_pad uint8; ifi_type uint16; ifi_index int32; ifi_flags uint32; ifi_change uint32; }
+const _sizeof_ifinfomsg = 16
+type _prefixmsg struct { prefix_family uint8; prefix_pad1 uint8; prefix_pad2 uint16; prefix_ifindex int32; prefix_type uint8; prefix_len uint8; prefix_flags uint8; prefix_pad3 uint8; }
+const _sizeof_prefixmsg = 12
+type _prefix_cacheinfo struct { preferred_time uint32; valid_time uint32; }
+const _sizeof_prefix_cacheinfo = 8
+type _rtnl_link_stats struct { rx_packets uint32; tx_packets uint32; rx_bytes uint32; tx_bytes uint32; rx_errors uint32; tx_errors uint32; rx_dropped uint32; tx_dropped uint32; multicast uint32; collisions uint32; rx_length_errors uint32; rx_over_errors uint32; rx_crc_errors uint32; rx_frame_errors uint32; rx_fifo_errors uint32; rx_missed_errors uint32; tx_aborted_errors uint32; tx_carrier_errors uint32; tx_fifo_errors uint32; tx_heartbeat_errors uint32; tx_window_errors uint32; rx_compressed uint32; tx_compressed uint32; }
+const _sizeof_rtnl_link_stats = 92
+type _rtnl_link_ifmap struct { mem_start uint64; mem_end uint64; base_addr uint64; irq uint16; dma uint8; port uint8; Godump_0_pad [4]byte; }
+const _sizeof_rtnl_link_ifmap = 32
+type _ifla_cacheinfo struct { max_reasm_len uint32; tstamp uint32; reachable_time uint32; retrans_time uint32; }
+const _sizeof_ifla_cacheinfo = 16
+type _tcmsg struct { tcm_family uint8; tcm__pad1 uint8; tcm__pad2 uint16; tcm_ifindex int32; tcm_handle uint32; tcm_parent uint32; tcm_info uint32; }
+const _sizeof_tcmsg = 20
+type _tcamsg struct { tca_family uint8; tca__pad1 uint8; tca__pad2 uint16; }
+const _sizeof_tcamsg = 4
+type _if_nameindex struct { if_index uint32; if_name *int8; }
+const _sizeof_if_nameindex = 8
+type _ifaddr struct { ifa_addr _sockaddr; ifa_ifu struct { ifu_broadaddr _sockaddr; }; ifa_ifp *_iface; ifa_next *_ifaddr; }
+const _sizeof_ifaddr = 40
+type _ifmap struct { mem_start uint32; mem_end uint32; base_addr uint16; irq uint8; dma uint8; port uint8; Godump_0_pad [3]byte; }
+const _sizeof_ifmap = 16
+type _ifreq struct { ifr_ifrn struct { ifrn_name [15+1]int8; }; ifr_ifru struct { ifru_addr _sockaddr; Godump_0_align [0]int32; }; }
+const _sizeof_ifreq = 32
+type _ifconf struct { ifc_len int32; ifc_ifcu struct { ifcu_buf ___caddr_t; }; }
+const _sizeof_ifconf = 8
+func _if_nametoindex (*int8) uint32 __asm__("if_nametoindex")
+func _if_indextoname (uint32, *int8) *int8 __asm__("if_indextoname")
+func _if_nameindex () *_if_nameindex __asm__("if_nameindex")
+func _if_freenameindex (*_if_nameindex) __asm__("if_freenameindex")
+type _rtentry struct { rt_pad1 uint32; rt_dst _sockaddr; rt_gateway _sockaddr; rt_genmask _sockaddr; rt_flags uint16; rt_pad2 int16; rt_pad3 uint32; rt_tos uint8; rt_class uint8; rt_pad4 int16; rt_metric int16; rt_dev *int8; rt_mtu uint32; rt_window uint32; rt_irtt uint16; Godump_0_pad [2]byte; }
+const _sizeof_rtentry = 84
+type _in6_rtmsg struct { rtmsg_dst _in6_addr; rtmsg_src _in6_addr; rtmsg_gateway _in6_addr; rtmsg_type uint32; rtmsg_dst_len uint16; rtmsg_src_len uint16; rtmsg_metric uint32; rtmsg_info uint32; rtmsg_flags uint32; rtmsg_ifindex int32; }
+const _sizeof_in6_rtmsg = 72
+type _sockaddr_ll struct { sll_family uint16; sll_protocol uint16; sll_ifindex int32; sll_hatype uint16; sll_pkttype uint8; sll_halen uint8; sll_addr [7+1]uint8; }
+const _sizeof_sockaddr_ll = 20
+type _packet_mreq struct { mr_ifindex int32; mr_type uint16; mr_alen uint16; mr_address [7+1]uint8; }
+const _sizeof_packet_mreq = 16
+func _mount (*int8, *int8, *int8, uint32, *byte) int32 __asm__("mount")
+func _umount (*int8) int32 __asm__("umount")
+func _umount2 (*int8, int32) int32 __asm__("umount2")
+type _statfs struct { f_type int32; f_bsize int32; f_blocks uint64; f_bfree uint64; f_bavail uint64; f_files uint64; f_ffree uint64; f_fsid ___fsid_t; f_namelen int32; f_frsize int32; f_spare [4+1]int32; Godump_0_pad [4]byte; }
+const _sizeof_statfs = 88
+type _statfs64 struct { f_type int32; f_bsize int32; f_blocks uint64; f_bfree uint64; f_bavail uint64; f_files uint64; f_ffree uint64; f_fsid ___fsid_t; f_namelen int32; f_frsize int32; f_spare [4+1]int32; Godump_0_pad [4]byte; }
+const _sizeof_statfs64 = 88
+func _statfs (*int8, *_statfs) int32 __asm__("*statfs64")
+func _statfs64 (*int8, *_statfs64) int32 __asm__("statfs64")
+func _fstatfs (int32, *_statfs) int32 __asm__("*fstatfs64")
+func _fstatfs64 (int32, *_statfs64) int32 __asm__("fstatfs64")
+type _ntptimeval struct { time _timeval; maxerror int32; esterror int32; }
+const _sizeof_ntptimeval = 16
+type _timex struct { modes uint32; offset int32; freq int32; maxerror int32; esterror int32; status int32; constant int32; precision int32; tolerance int32; time _timeval; tick int32; ppsfreq int32; jitter int32; shift int32; stabil int32; jitcnt int32; calcnt int32; errcnt int32; stbcnt int32; Godump_0 int32; Godump_1 int32; Godump_2 int32; Godump_3 int32; Godump_4 int32; Godump_5 int32; Godump_6 int32; Godump_7 int32; Godump_8 int32; Godump_9 int32; Godump_10 int32; Godump_11 int32; }
+const _sizeof_timex = 128
+func ___adjtimex (*_timex) int32 __asm__("__adjtimex")
+func _adjtimex (*_timex) int32 __asm__("adjtimex")
+func _ntp_gettime (*_ntptimeval) int32 __asm__("ntp_gettime")
+func _ntp_adjtime (*_timex) int32 __asm__("ntp_adjtime")
+type _sysinfo struct { uptime int32; loads [2+1]uint32; totalram uint32; freeram uint32; sharedram uint32; bufferram uint32; totalswap uint32; freeswap uint32; procs uint16; pad uint16; totalhigh uint32; freehigh uint32; mem_unit uint32; _f [7+1]int8; }
+const _sizeof_sysinfo = 64
+func _sysinfo (*_sysinfo) int32 __asm__("sysinfo")
+func _get_nprocs_conf () int32 __asm__("get_nprocs_conf")
+func _get_nprocs () int32 __asm__("get_nprocs")
+func _get_phys_pages () int32 __asm__("get_phys_pages")
+func _get_avphys_pages () int32 __asm__("get_avphys_pages")
+type _utimbuf struct { actime int32; modtime int32; }
+const _sizeof_utimbuf = 8
+func _utime (*int8, *_utimbuf) int32 __asm__("utime")
+type _files_stat_struct struct { nr_files int32; nr_free_files int32; max_files int32; }
+const _sizeof_files_stat_struct = 12
+var _files_stat _files_stat_struct
+func _get_max_files () int32 __asm__("get_max_files")
+type _inodes_stat_t struct { nr_inodes int32; nr_unused int32; dummy [4+1]int32; }
+const _sizeof_inodes_stat_t = 28
+var _inodes_stat _inodes_stat_t
+var _leases_enable int32
+var _lease_break_time int32
+var _dir_notify_enable int32
+type ___gwchar_t int32
+type _imaxdiv_t struct { quot int64; rem int64; }
+const _sizeof_imaxdiv_t = 16
+func _imaxabs (int64) int64 __asm__("imaxabs")
+func _imaxdiv (int64, int64) _imaxdiv_t __asm__("imaxdiv")
+func _strtoimax (*int8, **int8, int32) int64 __asm__("strtoimax")
+func _strtoumax (*int8, **int8, int32) uint64 __asm__("strtoumax")
+func _wcstoimax (*int32, **int32, int32) int64 __asm__("wcstoimax")
+func _wcstoumax (*int32, **int32, int32) uint64 __asm__("wcstoumax")
+type _icmp6_filter struct { data [7+1]uint32; }
+const _sizeof_icmp6_filter = 32
+type _icmp6_hdr struct { icmp6_type uint8; icmp6_code uint8; icmp6_cksum uint16; icmp6_dataun struct { icmp6_un_data32 [0+1]uint32; }; }
+const _sizeof_icmp6_hdr = 8
+type _nd_router_solicit struct { nd_rs_hdr _icmp6_hdr; }
+const _sizeof_nd_router_solicit = 8
+type _nd_router_advert struct { nd_ra_hdr _icmp6_hdr; nd_ra_reachable uint32; nd_ra_retransmit uint32; }
+const _sizeof_nd_router_advert = 16
+type _nd_neighbor_solicit struct { nd_ns_hdr _icmp6_hdr; nd_ns_target _in6_addr; }
+const _sizeof_nd_neighbor_solicit = 24
+type _nd_neighbor_advert struct { nd_na_hdr _icmp6_hdr; nd_na_target _in6_addr; }
+const _sizeof_nd_neighbor_advert = 24
+type _nd_redirect struct { nd_rd_hdr _icmp6_hdr; nd_rd_target _in6_addr; nd_rd_dst _in6_addr; }
+const _sizeof_nd_redirect = 40
+type _nd_opt_hdr struct { nd_opt_type uint8; nd_opt_len uint8; }
+const _sizeof_nd_opt_hdr = 2
+type _nd_opt_prefix_info struct { nd_opt_pi_type uint8; nd_opt_pi_len uint8; nd_opt_pi_prefix_len uint8; nd_opt_pi_flags_reserved uint8; nd_opt_pi_valid_time uint32; nd_opt_pi_preferred_time uint32; nd_opt_pi_reserved2 uint32; nd_opt_pi_prefix _in6_addr; }
+const _sizeof_nd_opt_prefix_info = 32
+type _nd_opt_rd_hdr struct { nd_opt_rh_type uint8; nd_opt_rh_len uint8; nd_opt_rh_reserved1 uint16; nd_opt_rh_reserved2 uint32; }
+const _sizeof_nd_opt_rd_hdr = 8
+type _nd_opt_mtu struct { nd_opt_mtu_type uint8; nd_opt_mtu_len uint8; nd_opt_mtu_reserved uint16; nd_opt_mtu_mtu uint32; }
+const _sizeof_nd_opt_mtu = 8
+type _nd_opt_adv_interval struct { nd_opt_adv_interval_type uint8; nd_opt_adv_interval_len uint8; nd_opt_adv_interval_reserved uint16; nd_opt_adv_interval_ival uint32; }
+const _sizeof_nd_opt_adv_interval = 8
+type _nd_opt_home_agent_info struct { nd_opt_home_agent_info_type uint8; nd_opt_home_agent_info_len uint8; nd_opt_home_agent_info_reserved uint16; nd_opt_home_agent_info_preference int16; nd_opt_home_agent_info_lifetime uint16; }
+const _sizeof_nd_opt_home_agent_info = 8
+type _sched_param struct { __sched_priority int32; }
+const _sizeof_sched_param = 4
+func _clone (func(*byte) int32, *byte, int32, *byte) int32 __asm__("clone")
+type ___cpu_mask uint32
+type _cpu_set_t struct { __bits [31+1]uint32; }
+const _sizeof_cpu_set_t = 128
+func _sched_setparam (int32, *_sched_param) int32 __asm__("sched_setparam")
+func _sched_getparam (int32, *_sched_param) int32 __asm__("sched_getparam")
+func _sched_setscheduler (int32, int32, *_sched_param) int32 __asm__("sched_setscheduler")
+func _sched_getscheduler (int32) int32 __asm__("sched_getscheduler")
+func _sched_yield () int32 __asm__("sched_yield")
+func _sched_get_priority_max (int32) int32 __asm__("sched_get_priority_max")
+func _sched_get_priority_min (int32) int32 __asm__("sched_get_priority_min")
+func _sched_rr_get_interval (int32, *_timespec) int32 __asm__("sched_rr_get_interval")
+func _sched_setaffinity (int32, uint32, *_cpu_set_t) int32 __asm__("sched_setaffinity")
+func _sched_getaffinity (int32, uint32, *_cpu_set_t) int32 __asm__("sched_getaffinity")
+type _sem_t struct { __sem_lock __pthread_fastlock; __sem_value int32; __sem_waiting __pthread_descr; }
+const _sizeof_sem_t = 16
+func _sem_init (*_sem_t, int32, uint32) int32 __asm__("sem_init")
+func _sem_destroy (*_sem_t) int32 __asm__("sem_destroy")
+func _sem_open (*int8, int32, ...interface{}) *_sem_t __asm__("sem_open")
+func _sem_close (*_sem_t) int32 __asm__("sem_close")
+func _sem_unlink (*int8) int32 __asm__("sem_unlink")
+func _sem_wait (*_sem_t) int32 __asm__("sem_wait")
+func _sem_timedwait (*_sem_t, *_timespec) int32 __asm__("sem_timedwait")
+func _sem_trywait (*_sem_t) int32 __asm__("sem_trywait")
+func _sem_post (*_sem_t) int32 __asm__("sem_post")
+func _sem_getvalue (*_sem_t, *int32) int32 __asm__("sem_getvalue")
+type _ffi_arg uint32
+type _ffi_sarg int32
+type _ffi_abi uint32
+type __ffi_type struct { size uint32; alignment uint16; _type uint16; elements **__ffi_type; }
+const _sizeof__ffi_type = 12
+type _ffi_type struct { size uint32; alignment uint16; _type uint16; elements **__ffi_type; }
+const _sizeof_ffi_type = 12
+var _ffi_type_void _ffi_type
+var _ffi_type_uint8 _ffi_type
+var _ffi_type_sint8 _ffi_type
+var _ffi_type_uint16 _ffi_type
+var _ffi_type_sint16 _ffi_type
+var _ffi_type_uint32 _ffi_type
+var _ffi_type_sint32 _ffi_type
+var _ffi_type_uint64 _ffi_type
+var _ffi_type_sint64 _ffi_type
+var _ffi_type_float _ffi_type
+var _ffi_type_double _ffi_type
+var _ffi_type_pointer _ffi_type
+var _ffi_type_complex_float _ffi_type
+var _ffi_type_complex_double _ffi_type
+type _ffi_status uint32
+type _FFI_TYPE uint32
+type _ffi_cif struct { abi uint32; nargs uint32; arg_types **_ffi_type; rtype *_ffi_type; bytes uint32; flags uint32; }
+const _sizeof_ffi_cif = 24
+func _ffi_prep_cif_core (*_ffi_cif, uint32, uint32, uint32, uint32, *_ffi_type, **_ffi_type) uint32 __asm__("ffi_prep_cif_core")
+type _ffi_raw struct { sint int32; }
+const _sizeof_ffi_raw = 4
+type _ffi_java_raw struct { sint int32; }
+const _sizeof_ffi_java_raw = 4
+func _ffi_raw_call (*_ffi_cif, func(), *byte, *_ffi_raw) __asm__("ffi_raw_call")
+func _ffi_ptrarray_to_raw (*_ffi_cif, **byte, *_ffi_raw) __asm__("ffi_ptrarray_to_raw")
+func _ffi_raw_to_ptrarray (*_ffi_cif, *_ffi_raw, **byte) __asm__("ffi_raw_to_ptrarray")
+func _ffi_raw_size (*_ffi_cif) uint32 __asm__("ffi_raw_size")
+func _ffi_java_raw_call (*_ffi_cif, func(), *byte, *_ffi_java_raw) __asm__("ffi_java_raw_call")
+func _ffi_java_ptrarray_to_raw (*_ffi_cif, **byte, *_ffi_java_raw) __asm__("ffi_java_ptrarray_to_raw")
+func _ffi_java_raw_to_ptrarray (*_ffi_cif, *_ffi_java_raw, **byte) __asm__("ffi_java_raw_to_ptrarray")
+func _ffi_java_raw_size (*_ffi_cif) uint32 __asm__("ffi_java_raw_size")
+type _ffi_closure struct { tramp [15+1]int8; cif *_ffi_cif; fun func(*_ffi_cif, *byte, **byte, *byte); user_data *byte; Godump_0_align [0]int64; }
+const _sizeof_ffi_closure = 28
+func _ffi_closure_alloc (uint32, **byte) *byte __asm__("ffi_closure_alloc")
+func _ffi_closure_free (*byte) __asm__("ffi_closure_free")
+func _ffi_prep_closure (*_ffi_closure, *_ffi_cif, func(*_ffi_cif, *byte, **byte, *byte), *byte) uint32 __asm__("ffi_prep_closure")
+func _ffi_prep_closure_loc (*_ffi_closure, *_ffi_cif, func(*_ffi_cif, *byte, **byte, *byte), *byte, *byte) uint32 __asm__("ffi_prep_closure_loc")
+type _ffi_raw_closure struct { tramp [15+1]int8; cif *_ffi_cif; translate_args func(*_ffi_cif, *byte, **byte, *byte); this_closure *byte; fun func(*_ffi_cif, *byte, *_ffi_raw, *byte); user_data *byte; }
+const _sizeof_ffi_raw_closure = 36
+type _ffi_java_raw_closure struct { tramp [15+1]int8; cif *_ffi_cif; translate_args func(*_ffi_cif, *byte, **byte, *byte); this_closure *byte; fun func(*_ffi_cif, *byte, *_ffi_java_raw, *byte); user_data *byte; }
+const _sizeof_ffi_java_raw_closure = 36
+func _ffi_prep_raw_closure (*_ffi_raw_closure, *_ffi_cif, func(*_ffi_cif, *byte, *_ffi_raw, *byte), *byte) uint32 __asm__("ffi_prep_raw_closure")
+func _ffi_prep_raw_closure_loc (*_ffi_raw_closure, *_ffi_cif, func(*_ffi_cif, *byte, *_ffi_raw, *byte), *byte, *byte) uint32 __asm__("ffi_prep_raw_closure_loc")
+func _ffi_prep_java_raw_closure (*_ffi_java_raw_closure, *_ffi_cif, func(*_ffi_cif, *byte, *_ffi_java_raw, *byte), *byte) uint32 __asm__("ffi_prep_java_raw_closure")
+func _ffi_prep_java_raw_closure_loc (*_ffi_java_raw_closure, *_ffi_cif, func(*_ffi_cif, *byte, *_ffi_java_raw, *byte), *byte, *byte) uint32 __asm__("ffi_prep_java_raw_closure_loc")
+type _ffi_go_closure struct { tramp *byte; cif *_ffi_cif; fun func(*_ffi_cif, *byte, **byte, *byte); }
+const _sizeof_ffi_go_closure = 12
+func _ffi_prep_go_closure (*_ffi_go_closure, *_ffi_cif, func(*_ffi_cif, *byte, **byte, *byte)) uint32 __asm__("ffi_prep_go_closure")
+func _ffi_call_go (*_ffi_cif, func(), *byte, **byte, *byte) __asm__("ffi_call_go")
+func _ffi_prep_cif (*_ffi_cif, uint32, uint32, *_ffi_type, **_ffi_type) uint32 __asm__("ffi_prep_cif")
+func _ffi_prep_cif_var (*_ffi_cif, uint32, uint32, uint32, *_ffi_type, **_ffi_type) uint32 __asm__("ffi_prep_cif_var")
+func _ffi_call (*_ffi_cif, func(), *byte, **byte) __asm__("ffi_call")
+const __PC_PIPE_BUF = 5
+const _WNOHANG = 1
+const _ENOTSOCK = 38
+const _PTRACE_SETFPAREGS = 21
+const _INT_LEAST16_MIN = (-32767-1)
+const _SYS_uselib = ___NR_uselib
+const _IPPROTO_TP = 29
+const _AIO_PRIO_DELTA_MAX = 20
+const ___FLT64_MIN_10_EXP__ = (-307)
+const __PC_PATH_MAX = 4
+const _INT_FAST8_MIN = (-128)
+const _B115200 = 0x00001002
+const ___FLT64_MANT_DIG__ = 53
+const ___NR_fsync = 95
+const _PTRACE_EVENT_EXEC = 4
+const _S_SWAPFILE = 256
+const _IPPORT_SUPDUP = 95
+const _SYS_ftruncate = ___NR_ftruncate
+const _TIOCSPGRP_val = 2147775618
+const _ARPD_LOOKUP = 0x02
+const ___NR_mremap = 250
+const ___NR_lsetxattr = 170
+const __SC_ARG_MAX = 0
+const _INT_LEAST32_MIN = (-2147483647-1)
+const _ATF_COM = 0x02
+const _MAP_FILE = 0x00
+const ___DEC64_MIN__ = 1E-383
+const _SIGEV_NONE = 1
+const _ICMP6_MEMBERSHIP_REPORT = 131
+const _ND_OPT_HOME_AGENT_INFO = 8
+const __POSIX_BARRIERS = 200112
+const _IP_RF = 0x8000
+const _ETH_P_PPPTALK = 0x0010
+const _DT_CHR = 2
+const ___FLT_MAX_EXP__ = 128
+const ___NR_pciconfig_write = 149
+const ___NR_setsid = 175
+const __XOPEN_XPG2 = 1
+const __XOPEN_XPG3 = 1
+const __XOPEN_XPG4 = 1
+const _BPF_LD = 0x00
+const _TCPI_OPT_ECN = 8
+const _RTF_REJECT = 0x0200
+const _SIGPWR = _SIGLOST
+const _PR_FP_EXC_SW_ENABLE = 0x80
+const ___NR_time = 231
+const _HAVE_SYS_EPOLL_H = 1
+const _B76800 = 0x00001005
+const _PACKET_MR_ALLMULTI = 2
+const _ICMP6_ECHO_REQUEST = 128
+const _ICMP6_MEMBERSHIP_REDUCTION = 132
+const __POSIX_AIO_MAX = 1
+const ___NR_flock = 131
+const _FNONBLOCK = _O_NONBLOCK
+const _ATF_PERM = 0x04
+const _EH_FRAME_FLAGS = "aw"
+const _CONFIG_FAT_DEFAULT_CODEPAGE = 437
+const _SIOCDRARP = 0x8960
+const __SC_TYPED_MEMORY_OBJECTS = 165
+const _ETHER_MAX_LEN = (_ETH_FRAME_LEN + _ETHER_CRC_LEN)
+const _CONFIG_USB_ARCH_HAS_OHCI = 1
+const __PC_REC_MAX_XFER_SIZE = 15
+const ___NR_mount = 167
+const __IOC_TYPEBITS = 8
+const _SOCK_DGRAM = 2
+const _MOD_OFFSET = _ADJ_OFFSET
+const _IFLA_MAP = 14
+const _EL2NSYNC = 95
+const _CONFIG_USB_STORAGE_JUMPSHOT = 1
+const _SYS_munlock = ___NR_munlock
+const _HAVE_GETXATTR = 1
+const _CONFIG_DEBUG_KERNEL = 1
+const _HAVE_SYS_SYSCALL_H = 1
+const _CONFIG_SYSFS = 1
+const ___NR_connect = 98
+const __SC_PIPE = 145
+const _SYS_nice = ___NR_nice
+const _CONFIG_HOTPLUG = 1
+const _SYS_statfs = ___NR_statfs
+const _FFI_SIZEOF_JAVA_RAW = _FFI_SIZEOF_ARG
+const _IFF_ONE_QUEUE = 0x2000
+const _IPPORT_CMDSERVER = 514
+const _PF_MAX = 32
+const _RT_CLASS_MAX = 255
+const _IPPROTO_IPV6 = 41
+const _RTMSG_NEWDEVICE = 0x11
+const _CONFIG_NFS_COMMON = 1
+const ___INT_LEAST8_MAX__ = 0x7f
+const ___DEC128_MANT_DIG__ = 34
+const _MAP_SHARED = 0x01
+const _SYS_epoll_create = ___NR_epoll_create
+const _MAXTC = 6
+const __SC_EXPR_NEST_MAX = 42
+const _PF_NETLINK = 16
+const _CONFIG_NFS_DIRECTIO = 1
+const _FFI_TYPE_LAST = _FFI_TYPE_COMPLEX
+const _CONFIG_PREEMPT_NONE = 1
+const _LINUX_REBOOT_MAGIC2A = 85072278
+const _RTMSG_CONTROL = 0x40
+const _LINUX_REBOOT_MAGIC2C = 537993216
+const _PR_GET_FPEXC = 11
+const _SS_ONSTACK = 1
+const _CONFIG_LOCKD = 1
+const _MREMAP_MAYMOVE = 1
+const _F_GETLK64 = 12
+const _CONFIG_USB_STORAGE_FREECOM = 1
+const _MSG_FIN = 512
+const _SYS_swapoff = ___NR_swapoff
+const ___STDC_UTF_32__ = 1
+const _RT_TABLE_LOCAL = 255
+const _PENDIN = 0x00004000
+const ___INT8_MAX__ = 0x7f
+const _ETH_P_ARCNET = 0x001A
+const _FD_SETSIZE = ___FD_SETSIZE
+const _MSG_EOR = 128
+const __NET_IF_ARP_H = 1
+const _RTM_F_CLONED = 0x200
+const _IPPROTO_NONE = 59
+const _EPROTO = 86
+const _F_EXLCK = 4
+const ___NR_clone = 217
+const ___NR_ptrace = 26
+const _CONFIG_MTD_GEN_PROBE = 1
+const _HAVE_ACOSL = 1
+const __POSIX_LOGIN_NAME_MAX = 9
+const __POSIX_SHARED_MEMORY_OBJECTS = 200112
+const __CS_XBS5_ILP32_OFFBIG_LINTFLAGS = 1107
+const __SC_OPEN_MAX = 4
+const __SC_2_SW_DEV = 51
+const ___NR_epoll_create = 193
+const _IPV6_ADD_MEMBERSHIP = _IPV6_JOIN_GROUP
+const _SIOCGRARP = 0x8961
+const _CERASE = 0177
+const ___NR_setpgid = 185
+const _RTF_INTERFACE = 0x40000000
+const _PRIoFAST8 = "o"
+const ___defined_schedparam = 1
+const _BRKINT = 0x00000002
+const _SOL_SOCKET = 0xffff
+const _IFLA_PRIORITY = 9
+const _ITIMER_REAL = 0
+const _SYS_getresuid32 = ___NR_getresuid32
+const ___NR_sched_getaffinity = 260
+const ___USE_BSD = 1
+const _PTHREAD_THREADS_MAX = 16384
+const _ENOENT = 2
+const _FS_ODD_RENAME = 32768
+const _LOCK_WRITE = 128
+const _IPOPT_TS_PRESPEC = 3
+const _PTRACE_EVENT_EXIT = 6
+const _XATTR_NAME_MAX = 255
+const ___S_IFLNK = 0120000
+const _IFF_ALLMULTI = 512
+const _CONFIG_NLS_CODEPAGE_950_MODULE = 1
+const _RTF_LINKRT = 0x00100000
+const ___ATOMIC_RELAXED = 0
+const _SYS_getsockopt = ___NR_getsockopt
+const _VTDLY = 0x00004000
+const ___NR_timer_delete = 265
+const _RTN_UNSPEC = 0
+const _SO_SNDTIMEO = 0x4000
+const _AF_UNSPEC = _PF_UNSPEC
+const _TIOCSERSETMULTI = 0x545B
+const _ARPHRD_FCPL = 786
+const _LOCK_RW = 192
+const _UREG_FADDR = _UREG_G0
+const _ARPHRD_FCPP = 784
+const _CONFIG_MMU = 1
+const ___USE_XOPEN = 1
+const _IPOPT_SEC = _IPOPT_SECURITY
+const _IFLA_TXQLEN = 13
+const _SYS_umount2 = ___NR_umount2
+const _CONFIG_R8169_MODULE = 1
+const _IP_ADD_MEMBERSHIP = 35
+const _CLONE_PTRACE = 0x00002000
+const _PROT_NONE = 0x0
+const _LINUX_REBOOT_CMD_RESTART = 0x01234567
+const _MAX_INPUT = 255
+const _SEL_EX = 4
+const __SC_TIMERS = 11
+const _UIO_MAXIOV = 1024
+const _PARMRK = 0x00000008
+const __SC_XOPEN_XPG3 = 99
+const _ENXIO = 6
+const __SC_XOPEN_XPG4 = 100
+const _MS_DIRSYNC = 128
+const __XOPEN_LEGACY = 1
+const _SOL_TCP = 6
+const _SYS_sched_yield = ___NR_sched_yield
+const _NDTA_THRESH2 = 3
+const _SYS_sigpending = ___NR_sigpending
+const _NDTA_THRESH3 = 4
+const _LOCK_SH = 1
+const ___SIZEOF_WCHAR_T__ = 4
+const _SIOCGIFCOUNT = 0x8938
+const _ARPHRD_ETHER = 1
+const _IPPORT_NAMESERVER = 42
+const __SC_BASE = 134
+const __CS_POSIX_V6_LPBIG_OFFBIG_LINTFLAGS = 1131
+const _ETHERTYPE_PUP = 0x0200
+const ___UINT16_MAX__ = 0xffff
+const _SYS_fremovexattr = ___NR_fremovexattr
+const _FFI_TYPE_UINT16 = 7
+const __SYS_WAIT_H = 1
+const _MSG_DONTROUTE = 4
+const _SYS_fsetxattr = ___NR_fsetxattr
+const ___NR_exit = 1
+const _ETH_P_DIAG = 0x6005
+const _LOGIN_NAME_MAX = 256
+const _S_IRWXO = (_S_IRWXG >> 3)
+const _ARPHRD_HIPPI = 780
+const _ARPHRD_INFINIBAND = 32
+const __IOC_WRITE = 4
+const _S_IRWXU = (___S_IREAD|___S_IWRITE|___S_IEXEC)
+const ___NR_setgid32 = 89
+const _CONFIG_CIFS_UPCALL = 1
+const _SYS_prctl = ___NR_prctl
+const _NL_ARGMAX = __POSIX_ARG_MAX
+const _O_APPEND = 0x0008
+const _RTF_DYNAMIC = 0x0010
+const _STA_INS = 0x0010
+const _SIOCGIFMETRIC = 0x891d
+const _IP_PMTUDISC_DO = 2
+const _ONLRET = 0x00000020
+const _RTAX_RTTVAR = 5
+const ___FLT_MIN_EXP__ = (-125)
+const _NUD_DELAY = 0x08
+const _IPPORT_ECHO = 7
+const ___NR_clock_getres = 258
+const _ND_RA_FLAG_MANAGED = 0x80
+const _ITIMER_VIRTUAL = 1
+const _PRIiLEAST8 = "i"
+const _ETH_P_CUST = 0x6006
+const _CONFIG_KALLSYMS = 1
+const _SHRT_MAX = ___SHRT_MAX__
+const __STAT_VER_LINUX_OLD = 1
+const ___S_IFCHR = 0020000
+const _CMSPAR = 0x40000000
+const _NLDLY = 0x00000100
+const ___NR_listxattr = 178
+const _SYS_sigreturn = ___NR_sigreturn
+const __IOC_NRMASK = ((1 << __IOC_NRBITS)-1)
+const ___NETPACKET_PACKET_H = 1
+const _EAGAIN = 11
+const ___FLT_MAX_10_EXP__ = 38
+const _IPV6_MULTICAST_LOOP = 19
+const ___NR_getpgid = 224
+const _CONFIG_MD_RAID5 = 1
+const _SO_PRIORITY = 0x000c
+const _MSG_DONTWAIT = 64
+const ___DECIMAL_DIG__ = 17
+const _TUN_ONE_QUEUE = 0x0080
+const _RTPROT_STATIC = 4
+const _IFA_LABEL = 3
+const ___NR_readahead = 205
+const _MS_SYNCHRONOUS = 16
+const _S

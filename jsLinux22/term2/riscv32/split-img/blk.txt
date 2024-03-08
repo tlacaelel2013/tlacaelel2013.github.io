@@ -1,0 +1,4 @@
+{
+  block_size: 32,
+  n_block: 26304,
+}

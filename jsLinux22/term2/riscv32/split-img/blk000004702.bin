@@ -1,0 +1,710 @@
+AccessIterator __last,
+                        _Compare __comp, _IsVector __is_vector, /* is_parallel = */ std::true_type) noexcept
+{
+    if (__last - __first < 2)
+        return __last;
+
+    return __internal::__except_handler([&]() {
+        return __parallel_find(
+            std::forward<_ExecutionPolicy>(__exec), __first, __last,
+            [__first, __comp, __is_vector](_RandomAccessIterator __i, _RandomAccessIterator __j) {
+                return __internal::__is_heap_until_local(__first, __i - __first, __j - __first, __comp, __is_vector);
+            },
+            std::less<typename std::iterator_traits<_RandomAccessIterator>::difference_type>(), /*is_first=*/true);
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// min_element
+//------------------------------------------------------------------------
+
+template <typename _ForwardIterator, typename _Compare>
+_ForwardIterator
+__brick_min_element(_ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                    /* __is_vector = */ std::false_type) noexcept
+{
+    return std::min_element(__first, __last, __comp);
+}
+
+template <typename _ForwardIterator, typename _Compare>
+_ForwardIterator
+__brick_min_element(_ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                    /* __is_vector = */ std::true_type) noexcept
+{
+#if __PSTL_UDR_PRESENT
+    return __unseq_backend::__simd_min_element(__first, __last - __first, __comp);
+#else
+    return std::min_element(__first, __last, __comp);
+#endif
+}
+
+template <typename _ExecutionPolicy, typename _ForwardIterator, typename _Compare, typename _IsVector>
+_ForwardIterator
+__pattern_min_element(_ExecutionPolicy&&, _ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                      _IsVector __is_vector, /* is_parallel = */ std::false_type) noexcept
+{
+    return __internal::__brick_min_element(__first, __last, __comp, __is_vector);
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <typename _ExecutionPolicy, typename _RandomAccessIterator, typename _Compare, typename _IsVector>
+_RandomAccessIterator
+__pattern_min_element(_ExecutionPolicy&& __exec, _RandomAccessIterator __first, _RandomAccessIterator __last,
+                      _Compare __comp, _IsVector __is_vector, /* is_parallel = */ std::true_type)
+{
+    if (__first == __last)
+        return __last;
+
+    return __internal::__except_handler([&]() {
+        return __par_backend::__parallel_reduce(
+            std::forward<_ExecutionPolicy>(__exec), __first + 1, __last, __first,
+            [=](_RandomAccessIterator __begin, _RandomAccessIterator __end,
+                _RandomAccessIterator __init) -> _RandomAccessIterator {
+                const _RandomAccessIterator subresult = __internal::__brick_min_element(__begin, __end, __comp, __is_vector);
+                return __internal::__cmp_iterators_by_values(__init, subresult, __comp);
+            },
+            [=](_RandomAccessIterator __it1, _RandomAccessIterator __it2) -> _RandomAccessIterator {
+                return __internal::__cmp_iterators_by_values(__it1, __it2, __comp);
+            });
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// minmax_element
+//------------------------------------------------------------------------
+
+template <typename _ForwardIterator, typename _Compare>
+std::pair<_ForwardIterator, _ForwardIterator>
+__brick_minmax_element(_ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                       /* __is_vector = */ std::false_type) noexcept
+{
+    return std::minmax_element(__first, __last, __comp);
+}
+
+template <typename _ForwardIterator, typename _Compare>
+std::pair<_ForwardIterator, _ForwardIterator>
+__brick_minmax_element(_ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                       /* __is_vector = */ std::true_type) noexcept
+{
+#if __PSTL_UDR_PRESENT
+    return __unseq_backend::__simd_minmax_element(__first, __last - __first, __comp);
+#else
+    return std::minmax_element(__first, __last, __comp);
+#endif
+}
+
+template <typename _ExecutionPolicy, typename _ForwardIterator, typename _Compare, typename _IsVector>
+std::pair<_ForwardIterator, _ForwardIterator>
+__pattern_minmax_element(_ExecutionPolicy&&, _ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                         _IsVector __is_vector, /* is_parallel = */ std::false_type) noexcept
+{
+    return __internal::__brick_minmax_element(__first, __last, __comp, __is_vector);
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <typename _ExecutionPolicy, typename _ForwardIterator, typename _Compare, typename _IsVector>
+std::pair<_ForwardIterator, _ForwardIterator>
+__pattern_minmax_element(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Compare __comp,
+                         _IsVector __is_vector, /* is_parallel = */ std::true_type)
+{
+    if (__first == __last)
+        return std::make_pair(__first, __first);
+
+    return __internal::__except_handler([&]() {
+        typedef std::pair<_ForwardIterator, _ForwardIterator> _Result;
+
+        return __par_backend::__parallel_reduce(
+            std::forward<_ExecutionPolicy>(__exec), __first + 1, __last, std::make_pair(__first, __first),
+            [=](_ForwardIterator __begin, _ForwardIterator __end, _Result __init) -> _Result {
+                const _Result __subresult = __internal::__brick_minmax_element(__begin, __end, __comp, __is_vector);
+                return std::make_pair(
+                    __internal::__cmp_iterators_by_values(__subresult.first, __init.first, __comp),
+                    __internal::__cmp_iterators_by_values(__init.second, __subresult.second, __not_pred<_Compare>(__comp)));
+            },
+            [=](_Result __p1, _Result __p2) -> _Result {
+                return std::make_pair(
+                    __internal::__cmp_iterators_by_values(__p1.first, __p2.first, __comp),
+                    __internal::__cmp_iterators_by_values(__p2.second, __p1.second, __not_pred<_Compare>(__comp)));
+            });
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// mismatch
+//------------------------------------------------------------------------
+template <class _ForwardIterator1, class _ForwardIterator2, class _BinaryPredicate>
+std::pair<_ForwardIterator1, _ForwardIterator2>
+__mismatch_serial(_ForwardIterator1 __first1, _ForwardIterator1 __last1, _ForwardIterator2 __first2,
+                  _ForwardIterator2 __last2, _BinaryPredicate __pred)
+{
+#if __PSTL_CPP14_2RANGE_MISMATCH_EQUAL_PRESENT
+    return std::mismatch(__first1, __last1, __first2, __last2, __pred);
+#else
+    for (; __first1 != __last1 && __first2 != __last2 && __pred(*__first1, *__first2); ++__first1, ++__first2)
+    {
+    }
+    return std::make_pair(__first1, __first2);
+#endif
+}
+
+template <class _ForwardIterator1, class _ForwardIterator2, class _Predicate>
+std::pair<_ForwardIterator1, _ForwardIterator2>
+__brick_mismatch(_ForwardIterator1 __first1, _ForwardIterator1 __last1, _ForwardIterator2 __first2,
+                 _ForwardIterator2 __last2, _Predicate __pred, /* __is_vector = */ std::false_type) noexcept
+{
+    return __mismatch_serial(__first1, __last1, __first2, __last2, __pred);
+}
+
+template <class _ForwardIterator1, class _ForwardIterator2, class _Predicate>
+std::pair<_ForwardIterator1, _ForwardIterator2>
+__brick_mismatch(_ForwardIterator1 __first1, _ForwardIterator1 __last1, _ForwardIterator2 __first2,
+                 _ForwardIterator2 __last2, _Predicate __pred, /* __is_vector = */ std::true_type) noexcept
+{
+    auto __n = std::min(__last1 - __first1, __last2 - __first2);
+    return __unseq_backend::__simd_first(__first1, __n, __first2, __not_pred<_Predicate>(__pred));
+}
+
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2, class _Predicate, class _IsVector>
+std::pair<_ForwardIterator1, _ForwardIterator2>
+__pattern_mismatch(_ExecutionPolicy&&, _ForwardIterator1 __first1, _ForwardIterator1 __last1,
+                   _ForwardIterator2 __first2, _ForwardIterator2 __last2, _Predicate __pred, _IsVector __is_vector,
+                   /* is_parallel = */ std::false_type) noexcept
+{
+    return __internal::__brick_mismatch(__first1, __last1, __first2, __last2, __pred, __is_vector);
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <class _ExecutionPolicy, class _RandomAccessIterator1, class _RandomAccessIterator2, class _Predicate,
+          class _IsVector>
+std::pair<_RandomAccessIterator1, _RandomAccessIterator2>
+__pattern_mismatch(_ExecutionPolicy&& __exec, _RandomAccessIterator1 __first1, _RandomAccessIterator1 __last1,
+                   _RandomAccessIterator2 __first2, _RandomAccessIterator2 __last2, _Predicate __pred,
+                   _IsVector __is_vector, /* is_parallel = */ std::true_type) noexcept
+{
+    return __internal::__except_handler([&]() {
+        auto __n = std::min(__last1 - __first1, __last2 - __first2);
+        auto __result = __internal::__parallel_find(
+            std::forward<_ExecutionPolicy>(__exec), __first1, __first1 + __n,
+            [__first1, __first2, __pred, __is_vector](_RandomAccessIterator1 __i, _RandomAccessIterator1 __j) {
+                return __internal::__brick_mismatch(__i, __j, __first2 + (__i - __first1), __first2 + (__j - __first1), __pred,
+                                        __is_vector)
+                    .first;
+            },
+            std::less<typename std::iterator_traits<_RandomAccessIterator1>::difference_type>(), /*is_first=*/true);
+        return std::make_pair(__result, __first2 + (__result - __first1));
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// lexicographical_compare
+//------------------------------------------------------------------------
+
+template <class _ForwardIterator1, class _ForwardIterator2, class _Compare>
+bool
+__brick_lexicographical_compare(_ForwardIterator1 __first1, _ForwardIterator1 __last1, _ForwardIterator2 __first2,
+                                _ForwardIterator2 __last2, _Compare __comp,
+                                /* __is_vector = */ std::false_type) noexcept
+{
+    return std::lexicographical_compare(__first1, __last1, __first2, __last2, __comp);
+}
+
+template <class _ForwardIterator1, class _ForwardIterator2, class _Compare>
+bool
+__brick_lexicographical_compare(_ForwardIterator1 __first1, _ForwardIterator1 __last1, _ForwardIterator2 __first2,
+                                _ForwardIterator2 __last2, _Compare __comp, /* __is_vector = */ std::true_type) noexcept
+{
+    if (__first2 == __last2)
+    { // if second sequence is empty
+        return false;
+    }
+    else if (__first1 == __last1)
+    { // if first sequence is empty
+        return true;
+    }
+    else
+    {
+        typedef typename std::iterator_traits<_ForwardIterator1>::reference ref_type1;
+        typedef typename std::iterator_traits<_ForwardIterator2>::reference ref_type2;
+        --__last1;
+        --__last2;
+        auto __n = std::min(__last1 - __first1, __last2 - __first2);
+        std::pair<_ForwardIterator1, _ForwardIterator2> __result = __unseq_backend::__simd_first(
+            __first1, __n, __first2, [__comp](const ref_type1 __x, const ref_type2 __y) mutable {
+                return __comp(__x, __y) || __comp(__y, __x);
+            });
+
+        if (__result.first == __last1 && __result.second != __last2)
+        { // if first sequence shorter than second
+            return !__comp(*__result.second, *__result.first);
+        }
+        else
+        { // if second sequence shorter than first or both have the same number of elements
+            return __comp(*__result.first, *__result.second);
+        }
+    }
+}
+
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2, class _Compare, class _IsVector>
+bool
+__pattern_lexicographical_compare(_ExecutionPolicy&&, _ForwardIterator1 __first1, _ForwardIterator1 __last1,
+                                  _ForwardIterator2 __first2, _ForwardIterator2 __last2, _Compare __comp,
+                                  _IsVector __is_vector, /* is_parallel = */ std::false_type) noexcept
+{
+    return __internal::__brick_lexicographical_compare(__first1, __last1, __first2, __last2, __comp, __is_vector);
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2, class _Compare, class _IsVector>
+bool
+__pattern_lexicographical_compare(_ExecutionPolicy&& __exec, _ForwardIterator1 __first1, _ForwardIterator1 __last1,
+                                  _ForwardIterator2 __first2, _ForwardIterator2 __last2, _Compare __comp,
+                                  _IsVector __is_vector, /* is_parallel = */ std::true_type) noexcept
+{
+    if (__first2 == __last2)
+    { // if second sequence is empty
+        return false;
+    }
+    else if (__first1 == __last1)
+    { // if first sequence is empty
+        return true;
+    }
+    else
+    {
+        typedef typename std::iterator_traits<_ForwardIterator1>::reference _RefType1;
+        typedef typename std::iterator_traits<_ForwardIterator2>::reference _RefType2;
+        --__last1;
+        --__last2;
+        auto __n = std::min(__last1 - __first1, __last2 - __first2);
+        auto __result = __internal::__parallel_find(
+            std::forward<_ExecutionPolicy>(__exec), __first1, __first1 + __n,
+            [__first1, __first2, &__comp, __is_vector](_ForwardIterator1 __i, _ForwardIterator1 __j) {
+                return __internal::__brick_mismatch(__i, __j, __first2 + (__i - __first1), __first2 + (__j - __first1),
+                                        [&__comp](const _RefType1 __x, const _RefType2 __y) {
+                                            return !__comp(__x, __y) && !__comp(__y, __x);
+                                        },
+                                        __is_vector)
+                    .first;
+            },
+            std::less<typename std::iterator_traits<_ForwardIterator1>::difference_type>(), /*is_first=*/true);
+
+        if (__result == __last1 && __first2 + (__result - __first1) != __last2)
+        { // if first sequence shorter than second
+            return !__comp(*(__first2 + (__result - __first1)), *__result);
+        }
+        else
+        { // if second sequence shorter than first or both have the same number of elements
+            return __comp(*__result, *(__first2 + (__result - __first1)));
+        }
+    }
+}
+#endif
+
+} // namespace __internal
+} // namespace __pstl
+
+#endif /* __PSTL_algorithm_impl_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // -*- C++ -*-
+//===-- execution_defs.h --------------------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef __PSTL_execution_policy_defs_H
+#define __PSTL_execution_policy_defs_H
+
+#include <type_traits>
+
+namespace __pstl
+{
+namespace execution
+{
+inline namespace v1
+{
+
+// 2.4, Sequential execution policy
+class sequenced_policy
+{
+  public:
+    // For internal use only
+    static constexpr std::false_type
+    __allow_unsequenced()
+    {
+        return std::false_type{};
+    }
+    static constexpr std::false_type
+    __allow_vector()
+    {
+        return std::false_type{};
+    }
+    static constexpr std::false_type
+    __allow_parallel()
+    {
+        return std::false_type{};
+    }
+};
+
+#if __PSTL_USE_PAR_POLICIES
+// 2.5, Parallel execution policy
+class parallel_policy
+{
+  public:
+    // For internal use only
+    static constexpr std::false_type
+    __allow_unsequenced()
+    {
+        return std::false_type{};
+    }
+    static constexpr std::false_type
+    __allow_vector()
+    {
+        return std::false_type{};
+    }
+    static constexpr std::true_type
+    __allow_parallel()
+    {
+        return std::true_type{};
+    }
+};
+
+// 2.6, Parallel+Vector execution policy
+class parallel_unsequenced_policy
+{
+  public:
+    // For internal use only
+    static constexpr std::true_type
+    __allow_unsequenced()
+    {
+        return std::true_type{};
+    }
+    static constexpr std::true_type
+    __allow_vector()
+    {
+        return std::true_type{};
+    }
+    static constexpr std::true_type
+    __allow_parallel()
+    {
+        return std::true_type{};
+    }
+};
+#endif
+
+class unsequenced_policy
+{
+  public:
+    // For internal use only
+    static constexpr std::true_type
+    __allow_unsequenced()
+    {
+        return std::true_type{};
+    }
+    static constexpr std::true_type
+    __allow_vector()
+    {
+        return std::true_type{};
+    }
+    static constexpr std::false_type
+    __allow_parallel()
+    {
+        return std::false_type{};
+    }
+};
+
+// 2.8, Execution policy objects
+constexpr sequenced_policy seq{};
+#if __PSTL_USE_PAR_POLICIES
+constexpr parallel_policy par{};
+constexpr parallel_unsequenced_policy par_unseq{};
+#endif
+constexpr unsequenced_policy unseq{};
+
+// 2.3, Execution policy type trait
+template <class _Tp>
+struct is_execution_policy : std::false_type
+{
+};
+
+template <>
+struct is_execution_policy<__pstl::execution::sequenced_policy> : std::true_type
+{
+};
+#if __PSTL_USE_PAR_POLICIES
+template <>
+struct is_execution_policy<__pstl::execution::parallel_policy> : std::true_type
+{
+};
+template <>
+struct is_execution_policy<__pstl::execution::parallel_unsequenced_policy> : std::true_type
+{
+};
+#endif
+template <>
+struct is_execution_policy<__pstl::execution::unsequenced_policy> : std::true_type
+{
+};
+
+#if __PSTL_CPP14_VARIABLE_TEMPLATES_PRESENT
+template <class _Tp>
+constexpr bool is_execution_policy_v = __pstl::execution::is_execution_policy<_Tp>::value;
+#endif
+
+} // namespace v1
+} // namespace execution
+
+namespace __internal
+{
+template <class _ExecPolicy, class _Tp>
+using __enable_if_execution_policy =
+    typename std::enable_if<__pstl::execution::is_execution_policy<typename std::decay<_ExecPolicy>::type>::value,
+                            _Tp>::type;
+} // namespace __internal
+
+} // namespace __pstl
+
+#endif /* __PSTL_execution_policy_defs_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // -*- C++ -*-
+//===-- execution_impl.h --------------------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef __PSTL_execution_impl_H
+#define __PSTL_execution_impl_H
+
+#include <iterator>
+#include <type_traits>
+
+#include "execution_defs.h"
+
+namespace __pstl
+{
+namespace __internal
+{
+
+using namespace __pstl::execution;
+
+/* predicate */
+
+template <typename _Tp>
+std::false_type __lazy_and(_Tp, std::false_type)
+{
+    return std::false_type{};
+};
+
+template <typename _Tp>
+inline _Tp
+__lazy_and(_Tp __a, std::true_type)
+{
+    return __a;
+}
+
+template <typename _Tp>
+std::true_type __lazy_or(_Tp, std::true_type)
+{
+    return std::true_type{};
+};
+
+template <typename _Tp>
+inline _Tp
+__lazy_or(_Tp __a, std::false_type)
+{
+    return __a;
+}
+
+/* iterator */
+template <typename _IteratorType, typename... _OtherIteratorTypes>
+struct __is_random_access_iterator
+{
+    static constexpr bool value =
+      __internal::__is_random_access_iterator<_IteratorType>::value && __internal::__is_random_access_iterator<_OtherIteratorTypes...>::value;
+    typedef std::integral_constant<bool, value> type;
+};
+
+template <typename _IteratorType>
+struct __is_random_access_iterator<_IteratorType>
+    : std::is_same<typename std::iterator_traits<_IteratorType>::iterator_category, std::random_access_iterator_tag>
+{
+};
+
+/* policy */
+template <typename _Policy>
+struct __policy_traits
+{
+};
+
+template <>
+struct __policy_traits<sequenced_policy>
+{
+    typedef std::false_type allow_parallel;
+    typedef std::false_type allow_unsequenced;
+    typedef std::false_type allow_vector;
+};
+
+template <>
+struct __policy_traits<unsequenced_policy>
+{
+    typedef std::false_type allow_parallel;
+    typedef std::true_type allow_unsequenced;
+    typedef std::true_type allow_vector;
+};
+
+#if __PSTL_USE_PAR_POLICIES
+template <>
+struct __policy_traits<parallel_policy>
+{
+    typedef std::true_type allow_parallel;
+    typedef std::false_type allow_unsequenced;
+    typedef std::false_type allow_vector;
+};
+
+template <>
+struct __policy_traits<parallel_unsequenced_policy>
+{
+    typedef std::true_type allow_parallel;
+    typedef std::true_type allow_unsequenced;
+    typedef std::true_type allow_vector;
+};
+#endif
+
+template <typename _ExecutionPolicy>
+using __collector_t = typename __internal::__policy_traits<typename std::decay<_ExecutionPolicy>::type>::__collector_type;
+
+template <typename _ExecutionPolicy>
+using __allow_vector = typename __internal::__policy_traits<typename std::decay<_ExecutionPolicy>::type>::__allow_vector;
+
+template <typename _ExecutionPolicy>
+using __allow_unsequenced = typename __internal::__policy_traits<typename std::decay<_ExecutionPolicy>::type>::__allow_unsequenced;
+
+template <typename _ExecutionPolicy>
+using __allow_parallel = typename __internal::__policy_traits<typename std::decay<_ExecutionPolicy>::type>::__allow_parallel;
+
+template <typename _ExecutionPolicy, typename... _IteratorTypes>
+auto
+__is_vectorization_preferred(_ExecutionPolicy&& __exec)
+    -> decltype(__internal::__lazy_and(__exec.__allow_vector(), typename __internal::__is_random_access_iterator<_IteratorTypes...>::type()))
+{
+    return __internal::__lazy_and(__exec.__allow_vector(), typename __internal::__is_random_access_iterator<_IteratorTypes...>::type());
+}
+
+template <typename _ExecutionPolicy, typename... _IteratorTypes>
+auto
+__is_parallelization_preferred(_ExecutionPolicy&& __exec)
+    -> decltype(__internal::__lazy_and(__exec.__allow_parallel(), typename __internal::__is_random_access_iterator<_IteratorTypes...>::type()))
+{
+    return __internal::__lazy_and(__exec.__allow_parallel(), typename __internal::__is_random_access_iterator<_IteratorTypes...>::type());
+}
+
+template <typename policy, typename... _IteratorTypes>
+struct __prefer_unsequenced_tag
+{
+    static constexpr bool value =
+        __internal::__allow_unsequenced<policy>::value && __internal::__is_random_access_iterator<_IteratorTypes...>::value;
+    typedef std::integral_constant<bool, value> type;
+};
+
+template <typename policy, typename... _IteratorTypes>
+struct __prefer_parallel_tag
+{
+    static constexpr bool value =
+        __internal::__allow_parallel<policy>::value && __internal::__is_random_access_iterator<_IteratorTypes...>::value;
+    typedef std::integral_constant<bool, value> type;
+};
+
+} // namespace __internal
+} // namespace __pstl
+
+#endif /* __PSTL_execution_impl_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          // -*- C++ -*-
+//===-- glue_algorithm_defs.h ---------------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef __PSTL_glue_algorithm_defs_H
+#define __PSTL_glue_algorithm_defs_H
+
+#include <functional>
+
+#include "execution_defs.h"
+
+namespace std
+{
+
+// [alg.any_of]
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Predicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, bool>
+any_of(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Predicate __pred);
+
+// [alg.all_of]
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Predicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, bool>
+all_of(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Predicate __pred);
+
+// [alg.none_of]
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Predicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, bool>
+none_of(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Predicate __pred);
+
+// [alg.foreach]
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Function>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, void>
+for_each(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Function __f);
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Size, class _Function>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator>
+for_each_n(_ExecutionPolicy&& __exec, _ForwardIterator __first, _Size __n, _Function __f);
+
+// [alg.find]
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Predicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator>
+find_if(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Predicate __pred);
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Predicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator>
+find_if_not(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Predicate __pred);
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Tp>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator>
+find(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, const _Tp& __value);
+
+// [alg.find.end]
+
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2, class _BinaryPredicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator1>
+find_end(_ExecutionPolicy&& __exec, _ForwardIterator1 __first, _ForwardIterator1 __last, _ForwardIterator2 __s_first,
+         _ForwardIterator2 __s_last, _BinaryPredicate __pred);
+
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator1>
+find_end(_ExecutionPolicy&& __exec, _ForwardIterator1 __first, _ForwardIterator1 __last, _ForwardIterator2 __s_first,
+         _ForwardIterator2 __s_last);
+
+// [alg.find_first_of]
+
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2, class _BinaryPredicate>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator1>
+find_first_of(_ExecutionPolicy&& __exec, _ForwardIterator1 __first, _ForwardIterator1 __last,
+              _ForwardIterator2 __s_first, _ForwardIterator2 __s_last, _BinaryPredicate __pred);
+
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2>
+__pstl::__internal::__enable_if_execution_policy<_ExecutionPolicy, _ForwardIterator1>
+find_first_of(_ExecutionPolicy&& __exec, _ForwardIterator1 __first, _ForwardIterator1 __last,
+    

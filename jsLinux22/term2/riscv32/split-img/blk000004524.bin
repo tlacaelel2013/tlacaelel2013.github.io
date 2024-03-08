@@ -1,0 +1,666 @@
+operator<(const duration<_Rep1, _Period1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<__dur1,__dur2>::type	__ct;
+	return __ct(__lhs).count() < __ct(__rhs).count();
+      }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr bool
+      operator!=(const duration<_Rep1, _Period1>& __lhs,
+		 const duration<_Rep2, _Period2>& __rhs)
+      { return !(__lhs == __rhs); }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr bool
+      operator<=(const duration<_Rep1, _Period1>& __lhs,
+		 const duration<_Rep2, _Period2>& __rhs)
+      { return !(__rhs < __lhs); }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr bool
+      operator>(const duration<_Rep1, _Period1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      { return __rhs < __lhs; }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Rep2, typename _Period2>
+      constexpr bool
+      operator>=(const duration<_Rep1, _Period1>& __lhs,
+		 const duration<_Rep2, _Period2>& __rhs)
+      { return !(__lhs < __rhs); }
+
+#ifdef _GLIBCXX_USE_C99_STDINT_TR1
+# define _GLIBCXX_CHRONO_INT64_T int64_t
+#elif defined __INT64_TYPE__
+# define _GLIBCXX_CHRONO_INT64_T __INT64_TYPE__
+#else
+    static_assert(std::numeric_limits<unsigned long long>::digits >= 64,
+	"Representation type for nanoseconds must have at least 64 bits");
+# define _GLIBCXX_CHRONO_INT64_T long long
+#endif
+
+    /// nanoseconds
+    typedef duration<_GLIBCXX_CHRONO_INT64_T, nano> 	    nanoseconds;
+
+    /// microseconds
+    typedef duration<_GLIBCXX_CHRONO_INT64_T, micro> 	    microseconds;
+
+    /// milliseconds
+    typedef duration<_GLIBCXX_CHRONO_INT64_T, milli> 	    milliseconds;
+
+    /// seconds
+    typedef duration<_GLIBCXX_CHRONO_INT64_T> 		    seconds;
+
+    /// minutes
+    typedef duration<_GLIBCXX_CHRONO_INT64_T, ratio< 60>>   minutes;
+
+    /// hours
+    typedef duration<_GLIBCXX_CHRONO_INT64_T, ratio<3600>>  hours;
+
+#undef _GLIBCXX_CHRONO_INT64_T
+
+    /// time_point
+    template<typename _Clock, typename _Dur>
+      struct time_point
+      {
+	typedef _Clock			  			clock;
+	typedef _Dur		  				duration;
+	typedef typename duration::rep	  			rep;
+	typedef typename duration::period			period;
+
+	constexpr time_point() : __d(duration::zero())
+	{ }
+
+	constexpr explicit time_point(const duration& __dur)
+	: __d(__dur)
+	{ }
+
+	// conversions
+	template<typename _Dur2,
+		 typename = _Require<is_convertible<_Dur2, _Dur>>>
+	  constexpr time_point(const time_point<clock, _Dur2>& __t)
+	  : __d(__t.time_since_epoch())
+	  { }
+
+	// observer
+	constexpr duration
+	time_since_epoch() const
+	{ return __d; }
+
+	// arithmetic
+	_GLIBCXX17_CONSTEXPR time_point&
+	operator+=(const duration& __dur)
+	{
+	  __d += __dur;
+	  return *this;
+	}
+
+	_GLIBCXX17_CONSTEXPR time_point&
+	operator-=(const duration& __dur)
+	{
+	  __d -= __dur;
+	  return *this;
+	}
+
+	// special values
+	static constexpr time_point
+	min() noexcept
+	{ return time_point(duration::min()); }
+
+	static constexpr time_point
+	max() noexcept
+	{ return time_point(duration::max()); }
+
+      private:
+	duration __d;
+      };
+
+    /// time_point_cast
+    template<typename _ToDur, typename _Clock, typename _Dur>
+      constexpr typename enable_if<__is_duration<_ToDur>::value,
+				   time_point<_Clock, _ToDur>>::type
+      time_point_cast(const time_point<_Clock, _Dur>& __t)
+      {
+	typedef time_point<_Clock, _ToDur> 			__time_point;
+	return __time_point(duration_cast<_ToDur>(__t.time_since_epoch()));
+      }
+
+#if __cplusplus > 201402L
+    template<typename _ToDur, typename _Clock, typename _Dur>
+      constexpr
+      enable_if_t<__is_duration<_ToDur>::value, time_point<_Clock, _ToDur>>
+      floor(const time_point<_Clock, _Dur>& __tp)
+      {
+	return time_point<_Clock, _ToDur>{
+	    chrono::floor<_ToDur>(__tp.time_since_epoch())};
+      }
+
+    template<typename _ToDur, typename _Clock, typename _Dur>
+      constexpr
+      enable_if_t<__is_duration<_ToDur>::value, time_point<_Clock, _ToDur>>
+      ceil(const time_point<_Clock, _Dur>& __tp)
+      {
+	return time_point<_Clock, _ToDur>{
+	    chrono::ceil<_ToDur>(__tp.time_since_epoch())};
+      }
+
+    template<typename _ToDur, typename _Clock, typename _Dur>
+      constexpr enable_if_t<
+	__and_<__is_duration<_ToDur>,
+	       __not_<treat_as_floating_point<typename _ToDur::rep>>>::value,
+	time_point<_Clock, _ToDur>>
+      round(const time_point<_Clock, _Dur>& __tp)
+      {
+	return time_point<_Clock, _ToDur>{
+	    chrono::round<_ToDur>(__tp.time_since_epoch())};
+      }
+#endif // C++17
+
+    template<typename _Clock, typename _Dur1,
+	     typename _Rep2, typename _Period2>
+      constexpr time_point<_Clock,
+	typename common_type<_Dur1, duration<_Rep2, _Period2>>::type>
+      operator+(const time_point<_Clock, _Dur1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<_Dur1,__dur2>::type	__ct;
+	typedef time_point<_Clock, __ct> 			__time_point;
+	return __time_point(__lhs.time_since_epoch() + __rhs);
+      }
+
+    template<typename _Rep1, typename _Period1,
+	     typename _Clock, typename _Dur2>
+      constexpr time_point<_Clock,
+	typename common_type<duration<_Rep1, _Period1>, _Dur2>::type>
+      operator+(const duration<_Rep1, _Period1>& __lhs,
+		const time_point<_Clock, _Dur2>& __rhs)
+      {
+	typedef duration<_Rep1, _Period1>			__dur1;
+	typedef typename common_type<__dur1,_Dur2>::type	__ct;
+	typedef time_point<_Clock, __ct> 			__time_point;
+	return __time_point(__rhs.time_since_epoch() + __lhs);
+      }
+
+    template<typename _Clock, typename _Dur1,
+	     typename _Rep2, typename _Period2>
+      constexpr time_point<_Clock,
+	typename common_type<_Dur1, duration<_Rep2, _Period2>>::type>
+      operator-(const time_point<_Clock, _Dur1>& __lhs,
+		const duration<_Rep2, _Period2>& __rhs)
+      {
+	typedef duration<_Rep2, _Period2>			__dur2;
+	typedef typename common_type<_Dur1,__dur2>::type	__ct;
+	typedef time_point<_Clock, __ct> 			__time_point;
+	return __time_point(__lhs.time_since_epoch() -__rhs);
+      }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr typename common_type<_Dur1, _Dur2>::type
+      operator-(const time_point<_Clock, _Dur1>& __lhs,
+		const time_point<_Clock, _Dur2>& __rhs)
+      { return __lhs.time_since_epoch() - __rhs.time_since_epoch(); }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr bool
+      operator==(const time_point<_Clock, _Dur1>& __lhs,
+		 const time_point<_Clock, _Dur2>& __rhs)
+      { return __lhs.time_since_epoch() == __rhs.time_since_epoch(); }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr bool
+      operator!=(const time_point<_Clock, _Dur1>& __lhs,
+		 const time_point<_Clock, _Dur2>& __rhs)
+      { return !(__lhs == __rhs); }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr bool
+      operator<(const time_point<_Clock, _Dur1>& __lhs,
+		const time_point<_Clock, _Dur2>& __rhs)
+      { return  __lhs.time_since_epoch() < __rhs.time_since_epoch(); }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr bool
+      operator<=(const time_point<_Clock, _Dur1>& __lhs,
+		 const time_point<_Clock, _Dur2>& __rhs)
+      { return !(__rhs < __lhs); }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr bool
+      operator>(const time_point<_Clock, _Dur1>& __lhs,
+		const time_point<_Clock, _Dur2>& __rhs)
+      { return __rhs < __lhs; }
+
+    template<typename _Clock, typename _Dur1, typename _Dur2>
+      constexpr bool
+      operator>=(const time_point<_Clock, _Dur1>& __lhs,
+		 const time_point<_Clock, _Dur2>& __rhs)
+      { return !(__lhs < __rhs); }
+
+
+    // Clocks.
+
+    // Why nanosecond resolution as the default?
+    // Why have std::system_clock always count in the highest
+    // resolution (ie nanoseconds), even if on some OSes the low 3
+    // or 9 decimal digits will be always zero? This allows later
+    // implementations to change the system_clock::now()
+    // implementation any time to provide better resolution without
+    // changing function signature or units.
+
+    // To support the (forward) evolution of the library's defined
+    // clocks, wrap inside inline namespace so that the current
+    // defintions of system_clock, steady_clock, and
+    // high_resolution_clock types are uniquely mangled. This way, new
+    // code can use the latests clocks, while the library can contain
+    // compatibility definitions for previous versions.  At some
+    // point, when these clocks settle down, the inlined namespaces
+    // can be removed.  XXX GLIBCXX_ABI Deprecated
+    inline namespace _V2 {
+
+    /**
+     *  @brief System clock.
+     *
+     *  Time returned represents wall time from the system-wide clock.
+    */
+    struct system_clock
+    {
+      typedef chrono::nanoseconds     				duration;
+      typedef duration::rep    					rep;
+      typedef duration::period 					period;
+      typedef chrono::time_point<system_clock, duration> 	time_point;
+
+      static_assert(system_clock::duration::min()
+		    < system_clock::duration::zero(),
+		    "a clock's minimum duration cannot be less than its epoch");
+
+      static constexpr bool is_steady = false;
+
+      static time_point
+      now() noexcept;
+
+      // Map to C API
+      static std::time_t
+      to_time_t(const time_point& __t) noexcept
+      {
+	return std::time_t(duration_cast<chrono::seconds>
+			   (__t.time_since_epoch()).count());
+      }
+
+      static time_point
+      from_time_t(std::time_t __t) noexcept
+      {
+	typedef chrono::time_point<system_clock, seconds>	__from;
+	return time_point_cast<system_clock::duration>
+	       (__from(chrono::seconds(__t)));
+      }
+    };
+
+
+    /**
+     *  @brief Monotonic clock
+     *
+     *  Time returned has the property of only increasing at a uniform rate.
+    */
+    struct steady_clock
+    {
+      typedef chrono::nanoseconds 				duration;
+      typedef duration::rep	  				rep;
+      typedef duration::period	  				period;
+      typedef chrono::time_point<steady_clock, duration> 	time_point;
+
+      static constexpr bool is_steady = true;
+
+      static time_point
+      now() noexcept;
+    };
+
+
+    /**
+     *  @brief Highest-resolution clock
+     *
+     *  This is the clock "with the shortest tick period." Alias to
+     *  std::system_clock until higher-than-nanosecond definitions
+     *  become feasible.
+    */
+    using high_resolution_clock = system_clock;
+
+    } // end inline namespace _V2
+  } // namespace chrono
+
+#if __cplusplus > 201103L
+
+#define __cpp_lib_chrono_udls 201304
+
+  inline namespace literals
+  {
+  inline namespace chrono_literals
+  {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wliteral-suffix"
+    template<typename _Dur, char... _Digits>
+      constexpr _Dur __check_overflow()
+      {
+	using _Val = __parse_int::_Parse_int<_Digits...>;
+	constexpr typename _Dur::rep __repval = _Val::value;
+	static_assert(__repval >= 0 && __repval == _Val::value,
+		      "literal value cannot be represented by duration type");
+	return _Dur(__repval);
+      }
+
+    constexpr chrono::duration<long double, ratio<3600,1>>
+    operator""h(long double __hours)
+    { return chrono::duration<long double, ratio<3600,1>>{__hours}; }
+
+    template <char... _Digits>
+      constexpr chrono::hours
+      operator""h()
+      { return __check_overflow<chrono::hours, _Digits...>(); }
+
+    constexpr chrono::duration<long double, ratio<60,1>>
+    operator""min(long double __mins)
+    { return chrono::duration<long double, ratio<60,1>>{__mins}; }
+
+    template <char... _Digits>
+      constexpr chrono::minutes
+      operator""min()
+      { return __check_overflow<chrono::minutes, _Digits...>(); }
+
+    constexpr chrono::duration<long double>
+    operator""s(long double __secs)
+    { return chrono::duration<long double>{__secs}; }
+
+    template <char... _Digits>
+      constexpr chrono::seconds
+      operator""s()
+      { return __check_overflow<chrono::seconds, _Digits...>(); }
+
+    constexpr chrono::duration<long double, milli>
+    operator""ms(long double __msecs)
+    { return chrono::duration<long double, milli>{__msecs}; }
+
+    template <char... _Digits>
+      constexpr chrono::milliseconds
+      operator""ms()
+      { return __check_overflow<chrono::milliseconds, _Digits...>(); }
+
+    constexpr chrono::duration<long double, micro>
+    operator""us(long double __usecs)
+    { return chrono::duration<long double, micro>{__usecs}; }
+
+    template <char... _Digits>
+      constexpr chrono::microseconds
+      operator""us()
+      { return __check_overflow<chrono::microseconds, _Digits...>(); }
+
+    constexpr chrono::duration<long double, nano>
+    operator""ns(long double __nsecs)
+    { return chrono::duration<long double, nano>{__nsecs}; }
+
+    template <char... _Digits>
+      constexpr chrono::nanoseconds
+      operator""ns()
+      { return __check_overflow<chrono::nanoseconds, _Digits...>(); }
+
+#pragma GCC diagnostic pop
+  } // inline namespace chrono_literals
+  } // inline namespace literals
+
+  namespace chrono
+  {
+    using namespace literals::chrono_literals;
+  } // namespace chrono
+
+#endif // C++14
+
+  /// @} group chrono
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // C++11
+
+#endif //_GLIBCXX_CHRONO
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // <cinttypes> -*- C++ -*-
+
+// Copyright (C) 2007-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file include/cinttypes
+ *  This is a Standard C++ Library header.
+ */
+
+#ifndef _GLIBCXX_CINTTYPES
+#define _GLIBCXX_CINTTYPES 1
+
+#pragma GCC system_header
+
+#if __cplusplus < 201103L
+# include <bits/c++0x_warning.h>
+#else
+
+#include <cstdint>
+
+// For 27.9.2/3 (see C99, Note 184)
+#if _GLIBCXX_HAVE_INTTYPES_H
+# ifndef __STDC_FORMAT_MACROS
+#  define _UNDEF__STDC_FORMAT_MACROS
+#  define __STDC_FORMAT_MACROS
+# endif
+# include <inttypes.h>
+# ifdef _UNDEF__STDC_FORMAT_MACROS
+#  undef __STDC_FORMAT_MACROS
+#  undef _UNDEF__STDC_FORMAT_MACROS
+# endif
+#endif
+
+#ifdef _GLIBCXX_USE_C99_INTTYPES_TR1
+
+namespace std
+{
+  // types
+  using ::imaxdiv_t;
+
+  // functions
+  using ::imaxabs;
+  using ::imaxdiv;
+
+  // GCC does not support extended integer types
+  // intmax_t abs(intmax_t)
+  // imaxdiv_t div(intmax_t, intmax_t)
+
+  using ::strtoimax;
+  using ::strtoumax;
+
+#if defined(_GLIBCXX_USE_WCHAR_T) && _GLIBCXX_USE_C99_INTTYPES_WCHAR_T_TR1
+  using ::wcstoimax;
+  using ::wcstoumax;
+#endif
+} // namespace std
+
+#endif // _GLIBCXX_USE_C99_INTTYPES_TR1
+
+#endif // C++11
+
+#endif // _GLIBCXX_CINTTYPES
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // -*- C++ -*- forwarding header.
+
+// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file ciso646
+ *  This is a Standard C++ Library file.  You should @c \#include this file
+ *  in your programs, rather than any of the @a *.h implementation files.
+ *
+ *  This is the C++ version of the Standard C Library header @c iso646.h,
+ *  which is empty in C++.
+ */
+#ifndef _GLIBCXX_CISO646
+#define _GLIBCXX_CISO646
+
+#pragma GCC system_header
+
+#include <bits/c++config.h>
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // -*- C++ -*- forwarding header.
+
+// Copyright (C) 1997-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file include/climits
+ *  This is a Standard C++ Library file.  You should @c \#include this file
+ *  in your programs, rather than any of the @a *.h implementation files.
+ *
+ *  This is the C++ version of the Standard C Library header @c limits.h,
+ *  and its contents are (mostly) the same as that header, but are all
+ *  contained in the namespace @c std (except for names which are defined
+ *  as macros in C).
+ */
+
+//
+// ISO C++ 14882: 18.2.2  Implementation properties: C library
+//
+
+#pragma GCC system_header
+
+#include <bits/c++config.h>
+#include <limits.h>
+
+#ifndef _GLIBCXX_CLIMITS
+#define _GLIBCXX_CLIMITS 1
+
+#ifndef LLONG_MIN
+#define LLONG_MIN (-__LONG_LONG_MAX__ - 1)
+#endif
+
+#ifndef LLONG_MAX
+#define LLONG_MAX __LONG_LONG_MAX__
+#endif
+
+#ifndef ULLONG_MAX
+#define ULLONG_MAX (__LONG_LONG_MAX__ * 2ULL + 1)
+#endif
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // -*- C++ -*- forwarding header.
+
+// Copyright (C) 1997-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file clocale
+ *  This is a Standard C++ Library file.  You should @c \#include this file
+ *  in your programs, rather than any of the @a *.h implementation files.
+ *
+ *  This is the C++ version of the Standard C Library header @c locale.h,
+ *  and its contents are (mostly) the same as that header, but are all
+ *  contained in the namespace @c std (except for names which are defined
+ *  as macros in C).
+ */
+
+//
+// ISO C++ 14882: 18.2.2  Implementation properties: C library
+//
+
+#pragma GCC system_header
+
+#include <bits/c++config.h>
+#include <locale.h>
+
+#ifndef _GLIBCXX_CLOCALE
+#define _GLIBCXX_CLOCALE 1
+
+// Get rid of those macros defined in <locale.h> in lieu of real functions.
+#undef setlocale
+#undef localeconv
+
+namespace std
+{
+  using ::lconv;
+  using ::setlocale;
+  using ::localeconv;
+} // namespace std
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               

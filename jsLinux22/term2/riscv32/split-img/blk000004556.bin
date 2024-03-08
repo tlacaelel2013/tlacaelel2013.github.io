@@ -1,0 +1,743 @@
+ion_condition, __ec);
+    }
+
+
+  template<typename _SyncReadStream, typename _DynamicBuffer,
+	   typename _CompletionCondition>
+    enable_if_t<is_dynamic_buffer<decay_t<_DynamicBuffer>>::value, size_t>
+    read(_SyncReadStream& __stream, _DynamicBuffer&& __b,
+	 _CompletionCondition __completion_condition, error_code& __ec)
+    {
+      const size_t __limit = 64;
+      __ec.clear();
+      size_t __cap = std::max(__b.capacity() - __b.size(), __limit);
+      size_t __total = 0;
+      size_t __n;
+      while ((__n = __completion_condition(__ec, __total))
+	  && __b.size() != __b.max_size())
+	{
+	  __n =  std::min(__n, __b.max_size() - __b.size());
+	  size_t __cap = std::max(__b.capacity() - __b.size(), __limit);
+	  mutable_buffer __to = __b.prepare(std::min(__cap, __n));
+	  __n = __stream.read_some(__to, __ec);
+	  __to = __to + __n;
+	  __total += __n;
+	  __b.commit(__n);
+	}
+      return __total;
+    }
+
+  template<typename _SyncReadStream, typename _DynamicBuffer>
+    inline enable_if_t<is_dynamic_buffer<_DynamicBuffer>::value, size_t>
+    read(_SyncReadStream& __stream, _DynamicBuffer&& __b)
+    {
+      error_code __ec;
+      return net::read(__stream, __b, transfer_all{}, __ec);
+    }
+
+  template<typename _SyncReadStream, typename _DynamicBuffer>
+    inline enable_if_t<is_dynamic_buffer<_DynamicBuffer>::value, size_t>
+    read(_SyncReadStream& __stream, _DynamicBuffer&& __b, error_code& __ec)
+    {
+      return net::read(__stream, __b, transfer_all{}, __ec);
+    }
+
+  template<typename _SyncReadStream, typename _DynamicBuffer,
+	   typename _CompletionCondition>
+    inline enable_if_t<is_dynamic_buffer<_DynamicBuffer>::value, size_t>
+    read(_SyncReadStream& __stream, _DynamicBuffer&& __b,
+	 _CompletionCondition __completion_condition)
+    {
+      error_code __ec;
+      return net::read(__stream, __b, __completion_condition, __ec);
+    }
+
+  /// @}
+
+  /** @brief asynchronous read operations
+   * @{
+   */
+
+  template<typename _AsyncReadStream, typename _MutableBufferSequence,
+	   typename _CompletionCondition, typename _CompletionToken>
+    __deduced_t<_CompletionToken, void(error_code, size_t)>
+    async_read(_AsyncReadStream& __stream,
+	       const _MutableBufferSequence& __buffers,
+	       _CompletionCondition __completion_condition,
+	       _CompletionToken&& __token)
+    {
+      error_code __ec;
+    }
+
+  template<typename _AsyncReadStream, typename _MutableBufferSequence,
+	   typename _CompletionToken>
+    inline __deduced_t<_CompletionToken, void(error_code, size_t)>
+    async_read(_AsyncReadStream& __stream,
+	       const _MutableBufferSequence& __buffers,
+	       _CompletionToken&& __token)
+    {
+      return net::async_read(__stream, __buffers, transfer_all{},
+			     std::forward<_CompletionToken>(__token));
+    }
+
+  template<typename _AsyncReadStream, typename _DynamicBuffer,
+	   typename _CompletionCondition, typename _CompletionToken>
+    __deduced_t<_CompletionToken, void(error_code, size_t)>
+    async_read(_AsyncReadStream& __stream, _DynamicBuffer&& __b,
+	       _CompletionCondition __completion_condition,
+	       _CompletionToken&& __token)
+    {
+      error_code __ec;
+    }
+
+  template<typename _AsyncReadStream, typename _DynamicBuffer,
+	   typename _CompletionToken>
+    inline __deduced_t<_CompletionToken, void(error_code, size_t)>
+    async_read(_AsyncReadStream& __stream, _DynamicBuffer&& __b,
+	       _CompletionToken&& __token)
+    {
+      return net::async_read(__stream, __b, transfer_all{},
+			     std::forward<_CompletionToken>(__token));
+    }
+
+  /// @}
+
+#if 0
+  /** @brief synchronous write operations:
+   * @{
+   */
+
+  template<typename _SyncWriteStream, typename _ConstBufferSequence>
+    size_t write(_SyncWriteStream& __stream,
+                 const _ConstBufferSequence& __buffers);
+  template<typename _SyncWriteStream, typename _ConstBufferSequence>
+    size_t write(_SyncWriteStream& __stream,
+                 const _ConstBufferSequence& __buffers, error_code& __ec);
+  template<typename _SyncWriteStream, typename _ConstBufferSequence,
+    typename _CompletionCondition>
+      size_t write(_SyncWriteStream& __stream,
+                   const _ConstBufferSequence& __buffers,
+                   _CompletionCondition __completion_condition);
+  template<typename _SyncWriteStream, typename _ConstBufferSequence,
+    typename _CompletionCondition>
+      size_t write(_SyncWriteStream& __stream,
+                   const _ConstBufferSequence& __buffers,
+                   _CompletionCondition __completion_condition,
+                   error_code& __ec);
+
+  template<typename _SyncWriteStream, typename _DynamicBuffer>
+    size_t write(_SyncWriteStream& __stream, _DynamicBuffer&& __b);
+  template<typename _SyncWriteStream, typename _DynamicBuffer>
+    size_t write(_SyncWriteStream& __stream, _DynamicBuffer&& __b, error_code& __ec);
+  template<typename _SyncWriteStream, typename _DynamicBuffer, typename _CompletionCondition>
+    size_t write(_SyncWriteStream& __stream, _DynamicBuffer&& __b,
+                 _CompletionCondition __completion_condition);
+  template<typename _SyncWriteStream, typename _DynamicBuffer, typename _CompletionCondition>
+    size_t write(_SyncWriteStream& __stream, _DynamicBuffer&& __b,
+                 _CompletionCondition __completion_condition, error_code& __ec);
+
+  /// @}
+
+  /** @brief asynchronous write operations
+   * @{
+   */
+
+  template<typename _AsyncWriteStream, typename _ConstBufferSequence,
+    typename _CompletionToken>
+      DEDUCED async_write(_AsyncWriteStream& __stream,
+                       const _ConstBufferSequence& __buffers,
+                       _CompletionToken&& __token);
+  template<typename _AsyncWriteStream, typename _ConstBufferSequence,
+    typename _CompletionCondition, typename _CompletionToken>
+      DEDUCED async_write(_AsyncWriteStream& __stream,
+                       const _ConstBufferSequence& __buffers,
+                       _CompletionCondition __completion_condition,
+                       _CompletionToken&& __token);
+
+  template<typename _AsyncWriteStream, typename _DynamicBuffer, typename _CompletionToken>
+    DEDUCED async_write(_AsyncWriteStream& __stream,
+                     _DynamicBuffer&& __b, _CompletionToken&& __token);
+  template<typename _AsyncWriteStream, typename _DynamicBuffer,
+    typename _CompletionCondition, typename _CompletionToken>
+      DEDUCED async_write(_AsyncWriteStream& __stream,
+                       _DynamicBuffer&& __b,
+                       _CompletionCondition __completion_condition,
+                       _CompletionToken&& __token);
+
+  /// @}
+
+  /** @brief synchronous delimited read operations
+   * @{
+   */
+
+  template<typename _SyncReadStream, typename _DynamicBuffer>
+    size_t read_until(_SyncReadStream& __s, _DynamicBuffer&& __b, char __delim);
+  template<typename _SyncReadStream, typename _DynamicBuffer>
+    size_t read_until(_SyncReadStream& __s, _DynamicBuffer&& __b,
+                      char __delim, error_code& __ec);
+  template<typename _SyncReadStream, typename _DynamicBuffer>
+    size_t read_until(_SyncReadStream& __s, _DynamicBuffer&& __b, string_view __delim);
+  template<typename _SyncReadStream, typename _DynamicBuffer>
+    size_t read_until(_SyncReadStream& __s, _DynamicBuffer&& __b,
+                      string_view __delim, error_code& __ec);
+
+  /// @}
+
+  /** @brief asynchronous delimited read operations
+   * @{
+   */
+
+  template<typename _AsyncReadStream, typename _DynamicBuffer, typename _CompletionToken>
+    DEDUCED async_read_until(_AsyncReadStream& __s,
+                          _DynamicBuffer&& __b, char __delim,
+                          _CompletionToken&& __token);
+  template<typename _AsyncReadStream, typename _DynamicBuffer, typename _CompletionToken>
+    DEDUCED async_read_until(_AsyncReadStream& __s,
+                          _DynamicBuffer&& __b, string_view __delim,
+                          _CompletionToken&& __token);
+
+  /// @}
+
+#endif
+  /// @}
+
+} // namespace v1
+} // namespace net
+} // namespace experimental
+
+  template<>
+    struct is_error_code_enum<experimental::net::v1::stream_errc>
+    : public true_type {};
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // C++14
+
+#endif // _GLIBCXX_EXPERIMENTAL_BUFFER
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      // Variable Templates For chrono -*- C++ -*-
+
+// Copyright (C) 2014-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file experimental/chrono
+ *  This is a TS C++ Library header.
+ */
+
+//
+// N3932 Variable Templates For Type Traits (Revision 1)
+//
+
+#ifndef _GLIBCXX_EXPERIMENTAL_CHRONO
+#define _GLIBCXX_EXPERIMENTAL_CHRONO 1
+
+#pragma GCC system_header
+
+#if __cplusplus >= 201402L
+
+#include <chrono>
+#include <experimental/bits/lfts_config.h>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+namespace chrono {
+namespace experimental
+{
+inline namespace fundamentals_v1
+{
+// See C++14 20.12.4, customization traits
+template <typename _Rep>
+   constexpr bool treat_as_floating_point_v =
+     treat_as_floating_point<_Rep>::value;
+} // namespace fundamentals_v1
+} // namespace experimental
+} // namespace chrono
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // __cplusplus <= 201103L
+
+#endif // _GLIBCXX_EXPERIMENTAL_CHRONO
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // <experimental/deque> -*- C++ -*-
+
+// Copyright (C) 2015-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file experimental/deque
+ *  This is a TS C++ Library header.
+ */
+
+#ifndef _GLIBCXX_EXPERIMENTAL_DEQUE
+#define _GLIBCXX_EXPERIMENTAL_DEQUE 1
+
+#pragma GCC system_header
+
+#if __cplusplus >= 201402L
+
+#include <deque>
+#include <algorithm>
+#include <experimental/memory_resource>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+namespace experimental
+{
+inline namespace fundamentals_v2
+{
+  template<typename _Tp, typename _Alloc, typename _Predicate>
+    inline void
+    erase_if(deque<_Tp, _Alloc>& __cont, _Predicate __pred)
+    {
+      __cont.erase(std::remove_if(__cont.begin(), __cont.end(), __pred),
+		   __cont.end());
+    }
+
+  template<typename _Tp, typename _Alloc, typename _Up>
+    inline void
+    erase(deque<_Tp, _Alloc>& __cont, const _Up& __value)
+    {
+      __cont.erase(std::remove(__cont.begin(), __cont.end(), __value),
+		   __cont.end());
+    }
+
+  namespace pmr {
+    template<typename _Tp>
+      using deque = std::deque<_Tp, polymorphic_allocator<_Tp>>;
+
+  } // namespace pmr
+} // namespace fundamentals_v2
+} // namespace experimental
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // C++14
+
+#endif // _GLIBCXX_EXPERIMENTAL_DEQUE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // <experimental/executor> -*- C++ -*-
+
+// Copyright (C) 2015-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file experimental/executor
+ *  This is a TS C++ Library header.
+ */
+
+#ifndef _GLIBCXX_EXPERIMENTAL_EXECUTOR
+#define _GLIBCXX_EXPERIMENTAL_EXECUTOR 1
+
+#pragma GCC system_header
+
+#if __cplusplus >= 201402L
+
+#include <algorithm>
+#include <condition_variable>
+#include <functional>
+#include <future>
+#include <list>
+#include <queue>
+#include <thread>
+#include <tuple>
+#include <unordered_map>
+#include <utility>
+#include <experimental/netfwd>
+#include <bits/unique_ptr.h>
+#include <experimental/bits/net.h>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+namespace experimental
+{
+namespace net
+{
+inline namespace v1
+{
+
+  /**
+   * @ingroup networking
+   * @{
+   */
+
+  /// Customization point for asynchronous operations.
+  template<typename _CompletionToken, typename _Signature, typename = void>
+    class async_result;
+
+  /// Convenience utility to help implement asynchronous operations.
+  template<typename _CompletionToken, typename _Signature>
+    class async_completion;
+
+  template<typename _Tp, typename _ProtoAlloc, typename = __void_t<>>
+    struct __associated_allocator_impl
+    {
+      using type = _ProtoAlloc;
+
+      static type
+      _S_get(const _Tp&, const _ProtoAlloc& __a) noexcept { return __a; }
+    };
+
+  template<typename _Tp, typename _ProtoAlloc>
+    struct __associated_allocator_impl<_Tp, _ProtoAlloc,
+				       __void_t<typename _Tp::allocator_type>>
+    {
+      using type = typename _Tp::allocator_type;
+
+      static type
+      _S_get(const _Tp& __t, const _ProtoAlloc&) noexcept
+      { return __t.get_allocator(); }
+    };
+
+  /// Helper to associate an allocator with a type.
+  template<typename _Tp, typename _ProtoAllocator = allocator<void>>
+    struct associated_allocator
+    : __associated_allocator_impl<_Tp, _ProtoAllocator>
+    {
+      static auto
+      get(const _Tp& __t,
+	  const _ProtoAllocator& __a = _ProtoAllocator()) noexcept
+      {
+	using _Impl = __associated_allocator_impl<_Tp, _ProtoAllocator>;
+	return _Impl::_S_get(__t, __a);
+      }
+    };
+
+  /// Alias template for associated_allocator.
+  template<typename _Tp, typename _ProtoAllocator = allocator<void>>
+    using associated_allocator_t
+      = typename associated_allocator<_Tp, _ProtoAllocator>::type;
+
+  // get_associated_allocator:
+
+  template<typename _Tp>
+    inline associated_allocator_t<_Tp>
+    get_associated_allocator(const _Tp& __t) noexcept
+    { return associated_allocator<_Tp>::get(__t); }
+
+  template<typename _Tp, typename _ProtoAllocator>
+    inline associated_allocator_t<_Tp, _ProtoAllocator>
+    get_associated_allocator(const _Tp& __t,
+			     const _ProtoAllocator& __a) noexcept
+    { return associated_allocator<_Tp, _ProtoAllocator>::get(__t, __a); }
+
+  enum class fork_event { prepare, parent, child };
+
+  /// An extensible, type-safe, polymorphic set of services.
+  class execution_context;
+
+  class service_already_exists : public logic_error
+  {
+  public:
+    // _GLIBCXX_RESOLVE_LIB_DEFECTS
+    // 3414. service_already_exists has no usable constructors
+    service_already_exists() : logic_error("service already exists") { }
+  };
+
+  template<typename _Tp> struct is_executor;
+
+  struct executor_arg_t { };
+
+  constexpr executor_arg_t executor_arg = executor_arg_t();
+
+  /// Trait for determining whether to construct an object with an executor.
+  template<typename _Tp, typename _Executor> struct uses_executor;
+
+  template<typename _Tp, typename _Executor, typename = __void_t<>>
+    struct __associated_executor_impl
+    {
+      using type = _Executor;
+
+      static type
+      _S_get(const _Tp&, const _Executor& __e) noexcept { return __e; }
+    };
+
+  template<typename _Tp, typename _Executor>
+    struct __associated_executor_impl<_Tp, _Executor,
+				       __void_t<typename _Tp::executor_type>>
+    {
+      using type = typename _Tp::executor_type;
+
+      static type
+      _S_get(const _Tp& __t, const _Executor&) noexcept
+      { return __t.get_executor(); }
+    };
+
+  /// Helper to associate an executor with a type.
+  template<typename _Tp, typename _Executor = system_executor>
+    struct associated_executor
+    : __associated_executor_impl<_Tp, _Executor>
+    {
+      static auto
+      get(const _Tp& __t, const _Executor& __e = _Executor()) noexcept
+      { return __associated_executor_impl<_Tp, _Executor>::_S_get(__t, __e); }
+    };
+
+
+  template<typename _Tp, typename _Executor = system_executor>
+    using associated_executor_t
+      = typename associated_executor<_Tp, _Executor>::type;
+
+  template<typename _ExecutionContext>
+    using __is_exec_context
+      = is_convertible<_ExecutionContext&, execution_context&>;
+
+  template<typename _Tp>
+    using __executor_t = typename _Tp::executor_type;
+
+  // get_associated_executor:
+
+  template<typename _Tp>
+    inline associated_executor_t<_Tp>
+    get_associated_executor(const _Tp& __t) noexcept
+    { return associated_executor<_Tp>::get(__t); }
+
+  template<typename _Tp, typename _Executor>
+    inline
+    enable_if_t<is_executor<_Executor>::value,
+		associated_executor_t<_Tp, _Executor>>
+    get_associated_executor(const _Tp& __t, const _Executor& __ex)
+    { return associated_executor<_Tp, _Executor>::get(__t, __ex); }
+
+  template<typename _Tp, typename _ExecutionContext>
+    inline
+    enable_if_t<__is_exec_context<_ExecutionContext>::value,
+		associated_executor_t<_Tp, __executor_t<_ExecutionContext>>>
+    get_associated_executor(const _Tp& __t, _ExecutionContext& __ctx) noexcept
+    { return net::get_associated_executor(__t, __ctx.get_executor()); }
+
+
+  /// Helper to bind an executor to an object or function.
+  template<typename _Tp, typename _Executor>
+    class executor_binder;
+
+  template<typename _Tp, typename _Executor, typename _Signature>
+    class async_result<executor_binder<_Tp, _Executor>, _Signature>;
+
+  template<typename _Tp, typename _Executor, typename _ProtoAllocator>
+    struct associated_allocator<executor_binder<_Tp, _Executor>,
+				_ProtoAllocator>;
+
+  template<typename _Tp, typename _Executor, typename _Executor1>
+    struct associated_executor<executor_binder<_Tp, _Executor>, _Executor1>;
+
+  // bind_executor:
+
+  template<typename _Executor, typename _Tp>
+    inline
+    enable_if_t<is_executor<_Executor>::value,
+		executor_binder<decay_t<_Tp>, _Executor>>
+    bind_executor(const _Executor& __ex, _Tp&& __t)
+    { return { std::forward<_Tp>(__t), __ex }; }
+
+  template<typename _ExecutionContext, typename _Tp>
+    inline
+    enable_if_t<__is_exec_context<_ExecutionContext>::value,
+		executor_binder<decay_t<_Tp>, __executor_t<_ExecutionContext>>>
+    bind_executor(_ExecutionContext& __ctx, _Tp&& __t)
+    { return { __ctx.get_executor(), forward<_Tp>(__t) }; }
+
+
+  /// A scope-guard type to record when work is started and finished.
+  template<typename _Executor>
+    class executor_work_guard;
+
+  // make_work_guard:
+
+  template<typename _Executor>
+    inline
+    enable_if_t<is_executor<_Executor>::value, executor_work_guard<_Executor>>
+    make_work_guard(const _Executor& __ex)
+    { return executor_work_guard<_Executor>(__ex); }
+
+  template<typename _ExecutionContext>
+    inline
+    enable_if_t<__is_exec_context<_ExecutionContext>::value,
+		executor_work_guard<__executor_t<_ExecutionContext>>>
+    make_work_guard(_ExecutionContext& __ctx)
+    { return net::make_work_guard(__ctx.get_executor()); }
+
+  template<typename _Tp>
+    inline
+    enable_if_t<__not_<__or_<is_executor<_Tp>, __is_exec_context<_Tp>>>::value,
+		executor_work_guard<associated_executor_t<_Tp>>>
+    make_work_guard(const _Tp& __t)
+    { return net::get_associated_executor(__t); }
+
+  template<typename _Tp, typename _Up>
+    auto
+    make_work_guard(const _Tp& __t, _Up&& __u)
+    -> decltype(net::make_work_guard(
+	  net::get_associated_executor(__t, forward<_Up>(__u))))
+    {
+      return net::make_work_guard(
+	  net::get_associated_executor(__t, forward<_Up>(__u)));
+    }
+
+  /// Allows function objects to execute on any thread.
+  class system_executor;
+
+  /// The execution context associated with system_executor objects.
+  class system_context;
+
+  inline bool
+  operator==(const system_executor&, const system_executor&) { return true; }
+
+  inline bool
+  operator!=(const system_executor&, const system_executor&) { return false; }
+
+  /// Exception thrown by empty executors.
+  class bad_executor;
+
+  /// Polymorphic wrapper for types satisfying the Executor requirements.
+  class executor;
+
+  bool
+  operator==(const executor&, const executor&) noexcept;
+
+  bool
+  operator==(const executor&, nullptr_t) noexcept;
+
+  bool
+  operator==(nullptr_t, const executor&) noexcept;
+
+  bool
+  operator!=(const executor&, const executor&) noexcept;
+
+  bool
+  operator!=(const executor&, nullptr_t) noexcept;
+
+  bool
+  operator!=(nullptr_t, const executor&) noexcept;
+
+  void swap(executor&, executor&) noexcept;
+
+  // dispatch:
+
+  template<typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    dispatch(_CompletionToken&& __token);
+
+  template<typename _Executor, typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    dispatch(const _Executor& __ex, _CompletionToken&& __token);
+
+  template<typename _ExecutionContext, typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    dispatch(_ExecutionContext& __ctx, _CompletionToken&& __token);
+
+  // post:
+
+  template<typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    post(_CompletionToken&& __token);
+  template<typename _Executor, typename _CompletionToken>
+    enable_if_t<is_executor<_Executor>::value,
+		__deduced_t<_CompletionToken, void()>>
+    post(const _Executor& __ex, _CompletionToken&& __token);
+  template<typename _ExecutionContext, typename _CompletionToken>
+    enable_if_t<__is_exec_context<_ExecutionContext>::value,
+		__deduced_t<_CompletionToken, void()>>
+    post(_ExecutionContext& __ctx, _CompletionToken&& __token);
+
+  // defer:
+
+  template<typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    defer(_CompletionToken&& __token);
+  template<typename _Executor, typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    defer(const _Executor& __ex, _CompletionToken&& __token);
+  template<typename _ExecutionContext, typename _CompletionToken>
+    __deduced_t<_CompletionToken, void()>
+    defer(_ExecutionContext& __ctx, _CompletionToken&& __token);
+
+  template<typename _Executor>
+    class strand;
+
+  template<typename _Executor>
+    bool
+    operator==(const strand<_Executor>& __a, const strand<_Executor>& __b);
+
+  template<typename _Executor>
+    bool
+    operator!=(const strand<_Executor>& __a, const strand<_Executor>& __b)
+    { return !(__a == __b); }
+
+  template<typename _CompletionToken, typename _Signature, typename>
+    class async_result
+    {
+    public:
+      typedef _CompletionToken completion_handler_type;
+      typedef void return_type;
+
+      explicit async_result(completion_handler_type&) {}
+      async_result(const async_result&) = delete;
+      async_result& operator=(const async_result&) = delete;
+
+      return_type get() {}
+    };
+
+  template<typename _CompletionToken, typename _Signature>
+    class async_completion
+    {
+      using __result_type
+	= async_result<decay_t<_CompletionToken>, _Signatur

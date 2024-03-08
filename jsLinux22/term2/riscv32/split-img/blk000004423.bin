@@ -1,0 +1,620 @@
+ther ctors.
+    constexpr explicit
+    _Enable_default_constructor(_Enable_default_constructor_tag) { }
+  };
+
+template<typename _Tag>
+  struct _Enable_destructor<false, _Tag>
+  { ~_Enable_destructor() noexcept = delete; };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, true, true, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, false, true, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, false, true, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, true, false, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, true, false, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, false, false, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, false, false, true, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = default;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, true, true, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, true, true, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, false, true, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, false, true, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, true, false, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, true, false, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = default;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<true, false, false, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = default;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+template<typename _Tag>
+  struct _Enable_copy_move<false, false, false, false, _Tag>
+  {
+    constexpr _Enable_copy_move() noexcept                          = default;
+    constexpr _Enable_copy_move(_Enable_copy_move const&) noexcept  = delete;
+    constexpr _Enable_copy_move(_Enable_copy_move&&) noexcept       = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move const&) noexcept                    = delete;
+    _Enable_copy_move&
+    operator=(_Enable_copy_move&&) noexcept                         = delete;
+  };
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // _ENABLE_SPECIAL_MEMBERS_H
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             // <bits/erase_if.h> -*- C++ -*-
+
+// Copyright (C) 2015-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file bits/erase_if.h
+ *  This is an internal header file, included by other library headers.
+ *  Do not attempt to use it directly.
+ */
+
+#ifndef _GLIBCXX_ERASE_IF_H
+#define _GLIBCXX_ERASE_IF_H 1
+
+#pragma GCC system_header
+
+#if __cplusplus >= 201402L
+
+namespace std
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+#if __cplusplus > 201703L
+# define __cpp_lib_erase_if 202002L
+#endif
+
+  namespace __detail
+  {
+    template<typename _Container, typename _Predicate>
+      typename _Container::size_type
+      __erase_nodes_if(_Container& __cont, _Predicate __pred)
+      {
+	typename _Container::size_type __num = 0;
+	for (auto __iter = __cont.begin(), __last = __cont.end();
+	     __iter != __last;)
+	  {
+	    if (__pred(*__iter))
+	      {
+		__iter = __cont.erase(__iter);
+		++__num;
+	      }
+	    else
+	      ++__iter;
+	  }
+	return __num;
+      }
+  } // namespace __detail
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // C++14
+
+#endif // _GLIBCXX_ERASE_IF_H
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           // Exception Handling support header for -*- C++ -*-
+
+// Copyright (C) 2016-2019 Free Software Foundation, Inc.
+//
+// This file is part of GCC.
+//
+// GCC is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3, or (at your option)
+// any later version.
+//
+// GCC is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file bits/exception.h
+ *  This is an internal header file, included by other library headers.
+ *  Do not attempt to use it directly.
+ */
+
+#ifndef __EXCEPTION_H
+#define __EXCEPTION_H 1
+
+#pragma GCC system_header
+
+#pragma GCC visibility push(default)
+
+#include <bits/c++config.h>
+
+extern "C++" {
+
+namespace std
+{
+  /**
+   * @defgroup exceptions Exceptions
+   * @ingroup diagnostics
+   *
+   * Classes and functions for reporting errors via exceptions.
+   * @{
+   */
+
+  /**
+   *  @brief Base class for all library exceptions.
+   *
+   *  This is the base class for all exceptions thrown by the standard
+   *  library, and by certain language expressions.  You are free to derive
+   *  your own %exception classes, or use a different hierarchy, or to
+   *  throw non-class data (e.g., fundamental types).
+   */
+  class exception
+  {
+  public:
+    exception() _GLIBCXX_NOTHROW { }
+    virtual ~exception() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
+#if __cplusplus >= 201103L
+    exception(const exception&) = default;
+    exception& operator=(const exception&) = default;
+    exception(exception&&) = default;
+    exception& operator=(exception&&) = default;
+#endif
+
+    /** Returns a C-style character string describing the general cause
+     *  of the current error.  */
+    virtual const char*
+    what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
+  };
+
+  /// @}
+
+} // namespace std
+
+}
+
+#pragma GCC visibility pop
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          // -fno-exceptions Support -*- C++ -*-
+
+// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file bits/exception_defines.h
+ *  This is an internal header file, included by other library headers.
+ *  Do not attempt to use it directly. @headername{exception}
+ */
+
+#ifndef _EXCEPTION_DEFINES_H
+#define _EXCEPTION_DEFINES_H 1
+
+#if ! __cpp_exceptions
+// Iff -fno-exceptions, transform error handling code to work without it.
+# define __try      if (true)
+# define __catch(X) if (false)
+# define __throw_exception_again
+#else
+// Else proceed normally.
+# define __try      try
+# define __catch(X) catch(X)
+# define __throw_exception_again throw
+#endif
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // Exception Handling support header (exception_ptr class) for -*- C++ -*-
+
+// Copyright (C) 2008-2019 Free Software Foundation, Inc.
+//
+// This file is part of GCC.
+//
+// GCC is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3, or (at your option)
+// any later version.
+// 
+// GCC is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file bits/exception_ptr.h
+ *  This is an internal header file, included by other library headers.
+ *  Do not attempt to use it directly. @headername{exception}
+ */
+
+#ifndef _EXCEPTION_PTR_H
+#define _EXCEPTION_PTR_H
+
+#pragma GCC visibility push(default)
+
+#include <bits/c++config.h>
+#include <bits/exception_defines.h>
+#include <bits/cxxabi_init_exception.h>
+#include <typeinfo>
+#include <new>
+
+#if __cplusplus >= 201103L
+# include <bits/move.h>
+#endif
+
+extern "C++" {
+
+namespace std 
+{
+  class type_info;
+
+  /**
+   * @addtogroup exceptions
+   * @{
+   */
+  namespace __exception_ptr
+  {
+    class exception_ptr;
+  }
+
+  using __exception_ptr::exception_ptr;
+
+  /** Obtain an exception_ptr to the currently handled exception. If there
+   *  is none, or the currently handled exception is foreign, return the null
+   *  value.
+   */
+  exception_ptr current_exception() _GLIBCXX_USE_NOEXCEPT;
+
+  template<typename _Ex>
+  exception_ptr make_exception_ptr(_Ex) _GLIBCXX_USE_NOEXCEPT;
+
+  /// Throw the object pointed to by the exception_ptr.
+  void rethrow_exception(exception_ptr) __attribute__ ((__noreturn__));
+
+  namespace __exception_ptr
+  {
+    using std::rethrow_exception;
+
+    /**
+     *  @brief An opaque pointer to an arbitrary exception.
+     *  @ingroup exceptions
+     */
+    class exception_ptr
+    {
+      void* _M_exception_object;
+
+      explicit exception_ptr(void* __e) _GLIBCXX_USE_NOEXCEPT;
+
+      void _M_addref() _GLIBCXX_USE_NOEXCEPT;
+      void _M_release() _GLIBCXX_USE_NOEXCEPT;
+
+      void *_M_get() const _GLIBCXX_NOEXCEPT __attribute__ ((__pure__));
+
+      friend exception_ptr std::current_exception() _GLIBCXX_USE_NOEXCEPT;
+      friend void std::rethrow_exception(exception_ptr);
+      template<typename _Ex>
+      friend exception_ptr std::make_exception_ptr(_Ex) _GLIBCXX_USE_NOEXCEPT;
+
+    public:
+      exception_ptr() _GLIBCXX_USE_NOEXCEPT;
+
+      exception_ptr(const exception_ptr&) _GLIBCXX_USE_NOEXCEPT;
+
+#if __cplusplus >= 201103L
+      exception_ptr(nullptr_t) noexcept
+      : _M_exception_object(0)
+      { }
+
+      exception_ptr(exception_ptr&& __o) noexcept
+      : _M_exception_object(__o._M_exception_object)
+      { __o._M_exception_object = 0; }
+#endif
+
+#if (__cplusplus < 201103L) || defined (_GLIBCXX_EH_PTR_COMPAT)
+      typedef void (exception_ptr::*__safe_bool)();
+
+      // For construction from nullptr or 0.
+      exception_ptr(__safe_bool) _GLIBCXX_USE_NOEXCEPT;
+#endif
+
+      exception_ptr& 
+      operator=(const exception_ptr&) _GLIBCXX_USE_NOEXCEPT;
+
+#if __cplusplus >= 201103L
+      exception_ptr& 
+      operator=(exception_ptr&& __o) noexcept
+      {
+        exception_ptr(static_cast<exception_ptr&&>(__o)).swap(*this);
+        return *this;
+      }
+#endif
+
+      ~exception_ptr() _GLIBCXX_USE_NOEXCEPT;
+
+      void 
+      swap(exception_ptr&) _GLIBCXX_USE_NOEXCEPT;
+
+#ifdef _GLIBCXX_EH_PTR_COMPAT
+      // Retained for compatibility with CXXABI_1.3.
+      void _M_safe_bool_dummy() _GLIBCXX_USE_NOEXCEPT
+	__attribute__ ((__const__));
+      bool operator!() const _GLIBCXX_USE_NOEXCEPT
+	__attribute__ ((__pure__));
+      operator __safe_bool() const _GLIBCXX_USE_NOEXCEPT;
+#endif
+
+#if __cplusplus >= 201103L
+      explicit operator bool() const
+      { return _M_exception_object; }
+#endif
+
+      friend bool 
+      operator==(const exception_ptr&, const exception_ptr&)
+	_GLIBCXX_USE_NOEXCEPT __attribute__ ((__pure__));
+
+      const class std::type_info*
+      __cxa_exception_type() const _GLIBCXX_USE_NOEXCEPT
+	__attribute__ ((__pure__));
+    };
+
+    bool 
+    operator==(const exception_ptr&, const exception_ptr&)
+      _GLIBCXX_USE_NOEXCEPT __attribute__ ((__pure__));
+
+    bool 
+    operator!=(const exception_ptr&, const exception_ptr&)
+      _GLIBCXX_USE_NOEXCEPT __attribute__ ((__pure__));
+
+    inline void
+    swap(exception_ptr& __lhs, exception_ptr& __rhs)
+    { __lhs.swap(__rhs); }
+
+    template<typename _Ex>
+      inline void
+      __dest_thunk(void* __x)
+      { static_cast<_Ex*>(__x)->~_Ex(); }
+
+  } // namespace __exception_ptr
+
+  /// Obtain an exception_ptr pointing to a copy of the supplied object.
+  template<typename _Ex>
+    exception_ptr 
+    make_exception_ptr(_Ex __ex) _GLIBCXX_USE_NOEXCEPT
+    {
+#if __cpp_exceptions && __cpp_rtti && !_GLIBCXX_HAVE_CDTOR_CALLABI \
+      && __cplusplus >= 201103L
+      using _Ex2 = typename remove_reference<_Ex>::type;
+      void* __e = __cxxabiv1::__cxa_allocate_exception(sizeof(_Ex));
+      (void) __cxxabiv1::__cxa_init_primary_exception(
+	  __e, const_cast<std::type_info*>(&typeid(_Ex)),
+	  __exception_ptr::__dest_thunk<_Ex2>);
+      try
+	{
+	  ::new (__e) _Ex2(std::forward<_Ex>(__ex));
+          return exception_ptr(__e);
+	}
+      catch(...)
+	{
+	  __cxxabiv1::__cxa_free_exception(__e);
+	  return current_exception();
+	}
+#elif __cpp_exceptions
+      try
+	{
+          throw __ex;
+	}
+      catch(...)
+	{
+	  return current_exception();
+	}
+#else // no RTTI and no exceptions
+      return exception_ptr();
+#endif
+    }
+
+  /// @} group exceptions
+} // namespace std
+
+} // extern "C++"
+
+#pragma GCC visibility pop
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               

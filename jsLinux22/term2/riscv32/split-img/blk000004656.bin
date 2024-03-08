@@ -1,0 +1,810 @@
+unction first clears eofbit.  It does not count the
+       *         number of characters extracted, if any, and therefore does
+       *         not affect the next call to @c gcount().
+      */
+      __istream_type&
+      seekg(off_type, ios_base::seekdir);
+      ///@}
+
+    protected:
+      basic_istream()
+      : _M_gcount(streamsize(0))
+      { this->init(0); }
+
+#if __cplusplus >= 201103L
+      basic_istream(const basic_istream&) = delete;
+
+      basic_istream(basic_istream&& __rhs)
+      : __ios_type(), _M_gcount(__rhs._M_gcount)
+      {
+	__ios_type::move(__rhs);
+	__rhs._M_gcount = 0;
+      }
+
+      // 27.7.3.3 Assign/swap
+
+      basic_istream& operator=(const basic_istream&) = delete;
+
+      basic_istream&
+      operator=(basic_istream&& __rhs)
+      {
+	swap(__rhs);
+	return *this;
+      }
+
+      void
+      swap(basic_istream& __rhs)
+      {
+	__ios_type::swap(__rhs);
+	std::swap(_M_gcount, __rhs._M_gcount);
+      }
+#endif
+
+      template<typename _ValueT>
+	__istream_type&
+	_M_extract(_ValueT& __v);
+    };
+
+  /// Explicit specialization declarations, defined in src/istream.cc.
+  template<>
+    basic_istream<char>&
+    basic_istream<char>::
+    getline(char_type* __s, streamsize __n, char_type __delim);
+
+  template<>
+    basic_istream<char>&
+    basic_istream<char>::
+    ignore(streamsize __n);
+
+  template<>
+    basic_istream<char>&
+    basic_istream<char>::
+    ignore(streamsize __n, int_type __delim);
+
+#ifdef _GLIBCXX_USE_WCHAR_T
+  template<>
+    basic_istream<wchar_t>&
+    basic_istream<wchar_t>::
+    getline(char_type* __s, streamsize __n, char_type __delim);
+
+  template<>
+    basic_istream<wchar_t>&
+    basic_istream<wchar_t>::
+    ignore(streamsize __n);
+
+  template<>
+    basic_istream<wchar_t>&
+    basic_istream<wchar_t>::
+    ignore(streamsize __n, int_type __delim);
+#endif
+
+  /**
+   *  @brief  Performs setup work for input streams.
+   *
+   *  Objects of this class are created before all of the standard
+   *  extractors are run.  It is responsible for <em>exception-safe
+   *  prefix and suffix operations,</em> although only prefix actions
+   *  are currently required by the standard.
+  */
+  template<typename _CharT, typename _Traits>
+    class basic_istream<_CharT, _Traits>::sentry
+    {
+      // Data Members.
+      bool _M_ok;
+
+    public:
+      /// Easy access to dependent types.
+      typedef _Traits 					traits_type;
+      typedef basic_streambuf<_CharT, _Traits> 		__streambuf_type;
+      typedef basic_istream<_CharT, _Traits> 		__istream_type;
+      typedef typename __istream_type::__ctype_type 	__ctype_type;
+      typedef typename _Traits::int_type		__int_type;
+
+      /**
+       *  @brief  The constructor performs all the work.
+       *  @param  __is  The input stream to guard.
+       *  @param  __noskipws  Whether to consume whitespace or not.
+       *
+       *  If the stream state is good (@a __is.good() is true), then the
+       *  following actions are performed, otherwise the sentry state
+       *  is false (<em>not okay</em>) and failbit is set in the
+       *  stream state.
+       *
+       *  The sentry's preparatory actions are:
+       *
+       *  -# if the stream is tied to an output stream, @c is.tie()->flush()
+       *     is called to synchronize the output sequence
+       *  -# if @a __noskipws is false, and @c ios_base::skipws is set in
+       *     @c is.flags(), the sentry extracts and discards whitespace
+       *     characters from the stream.  The currently imbued locale is
+       *     used to determine whether each character is whitespace.
+       *
+       *  If the stream state is still good, then the sentry state becomes
+       *  true (@a okay).
+      */
+      explicit
+      sentry(basic_istream<_CharT, _Traits>& __is, bool __noskipws = false);
+
+      /**
+       *  @brief  Quick status checking.
+       *  @return  The sentry state.
+       *
+       *  For ease of use, sentries may be converted to booleans.  The
+       *  return value is that of the sentry state (true == okay).
+      */
+#if __cplusplus >= 201103L
+      explicit
+#endif
+      operator bool() const
+      { return _M_ok; }
+    };
+
+  ///@{
+  /**
+   *  @brief  Character extractors
+   *  @param  __in  An input stream.
+   *  @param  __c  A character reference.
+   *  @return  in
+   *
+   *  Behaves like one of the formatted arithmetic extractors described in
+   *  std::basic_istream.  After constructing a sentry object with good
+   *  status, this function extracts a character (if one is available) and
+   *  stores it in @a __c.  Otherwise, sets failbit in the input stream.
+  */
+  template<typename _CharT, typename _Traits>
+    basic_istream<_CharT, _Traits>&
+    operator>>(basic_istream<_CharT, _Traits>& __in, _CharT& __c);
+
+  template<class _Traits>
+    inline basic_istream<char, _Traits>&
+    operator>>(basic_istream<char, _Traits>& __in, unsigned char& __c)
+    { return (__in >> reinterpret_cast<char&>(__c)); }
+
+  template<class _Traits>
+    inline basic_istream<char, _Traits>&
+    operator>>(basic_istream<char, _Traits>& __in, signed char& __c)
+    { return (__in >> reinterpret_cast<char&>(__c)); }
+  ///@}
+
+  ///@{
+  /**
+   *  @brief  Character string extractors
+   *  @param  __in  An input stream.
+   *  @param  __s  A pointer to a character array.
+   *  @return  __in
+   *
+   *  Behaves like one of the formatted arithmetic extractors described in
+   *  std::basic_istream.  After constructing a sentry object with good
+   *  status, this function extracts up to @c n characters and stores them
+   *  into the array starting at @a __s.  @c n is defined as:
+   *
+   *  - if @c width() is greater than zero, @c n is width() otherwise
+   *  - @c n is <em>the number of elements of the largest array of *
+   *  - @c char_type that can store a terminating @c eos.</em>
+   *  - [27.6.1.2.3]/6
+   *
+   *  Characters are extracted and stored until one of the following happens:
+   *  - @c n-1 characters are stored
+   *  - EOF is reached
+   *  - the next character is whitespace according to the current locale
+   *  - the next character is a null byte (i.e., @c charT() )
+   *
+   *  @c width(0) is then called for the input stream.
+   *
+   *  If no characters are extracted, sets failbit.
+  */
+  template<typename _CharT, typename _Traits>
+    basic_istream<_CharT, _Traits>&
+    operator>>(basic_istream<_CharT, _Traits>& __in, _CharT* __s);
+
+  // Explicit specialization declaration, defined in src/istream.cc.
+  template<>
+    basic_istream<char>&
+    operator>>(basic_istream<char>& __in, char* __s);
+
+  template<class _Traits>
+    inline basic_istream<char, _Traits>&
+    operator>>(basic_istream<char, _Traits>& __in, unsigned char* __s)
+    { return (__in >> reinterpret_cast<char*>(__s)); }
+
+  template<class _Traits>
+    inline basic_istream<char, _Traits>&
+    operator>>(basic_istream<char, _Traits>& __in, signed char* __s)
+    { return (__in >> reinterpret_cast<char*>(__s)); }
+  ///@}
+
+  /**
+   *  @brief  Template class basic_iostream
+   *  @ingroup io
+   *
+   *  @tparam _CharT  Type of character stream.
+   *  @tparam _Traits  Traits for character type, defaults to
+   *                   char_traits<_CharT>.
+   *
+   *  This class multiply inherits from the input and output stream classes
+   *  simply to provide a single interface.
+  */
+  template<typename _CharT, typename _Traits>
+    class basic_iostream
+    : public basic_istream<_CharT, _Traits>,
+      public basic_ostream<_CharT, _Traits>
+    {
+    public:
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 271. basic_iostream missing typedefs
+      // Types (inherited):
+      typedef _CharT			 		char_type;
+      typedef typename _Traits::int_type 		int_type;
+      typedef typename _Traits::pos_type 		pos_type;
+      typedef typename _Traits::off_type 		off_type;
+      typedef _Traits			 		traits_type;
+
+      // Non-standard Types:
+      typedef basic_istream<_CharT, _Traits>		__istream_type;
+      typedef basic_ostream<_CharT, _Traits>		__ostream_type;
+
+      /**
+       *  @brief  Constructor does nothing.
+       *
+       *  Both of the parent classes are initialized with the same
+       *  streambuf pointer passed to this constructor.
+      */
+      explicit
+      basic_iostream(basic_streambuf<_CharT, _Traits>* __sb)
+      : __istream_type(__sb), __ostream_type(__sb) { }
+
+      /**
+       *  @brief  Destructor does nothing.
+      */
+      virtual
+      ~basic_iostream() { }
+
+    protected:
+      basic_iostream()
+      : __istream_type(), __ostream_type() { }
+
+#if __cplusplus >= 201103L
+      basic_iostream(const basic_iostream&) = delete;
+
+      basic_iostream(basic_iostream&& __rhs)
+      : __istream_type(std::move(__rhs)), __ostream_type(*this)
+      { }
+
+      // 27.7.3.3 Assign/swap
+
+      basic_iostream& operator=(const basic_iostream&) = delete;
+
+      basic_iostream&
+      operator=(basic_iostream&& __rhs)
+      {
+	swap(__rhs);
+	return *this;
+      }
+
+      void
+      swap(basic_iostream& __rhs)
+      { __istream_type::swap(__rhs); }
+#endif
+    };
+
+  /**
+   *  @brief  Quick and easy way to eat whitespace
+   *
+   *  This manipulator extracts whitespace characters, stopping when the
+   *  next character is non-whitespace, or when the input sequence is empty.
+   *  If the sequence is empty, @c eofbit is set in the stream, but not
+   *  @c failbit.
+   *
+   *  The current locale is used to distinguish whitespace characters.
+   *
+   *  Example:
+   *  @code
+   *     MyClass   mc;
+   *
+   *     std::cin >> std::ws >> mc;
+   *  @endcode
+   *  will skip leading whitespace before calling operator>> on cin and your
+   *  object.  Note that the same effect can be achieved by creating a
+   *  std::basic_istream::sentry inside your definition of operator>>.
+  */
+  template<typename _CharT, typename _Traits>
+    basic_istream<_CharT, _Traits>&
+    ws(basic_istream<_CharT, _Traits>& __is);
+
+#if __cplusplus >= 201103L
+  template<typename _Ch, typename _Up>
+    basic_istream<_Ch, _Up>&
+    __is_convertible_to_basic_istream_test(basic_istream<_Ch, _Up>*);
+
+  template<typename _Tp, typename = void>
+    struct __is_convertible_to_basic_istream_impl
+    {
+      using __istream_type = void;
+    };
+
+  template<typename _Tp>
+    using __do_is_convertible_to_basic_istream_impl =
+    decltype(__is_convertible_to_basic_istream_test
+	     (declval<typename remove_reference<_Tp>::type*>()));
+
+  template<typename _Tp>
+    struct __is_convertible_to_basic_istream_impl
+    <_Tp,
+     __void_t<__do_is_convertible_to_basic_istream_impl<_Tp>>>
+    {
+      using __istream_type =
+	__do_is_convertible_to_basic_istream_impl<_Tp>;
+    };
+
+  template<typename _Tp>
+    struct __is_convertible_to_basic_istream
+    : __is_convertible_to_basic_istream_impl<_Tp>
+    {
+    public:
+      using type = __not_<is_void<
+        typename __is_convertible_to_basic_istream_impl<_Tp>::__istream_type>>;
+      constexpr static bool value = type::value;
+    };
+
+  template<typename _Istream, typename _Tp, typename = void>
+    struct __is_extractable : false_type {};
+
+  template<typename _Istream, typename _Tp>
+    struct __is_extractable<_Istream, _Tp,
+			    __void_t<decltype(declval<_Istream&>()
+					      >> declval<_Tp>())>>
+    : true_type {};
+
+  template<typename _Istream>
+    using __rvalue_istream_type =
+      typename __is_convertible_to_basic_istream<
+	_Istream>::__istream_type;
+
+  // [27.7.1.6] Rvalue stream extraction
+  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+  // 2328. Rvalue stream extraction should use perfect forwarding
+  /**
+   *  @brief  Generic extractor for rvalue stream
+   *  @param  __is  An input stream.
+   *  @param  __x  A reference to the extraction target.
+   *  @return  is
+   *
+   *  This is just a forwarding function to allow extraction from
+   *  rvalue streams since they won't bind to the extractor functions
+   *  that take an lvalue reference.
+  */
+  template<typename _Istream, typename _Tp>
+    inline
+    typename enable_if<__and_<__not_<is_lvalue_reference<_Istream>>,
+			      __is_convertible_to_basic_istream<_Istream>,
+			      __is_extractable<
+				__rvalue_istream_type<_Istream>,
+				_Tp&&>>::value,
+		       __rvalue_istream_type<_Istream>>::type
+    operator>>(_Istream&& __is, _Tp&& __x)
+    {
+      __rvalue_istream_type<_Istream> __ret_is = __is;
+      __ret_is >> std::forward<_Tp>(__x);
+      return __ret_is;
+    }
+#endif // C++11
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace
+
+#include <bits/istream.tcc>
+
+#endif	/* _GLIBCXX_ISTREAM */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // <iterator> -*- C++ -*-
+
+// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/*
+ *
+ * Copyright (c) 1994
+ * Hewlett-Packard Company
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Hewlett-Packard Company makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ *
+ *
+ * Copyright (c) 1996,1997
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Silicon Graphics makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
+
+/** @file include/iterator
+ *  This is a Standard C++ Library header.
+ */
+
+#ifndef _GLIBCXX_ITERATOR
+#define _GLIBCXX_ITERATOR 1
+
+#pragma GCC system_header
+
+#include <bits/c++config.h>
+#include <bits/stl_iterator_base_types.h>
+#include <bits/stl_iterator_base_funcs.h>
+#include <bits/stl_iterator.h>
+#include <ostream>
+#include <istream>
+#include <bits/stream_iterator.h>
+#include <bits/streambuf_iterator.h>
+#include <bits/range_access.h>
+
+#if __cplusplus >= 201402L && ! defined _GLIBCXX_DEBUG // PR libstdc++/70303
+# define __cpp_lib_null_iterators 201304L
+#endif
+
+#endif /* _GLIBCXX_ITERATOR */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             // The template and inlines for the numeric_limits classes. -*- C++ -*-
+
+// Copyright (C) 1999-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file include/limits
+ *  This is a Standard C++ Library header.
+ */
+
+// Note: this is not a conforming implementation.
+// Written by Gabriel Dos Reis <gdr@codesourcery.com>
+
+//
+// ISO 14882:1998
+// 18.2.1
+//
+
+#ifndef _GLIBCXX_NUMERIC_LIMITS
+#define _GLIBCXX_NUMERIC_LIMITS 1
+
+#pragma GCC system_header
+
+#include <bits/c++config.h>
+
+//
+// The numeric_limits<> traits document implementation-defined aspects
+// of fundamental arithmetic data types (integers and floating points).
+// From Standard C++ point of view, there are 14 such types:
+//   * integers
+//         bool							(1)
+//         char, signed char, unsigned char, wchar_t            (4)
+//         short, unsigned short				(2)
+//         int, unsigned					(2)
+//         long, unsigned long					(2)
+//
+//   * floating points
+//         float						(1)
+//         double						(1)
+//         long double						(1)
+//
+// GNU C++ understands (where supported by the host C-library)
+//   * integer
+//         long long, unsigned long long			(2)
+//
+// which brings us to 16 fundamental arithmetic data types in GNU C++.
+//
+//
+// Since a numeric_limits<> is a bit tricky to get right, we rely on
+// an interface composed of macros which should be defined in config/os
+// or config/cpu when they differ from the generic (read arbitrary)
+// definitions given here.
+//
+
+// These values can be overridden in the target configuration file.
+// The default values are appropriate for many 32-bit targets.
+
+// GCC only intrinsically supports modulo integral types.  The only remaining
+// integral exceptional values is division by zero.  Only targets that do not
+// signal division by zero in some "hard to ignore" way should use false.
+#ifndef __glibcxx_integral_traps
+# define __glibcxx_integral_traps true
+#endif
+
+// float
+//
+
+// Default values.  Should be overridden in configuration files if necessary.
+
+#ifndef __glibcxx_float_has_denorm_loss
+#  define __glibcxx_float_has_denorm_loss false
+#endif
+#ifndef __glibcxx_float_traps
+#  define __glibcxx_float_traps false
+#endif
+#ifndef __glibcxx_float_tinyness_before
+#  define __glibcxx_float_tinyness_before false
+#endif
+
+// double
+
+// Default values.  Should be overridden in configuration files if necessary.
+
+#ifndef __glibcxx_double_has_denorm_loss
+#  define __glibcxx_double_has_denorm_loss false
+#endif
+#ifndef __glibcxx_double_traps
+#  define __glibcxx_double_traps false
+#endif
+#ifndef __glibcxx_double_tinyness_before
+#  define __glibcxx_double_tinyness_before false
+#endif
+
+// long double
+
+// Default values.  Should be overridden in configuration files if necessary.
+
+#ifndef __glibcxx_long_double_has_denorm_loss
+#  define __glibcxx_long_double_has_denorm_loss false
+#endif
+#ifndef __glibcxx_long_double_traps
+#  define __glibcxx_long_double_traps false
+#endif
+#ifndef __glibcxx_long_double_tinyness_before
+#  define __glibcxx_long_double_tinyness_before false
+#endif
+
+// You should not need to define any macros below this point.
+
+#define __glibcxx_signed_b(T,B)	((T)(-1) < 0)
+
+#define __glibcxx_min_b(T,B)					\
+  (__glibcxx_signed_b (T,B) ? -__glibcxx_max_b (T,B) - 1 : (T)0)
+
+#define __glibcxx_max_b(T,B)						\
+  (__glibcxx_signed_b (T,B) ?						\
+   (((((T)1 << (__glibcxx_digits_b (T,B) - 1)) - 1) << 1) + 1) : ~(T)0)
+
+#define __glibcxx_digits_b(T,B)				\
+  (B - __glibcxx_signed_b (T,B))
+
+// The fraction 643/2136 approximates log10(2) to 7 significant digits.
+#define __glibcxx_digits10_b(T,B)		\
+  (__glibcxx_digits_b (T,B) * 643L / 2136)
+
+#define __glibcxx_signed(T) \
+  __glibcxx_signed_b (T, sizeof(T) * __CHAR_BIT__)
+#define __glibcxx_min(T) \
+  __glibcxx_min_b (T, sizeof(T) * __CHAR_BIT__)
+#define __glibcxx_max(T) \
+  __glibcxx_max_b (T, sizeof(T) * __CHAR_BIT__)
+#define __glibcxx_digits(T) \
+  __glibcxx_digits_b (T, sizeof(T) * __CHAR_BIT__)
+#define __glibcxx_digits10(T) \
+  __glibcxx_digits10_b (T, sizeof(T) * __CHAR_BIT__)
+
+#define __glibcxx_max_digits10(T) \
+  (2 + (T) * 643L / 2136)
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+  /**
+   *  @brief Describes the rounding style for floating-point types.
+   *
+   *  This is used in the std::numeric_limits class.
+  */
+  enum float_round_style
+  {
+    round_indeterminate       = -1,    /// Intermediate.
+    round_toward_zero         = 0,     /// To zero.
+    round_to_nearest          = 1,     /// To the nearest representable value.
+    round_toward_infinity     = 2,     /// To infinity.
+    round_toward_neg_infinity = 3      /// To negative infinity.
+  };
+
+  /**
+   *  @brief Describes the denormalization for floating-point types.
+   *
+   *  These values represent the presence or absence of a variable number
+   *  of exponent bits.  This type is used in the std::numeric_limits class.
+  */
+  enum float_denorm_style
+  {
+    /// Indeterminate at compile time whether denormalized values are allowed.
+    denorm_indeterminate = -1,
+    /// The type does not allow denormalized values.
+    denorm_absent        = 0,
+    /// The type allows denormalized values.
+    denorm_present       = 1
+  };
+
+  /**
+   *  @brief Part of std::numeric_limits.
+   *
+   *  The @c static @c const members are usable as integral constant
+   *  expressions.
+   *
+   *  @note This is a separate class for purposes of efficiency; you
+   *        should only access these members as part of an instantiation
+   *        of the std::numeric_limits class.
+  */
+  struct __numeric_limits_base
+  {
+    /** This will be true for all fundamental types (which have
+	specializations), and false for everything else.  */
+    static _GLIBCXX_USE_CONSTEXPR bool is_specialized = false;
+
+    /** The number of @c radix digits that be represented without change:  for
+	integer types, the number of non-sign bits in the mantissa; for
+	floating types, the number of @c radix digits in the mantissa.  */
+    static _GLIBCXX_USE_CONSTEXPR int digits = 0;
+
+    /** The number of base 10 digits that can be represented without change. */
+    static _GLIBCXX_USE_CONSTEXPR int digits10 = 0;
+
+#if __cplusplus >= 201103L
+    /** The number of base 10 digits required to ensure that values which
+	differ are always differentiated.  */
+    static constexpr int max_digits10 = 0;
+#endif
+
+    /** True if the type is signed.  */
+    static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+
+    /** True if the type is integer.  */
+    static _GLIBCXX_USE_CONSTEXPR bool is_integer = false;
+
+    /** True if the type uses an exact representation. All integer types are
+	exact, but not all exact types are integer.  For example, rational and
+	fixed-exponent representations are exact but not integer. */
+    static _GLIBCXX_USE_CONSTEXPR bool is_exact = false;
+
+    /** For integer types, specifies the base of the representation.  For
+	floating types, specifies the base of the exponent representation.  */
+    static _GLIBCXX_USE_CONSTEXPR int radix = 0;
+
+    /** The minimum negative integer such that @c radix raised to the power of
+	(one less than that integer) is a normalized floating point number.  */
+    static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+
+    /** The minimum negative integer such that 10 raised to that power is in
+	the range of normalized floating point numbers.  */
+    static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+
+    /** The maximum positive integer such that @c radix raised to the power of
+	(one less than that integer) is a representable finite floating point
+	number.  */
+    static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+
+    /** The maximum positive integer such that 10 raised to that power is in
+	the range of representable finite floating point numbers.  */
+    static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+
+    /** True if the type has a representation for positive infinity.  */
+    static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+
+    /** True if the type has a representation for a quiet (non-signaling)
+	Not a Number.  */
+    static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+
+    /** True if the type has a representation for a signaling
+	Not a Number.  */
+    static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+
+    /** See std::float_denorm_style for more information.  */
+    static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm = denorm_absent;
+
+    /** True if loss of accuracy is detected as a denormalization loss,
+	rather than as an inexact result. */
+    static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+
+    /** True if-and-only-if the type adheres to the IEC 559 standard, also
+	known as IEEE 754.  (Only makes sense for floating point types.)  */
+    static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+
+    /** True if the set of values representable by the type is
+	finite.  All built-in types are bounded, this member would be
+	false for arbitrary precision types. */
+    static _GLIBCXX_USE_CONSTEXPR bool is_bounded = false;
+
+    /** True if the type is @e modulo. A type is modulo if, for any
+	operation involving +, -, or * on values of that type whose
+	result would fall outside the range [min(),max()], the value
+	returned differs from the true value by an integer multiple of
+	max() - min() + 1. On most machines, this is false for floating
+	types, true for unsigned integers, and true for signed integers.
+	See PR22200 about signed integers.  */
+    static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+
+    /** True if trapping is implemented for this type.  */
+    static _GLIBCXX_USE_CONSTEXPR bool traps = false;
+
+    /** True if tininess is detected before rounding.  (see IEC 559)  */
+    static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+
+    /** See std::float_round_style for more information.  This is only
+	meaningful for floating types; integer types will all be
+	round_toward_zero.  */
+    static _GLIBCXX_USE_CONSTEXPR float_round_style round_style =
+						    round_toward_zero;
+  };
+
+  /**
+   *  @brief Properties of fundamental types.
+   *
+   *  This class allows a program to obtain information about the
+   *  representation of a fundamental type on a given platform.  For
+   *  non-fundamental types, the functions will return 0 and the data
+   *  members will all be @c false.
+  */
+  template<typename _Tp>
+    struct numeric_limits : public __numeric_limits_base
+    {
+      /** The minimum finite value, or for floating types with
+	  denormalization, the minimum positive normalized value.  */
+      static _GLIBCXX_CONSTEXPR _Tp
+      min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+
+      /** The maximum finite value.  */
+      static _GLIBCXX_CONSTEXPR _Tp
+      max() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+
+#if __cplusplus >= 201103L
+      /** A finite value x such that there is no other finite value y
+       *  where y < x.  */
+      static constexpr _Tp
+      lowest() noexcept { return _Tp(); }
+#endif
+
+      /** The @e machine @e epsilon:  the difference between 1 and the least
+	  value greater than 1 that is representable.  */
+      static _GLIBCXX_CONSTEXPR _Tp
+      epsilon() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+
+      /** The maximum rounding error measurement (see LIA-1).  */
+      static _GLIBCXX_CONSTEXPR _Tp
+      round_error() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+
+      /** The representati

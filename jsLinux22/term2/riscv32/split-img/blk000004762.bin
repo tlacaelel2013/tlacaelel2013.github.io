@@ -1,0 +1,1018 @@
+    *  indicated by the argument.  The elements in the argument are
+       *  interpreted as the indices of elements of this valarray to include
+       *  in the subset.  The returned indirect_array refers to these
+       *  elements.
+       *
+       *  @param  __i  The valarray element index list.
+       *  @return  Indirect_array referencing elements in @a __i.
+       */
+      indirect_array<_Tp> operator[](const valarray<size_t>& __i);
+
+      // _lib.valarray.unary_ unary operators:
+      ///  Return a new valarray by applying unary + to each element.
+      typename _UnaryOp<__unary_plus>::_Rt  operator+() const;
+
+      ///  Return a new valarray by applying unary - to each element.
+      typename _UnaryOp<__negate>::_Rt      operator-() const;
+
+      ///  Return a new valarray by applying unary ~ to each element.
+      typename _UnaryOp<__bitwise_not>::_Rt operator~() const;
+
+      ///  Return a new valarray by applying unary ! to each element.
+      typename _UnaryOp<__logical_not>::_Rt operator!() const;
+
+      // _lib.valarray.cassign_ computed assignment:
+      ///  Multiply each element of array by @a t.
+      valarray<_Tp>& operator*=(const _Tp&);
+
+      ///  Divide each element of array by @a t.
+      valarray<_Tp>& operator/=(const _Tp&);
+
+      ///  Set each element e of array to e % @a t.
+      valarray<_Tp>& operator%=(const _Tp&);
+
+      ///  Add @a t to each element of array.
+      valarray<_Tp>& operator+=(const _Tp&);
+
+      ///  Subtract @a t to each element of array.
+      valarray<_Tp>& operator-=(const _Tp&);
+
+      ///  Set each element e of array to e ^ @a t.
+      valarray<_Tp>& operator^=(const _Tp&);
+
+      ///  Set each element e of array to e & @a t.
+      valarray<_Tp>& operator&=(const _Tp&);
+
+      ///  Set each element e of array to e | @a t.
+      valarray<_Tp>& operator|=(const _Tp&);
+
+      ///  Left shift each element e of array by @a t bits.
+      valarray<_Tp>& operator<<=(const _Tp&);
+
+      ///  Right shift each element e of array by @a t bits.
+      valarray<_Tp>& operator>>=(const _Tp&);
+
+      ///  Multiply elements of array by corresponding elements of @a v.
+      valarray<_Tp>& operator*=(const valarray<_Tp>&);
+
+      ///  Divide elements of array by corresponding elements of @a v.
+      valarray<_Tp>& operator/=(const valarray<_Tp>&);
+
+      ///  Modulo elements of array by corresponding elements of @a v.
+      valarray<_Tp>& operator%=(const valarray<_Tp>&);
+
+      ///  Add corresponding elements of @a v to elements of array.
+      valarray<_Tp>& operator+=(const valarray<_Tp>&);
+
+      ///  Subtract corresponding elements of @a v from elements of array.
+      valarray<_Tp>& operator-=(const valarray<_Tp>&);
+
+      ///  Logical xor corresponding elements of @a v with elements of array.
+      valarray<_Tp>& operator^=(const valarray<_Tp>&);
+
+      ///  Logical or corresponding elements of @a v with elements of array.
+      valarray<_Tp>& operator|=(const valarray<_Tp>&);
+
+      ///  Logical and corresponding elements of @a v with elements of array.
+      valarray<_Tp>& operator&=(const valarray<_Tp>&);
+
+      ///  Left shift elements of array by corresponding elements of @a v.
+      valarray<_Tp>& operator<<=(const valarray<_Tp>&);
+
+      ///  Right shift elements of array by corresponding elements of @a v.
+      valarray<_Tp>& operator>>=(const valarray<_Tp>&);
+
+      template<class _Dom>
+	valarray<_Tp>& operator*=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator/=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator%=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator+=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator-=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator^=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator|=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator&=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+        valarray<_Tp>& operator<<=(const _Expr<_Dom, _Tp>&);
+      template<class _Dom>
+	valarray<_Tp>& operator>>=(const _Expr<_Dom, _Tp>&);
+
+      // _lib.valarray.members_ member functions:
+#if __cplusplus >= 201103L
+      ///  Swap.
+      void swap(valarray<_Tp>& __v) noexcept;
+#endif
+
+      ///  Return the number of elements in array.
+      size_t size() const;
+
+      /**
+       *  @brief  Return the sum of all elements in the array.
+       *
+       *  Accumulates the sum of all elements into a Tp using +=.  The order
+       *  of adding the elements is unspecified.
+       */
+      _Tp    sum() const;
+
+      ///  Return the minimum element using operator<().
+      _Tp    min() const;
+
+      ///  Return the maximum element using operator<().
+      _Tp    max() const;
+
+      /**
+       *  @brief  Return a shifted array.
+       *
+       *  A new valarray is constructed as a copy of this array with elements
+       *  in shifted positions.  For an element with index i, the new position
+       *  is i - n.  The new valarray has the same size as the current one.
+       *  New elements without a value are set to 0.  Elements whose new
+       *  position is outside the bounds of the array are discarded.
+       *
+       *  Positive arguments shift toward index 0, discarding elements [0, n).
+       *  Negative arguments discard elements from the top of the array.
+       *
+       *  @param  __n  Number of element positions to shift.
+       *  @return  New valarray with elements in shifted positions.
+       */
+      valarray<_Tp> shift (int __n) const;
+
+      /**
+       *  @brief  Return a rotated array.
+       *
+       *  A new valarray is constructed as a copy of this array with elements
+       *  in shifted positions.  For an element with index i, the new position
+       *  is (i - n) % size().  The new valarray has the same size as the
+       *  current one.  Elements that are shifted beyond the array bounds are
+       *  shifted into the other end of the array.  No elements are lost.
+       *
+       *  Positive arguments shift toward index 0, wrapping around the top.
+       *  Negative arguments shift towards the top, wrapping around to 0.
+       *
+       *  @param  __n  Number of element positions to rotate.
+       *  @return  New valarray with elements in shifted positions.
+       */
+      valarray<_Tp> cshift(int __n) const;
+
+      /**
+       *  @brief  Apply a function to the array.
+       *
+       *  Returns a new valarray with elements assigned to the result of
+       *  applying func to the corresponding element of this array.  The new
+       *  array has the same size as this one.
+       *
+       *  @param  func  Function of Tp returning Tp to apply.
+       *  @return  New valarray with transformed elements.
+       */
+      _Expr<_ValFunClos<_ValArray, _Tp>, _Tp> apply(_Tp func(_Tp)) const;
+
+      /**
+       *  @brief  Apply a function to the array.
+       *
+       *  Returns a new valarray with elements assigned to the result of
+       *  applying func to the corresponding element of this array.  The new
+       *  array has the same size as this one.
+       *
+       *  @param  func  Function of const Tp& returning Tp to apply.
+       *  @return  New valarray with transformed elements.
+       */
+      _Expr<_RefFunClos<_ValArray, _Tp>, _Tp> apply(_Tp func(const _Tp&)) const;
+
+      /**
+       *  @brief  Resize array.
+       *
+       *  Resize this array to @a size and set all elements to @a c.  All
+       *  references and iterators are invalidated.
+       *
+       *  @param  __size  New array size.
+       *  @param  __c  New value for all elements.
+       */
+      void resize(size_t __size, _Tp __c = _Tp());
+
+    private:
+      size_t _M_size;
+      _Tp* __restrict__ _M_data;
+
+      friend class _Array<_Tp>;
+    };
+
+#if __cpp_deduction_guides >= 201606
+  template<typename _Tp, size_t _Nm>
+    valarray(const _Tp(&)[_Nm], size_t) -> valarray<_Tp>;
+#endif
+
+  template<typename _Tp>
+    inline const _Tp&
+    valarray<_Tp>::operator[](size_t __i) const
+    {
+      __glibcxx_requires_subscript(__i);
+      return _M_data[__i];
+    }
+
+  template<typename _Tp>
+    inline _Tp&
+    valarray<_Tp>::operator[](size_t __i)
+    {
+      __glibcxx_requires_subscript(__i);
+      return _M_data[__i];
+    }
+
+  /// @} group numeric_arrays
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace
+
+#include <bits/valarray_after.h>
+#include <bits/slice_array.h>
+#include <bits/gslice.h>
+#include <bits/gslice_array.h>
+#include <bits/mask_array.h>
+#include <bits/indirect_array.h>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+  /**
+   * @addtogroup numeric_arrays
+   * @{
+   */
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray() : _M_size(0), _M_data(0) {}
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(size_t __n)
+    : _M_size(__n), _M_data(__valarray_get_storage<_Tp>(__n))
+    { std::__valarray_default_construct(_M_data, _M_data + __n); }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const _Tp& __t, size_t __n)
+    : _M_size(__n), _M_data(__valarray_get_storage<_Tp>(__n))
+    { std::__valarray_fill_construct(_M_data, _M_data + __n, __t); }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const _Tp* __restrict__ __p, size_t __n)
+    : _M_size(__n), _M_data(__valarray_get_storage<_Tp>(__n))
+    {
+      __glibcxx_assert(__p != 0 || __n == 0);
+      std::__valarray_copy_construct(__p, __p + __n, _M_data);
+    }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const valarray<_Tp>& __v)
+    : _M_size(__v._M_size), _M_data(__valarray_get_storage<_Tp>(__v._M_size))
+    { std::__valarray_copy_construct(__v._M_data, __v._M_data + _M_size,
+				     _M_data); }
+
+#if __cplusplus >= 201103L
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(valarray<_Tp>&& __v) noexcept
+    : _M_size(__v._M_size), _M_data(__v._M_data)
+    {
+      __v._M_size = 0;
+      __v._M_data = 0;
+    }
+#endif
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const slice_array<_Tp>& __sa)
+    : _M_size(__sa._M_sz), _M_data(__valarray_get_storage<_Tp>(__sa._M_sz))
+    {
+      std::__valarray_copy_construct
+	(__sa._M_array, __sa._M_sz, __sa._M_stride, _Array<_Tp>(_M_data));
+    }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const gslice_array<_Tp>& __ga)
+    : _M_size(__ga._M_index.size()),
+      _M_data(__valarray_get_storage<_Tp>(_M_size))
+    {
+      std::__valarray_copy_construct
+	(__ga._M_array, _Array<size_t>(__ga._M_index),
+	 _Array<_Tp>(_M_data), _M_size);
+    }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const mask_array<_Tp>& __ma)
+    : _M_size(__ma._M_sz), _M_data(__valarray_get_storage<_Tp>(__ma._M_sz))
+    {
+      std::__valarray_copy_construct
+	(__ma._M_array, __ma._M_mask, _Array<_Tp>(_M_data), _M_size);
+    }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(const indirect_array<_Tp>& __ia)
+    : _M_size(__ia._M_sz), _M_data(__valarray_get_storage<_Tp>(__ia._M_sz))
+    {
+      std::__valarray_copy_construct
+	(__ia._M_array, __ia._M_index, _Array<_Tp>(_M_data), _M_size);
+    }
+
+#if __cplusplus >= 201103L
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::valarray(initializer_list<_Tp> __l)
+    : _M_size(__l.size()), _M_data(__valarray_get_storage<_Tp>(__l.size()))
+    { std::__valarray_copy_construct(__l.begin(), __l.end(), _M_data); }
+#endif
+
+  template<typename _Tp> template<class _Dom>
+    inline
+    valarray<_Tp>::valarray(const _Expr<_Dom, _Tp>& __e)
+    : _M_size(__e.size()), _M_data(__valarray_get_storage<_Tp>(_M_size))
+    { std::__valarray_copy_construct(__e, _M_size, _Array<_Tp>(_M_data)); }
+
+  template<typename _Tp>
+    inline
+    valarray<_Tp>::~valarray() _GLIBCXX_NOEXCEPT
+    {
+      std::__valarray_destroy_elements(_M_data, _M_data + _M_size);
+      std::__valarray_release_memory(_M_data);
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const valarray<_Tp>& __v)
+    {
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 630. arrays of valarray.
+      if (_M_size == __v._M_size)
+	std::__valarray_copy(__v._M_data, _M_size, _M_data);
+      else
+	{
+	  if (_M_data)
+	    {
+	      std::__valarray_destroy_elements(_M_data, _M_data + _M_size);
+	      std::__valarray_release_memory(_M_data);
+	    }
+	  _M_size = __v._M_size;
+	  _M_data = __valarray_get_storage<_Tp>(_M_size);
+	  std::__valarray_copy_construct(__v._M_data, __v._M_data + _M_size,
+					 _M_data);
+	}
+      return *this;
+    }
+
+#if __cplusplus >= 201103L
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(valarray<_Tp>&& __v) noexcept
+    {
+      if (_M_data)
+	{
+	  std::__valarray_destroy_elements(_M_data, _M_data + _M_size);
+	  std::__valarray_release_memory(_M_data);
+	}
+      _M_size = __v._M_size;
+      _M_data = __v._M_data;
+      __v._M_size = 0;
+      __v._M_data = 0;
+      return *this;
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(initializer_list<_Tp> __l)
+    {
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 630. arrays of valarray.
+      if (_M_size == __l.size())
+	std::__valarray_copy(__l.begin(), __l.size(), _M_data);
+      else
+	{
+	  if (_M_data)
+	    {
+	      std::__valarray_destroy_elements(_M_data, _M_data + _M_size);
+	      std::__valarray_release_memory(_M_data);
+	    }
+	  _M_size = __l.size();
+	  _M_data = __valarray_get_storage<_Tp>(_M_size);
+	  std::__valarray_copy_construct(__l.begin(), __l.begin() + _M_size,
+					 _M_data);
+	}
+      return *this;
+    }
+#endif
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const _Tp& __t)
+    {
+      std::__valarray_fill(_M_data, _M_size, __t);
+      return *this;
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const slice_array<_Tp>& __sa)
+    {
+      __glibcxx_assert(_M_size == __sa._M_sz);
+      std::__valarray_copy(__sa._M_array, __sa._M_sz,
+			   __sa._M_stride, _Array<_Tp>(_M_data));
+      return *this;
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const gslice_array<_Tp>& __ga)
+    {
+      __glibcxx_assert(_M_size == __ga._M_index.size());
+      std::__valarray_copy(__ga._M_array, _Array<size_t>(__ga._M_index),
+			   _Array<_Tp>(_M_data), _M_size);
+      return *this;
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const mask_array<_Tp>& __ma)
+    {
+      __glibcxx_assert(_M_size == __ma._M_sz);
+      std::__valarray_copy(__ma._M_array, __ma._M_mask,
+			   _Array<_Tp>(_M_data), _M_size);
+      return *this;
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const indirect_array<_Tp>& __ia)
+    {
+      __glibcxx_assert(_M_size == __ia._M_sz);
+      std::__valarray_copy(__ia._M_array, __ia._M_index,
+			   _Array<_Tp>(_M_data), _M_size);
+      return *this;
+    }
+
+  template<typename _Tp> template<class _Dom>
+    inline valarray<_Tp>&
+    valarray<_Tp>::operator=(const _Expr<_Dom, _Tp>& __e)
+    {
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 630. arrays of valarray.
+      if (_M_size == __e.size())
+	std::__valarray_copy(__e, _M_size, _Array<_Tp>(_M_data));
+      else
+	{
+	  if (_M_data)
+	    {
+	      std::__valarray_destroy_elements(_M_data, _M_data + _M_size);
+	      std::__valarray_release_memory(_M_data);
+	    }
+	  _M_size = __e.size();
+	  _M_data = __valarray_get_storage<_Tp>(_M_size);
+	  std::__valarray_copy_construct(__e, _M_size, _Array<_Tp>(_M_data));
+	}
+      return *this;
+    }
+
+  template<typename _Tp>
+    inline _Expr<_SClos<_ValArray,_Tp>, _Tp>
+    valarray<_Tp>::operator[](slice __s) const
+    {
+      typedef _SClos<_ValArray,_Tp> _Closure;
+      return _Expr<_Closure, _Tp>(_Closure (_Array<_Tp>(_M_data), __s));
+    }
+
+  template<typename _Tp>
+    inline slice_array<_Tp>
+    valarray<_Tp>::operator[](slice __s)
+    { return slice_array<_Tp>(_Array<_Tp>(_M_data), __s); }
+
+  template<typename _Tp>
+    inline _Expr<_GClos<_ValArray,_Tp>, _Tp>
+    valarray<_Tp>::operator[](const gslice& __gs) const
+    {
+      typedef _GClos<_ValArray,_Tp> _Closure;
+      return _Expr<_Closure, _Tp>
+	(_Closure(_Array<_Tp>(_M_data), __gs._M_index->_M_index));
+    }
+
+  template<typename _Tp>
+    inline gslice_array<_Tp>
+    valarray<_Tp>::operator[](const gslice& __gs)
+    {
+      return gslice_array<_Tp>
+	(_Array<_Tp>(_M_data), __gs._M_index->_M_index);
+    }
+
+  template<typename _Tp>
+    inline valarray<_Tp>
+    valarray<_Tp>::operator[](const valarray<bool>& __m) const
+    {
+      size_t __s = 0;
+      size_t __e = __m.size();
+      for (size_t __i=0; __i<__e; ++__i)
+	if (__m[__i]) ++__s;
+      return valarray<_Tp>(mask_array<_Tp>(_Array<_Tp>(_M_data), __s,
+					   _Array<bool> (__m)));
+    }
+
+  template<typename _Tp>
+    inline mask_array<_Tp>
+    valarray<_Tp>::operator[](const valarray<bool>& __m)
+    {
+      size_t __s = 0;
+      size_t __e = __m.size();
+      for (size_t __i=0; __i<__e; ++__i)
+	if (__m[__i]) ++__s;
+      return mask_array<_Tp>(_Array<_Tp>(_M_data), __s, _Array<bool>(__m));
+    }
+
+  template<typename _Tp>
+    inline _Expr<_IClos<_ValArray,_Tp>, _Tp>
+    valarray<_Tp>::operator[](const valarray<size_t>& __i) const
+    {
+      typedef _IClos<_ValArray,_Tp> _Closure;
+      return _Expr<_Closure, _Tp>(_Closure(*this, __i));
+    }
+
+  template<typename _Tp>
+    inline indirect_array<_Tp>
+    valarray<_Tp>::operator[](const valarray<size_t>& __i)
+    {
+      return indirect_array<_Tp>(_Array<_Tp>(_M_data), __i.size(),
+				 _Array<size_t>(__i));
+    }
+
+#if __cplusplus >= 201103L
+  template<class _Tp>
+    inline void
+    valarray<_Tp>::swap(valarray<_Tp>& __v) noexcept
+    {
+      std::swap(_M_size, __v._M_size);
+      std::swap(_M_data, __v._M_data);
+    }
+#endif
+
+  template<class _Tp>
+    inline size_t
+    valarray<_Tp>::size() const
+    { return _M_size; }
+
+  template<class _Tp>
+    inline _Tp
+    valarray<_Tp>::sum() const
+    {
+      __glibcxx_assert(_M_size > 0);
+      return std::__valarray_sum(_M_data, _M_data + _M_size);
+    }
+
+  template<class _Tp>
+     inline valarray<_Tp>
+     valarray<_Tp>::shift(int __n) const
+     {
+       valarray<_Tp> __ret;
+
+       if (_M_size == 0)
+	 return __ret;
+
+       _Tp* __restrict__ __tmp_M_data =
+	 std::__valarray_get_storage<_Tp>(_M_size);
+
+       if (__n == 0)
+	 std::__valarray_copy_construct(_M_data,
+					_M_data + _M_size, __tmp_M_data);
+       else if (__n > 0)      // shift left
+	 {
+	   if (size_t(__n) > _M_size)
+	     __n = int(_M_size);
+
+	   std::__valarray_copy_construct(_M_data + __n,
+					  _M_data + _M_size, __tmp_M_data);
+	   std::__valarray_default_construct(__tmp_M_data + _M_size - __n,
+					     __tmp_M_data + _M_size);
+	 }
+       else                   // shift right
+	 {
+	   if (-size_t(__n) > _M_size)
+	     __n = -int(_M_size);
+
+	   std::__valarray_copy_construct(_M_data, _M_data + _M_size + __n,
+					  __tmp_M_data - __n);
+	   std::__valarray_default_construct(__tmp_M_data,
+					     __tmp_M_data - __n);
+	 }
+
+       __ret._M_size = _M_size;
+       __ret._M_data = __tmp_M_data;
+       return __ret;
+     }
+
+  template<class _Tp>
+     inline valarray<_Tp>
+     valarray<_Tp>::cshift(int __n) const
+     {
+       valarray<_Tp> __ret;
+
+       if (_M_size == 0)
+	 return __ret;
+
+       _Tp* __restrict__ __tmp_M_data =
+	 std::__valarray_get_storage<_Tp>(_M_size);
+
+       if (__n == 0)
+	 std::__valarray_copy_construct(_M_data,
+					_M_data + _M_size, __tmp_M_data);
+       else if (__n > 0)      // cshift left
+	 {
+	   if (size_t(__n) > _M_size)
+	     __n = int(__n % _M_size);
+
+	   std::__valarray_copy_construct(_M_data, _M_data + __n,
+					  __tmp_M_data + _M_size - __n);
+	   std::__valarray_copy_construct(_M_data + __n, _M_data + _M_size,
+					  __tmp_M_data);
+	 }
+       else                   // cshift right
+	 {
+	   if (-size_t(__n) > _M_size)
+	     __n = -int(-size_t(__n) % _M_size);
+
+	   std::__valarray_copy_construct(_M_data + _M_size + __n,
+					  _M_data + _M_size, __tmp_M_data);
+	   std::__valarray_copy_construct(_M_data, _M_data + _M_size + __n,
+					  __tmp_M_data - __n);
+	 }
+
+       __ret._M_size = _M_size;
+       __ret._M_data = __tmp_M_data;
+       return __ret;
+     }
+
+  template<class _Tp>
+    inline void
+    valarray<_Tp>::resize(size_t __n, _Tp __c)
+    {
+      // This complication is so to make valarray<valarray<T> > work
+      // even though it is not required by the standard.  Nobody should
+      // be saying valarray<valarray<T> > anyway.  See the specs.
+      std::__valarray_destroy_elements(_M_data, _M_data + _M_size);
+      if (_M_size != __n)
+	{
+	  std::__valarray_release_memory(_M_data);
+	  _M_size = __n;
+	  _M_data = __valarray_get_storage<_Tp>(__n);
+	}
+      std::__valarray_fill_construct(_M_data, _M_data + __n, __c);
+    }
+
+  template<typename _Tp>
+    inline _Tp
+    valarray<_Tp>::min() const
+    {
+      __glibcxx_assert(_M_size > 0);
+      return *std::min_element(_M_data, _M_data + _M_size);
+    }
+
+  template<typename _Tp>
+    inline _Tp
+    valarray<_Tp>::max() const
+    {
+      __glibcxx_assert(_M_size > 0);
+      return *std::max_element(_M_data, _M_data + _M_size);
+    }
+
+  template<class _Tp>
+    inline _Expr<_ValFunClos<_ValArray, _Tp>, _Tp>
+    valarray<_Tp>::apply(_Tp func(_Tp)) const
+    {
+      typedef _ValFunClos<_ValArray, _Tp> _Closure;
+      return _Expr<_Closure, _Tp>(_Closure(*this, func));
+    }
+
+  template<class _Tp>
+    inline _Expr<_RefFunClos<_ValArray, _Tp>, _Tp>
+    valarray<_Tp>::apply(_Tp func(const _Tp &)) const
+    {
+      typedef _RefFunClos<_ValArray, _Tp> _Closure;
+      return _Expr<_Closure, _Tp>(_Closure(*this, func));
+    }
+
+#define _DEFINE_VALARRAY_UNARY_OPERATOR(_Op, _Name)                     \
+  template<typename _Tp>						\
+    inline typename valarray<_Tp>::template _UnaryOp<_Name>::_Rt	\
+    valarray<_Tp>::operator _Op() const					\
+    {									\
+      typedef _UnClos<_Name, _ValArray, _Tp> _Closure;			\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(*this));			\
+    }
+
+    _DEFINE_VALARRAY_UNARY_OPERATOR(+, __unary_plus)
+    _DEFINE_VALARRAY_UNARY_OPERATOR(-, __negate)
+    _DEFINE_VALARRAY_UNARY_OPERATOR(~, __bitwise_not)
+    _DEFINE_VALARRAY_UNARY_OPERATOR (!, __logical_not)
+
+#undef _DEFINE_VALARRAY_UNARY_OPERATOR
+
+#define _DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(_Op, _Name)               \
+  template<class _Tp>							\
+    inline valarray<_Tp>&						\
+    valarray<_Tp>::operator _Op##=(const _Tp &__t)			\
+    {									\
+      _Array_augmented_##_Name(_Array<_Tp>(_M_data), _M_size, __t);	\
+      return *this;							\
+    }									\
+									\
+  template<class _Tp>							\
+    inline valarray<_Tp>&						\
+    valarray<_Tp>::operator _Op##=(const valarray<_Tp> &__v)		\
+    {									\
+      __glibcxx_assert(_M_size == __v._M_size);				\
+      _Array_augmented_##_Name(_Array<_Tp>(_M_data), _M_size, 		\
+			       _Array<_Tp>(__v._M_data));		\
+      return *this;							\
+    }
+
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(+, __plus)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(-, __minus)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(*, __multiplies)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(/, __divides)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(%, __modulus)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(^, __bitwise_xor)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(&, __bitwise_and)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(|, __bitwise_or)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(<<, __shift_left)
+_DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT(>>, __shift_right)
+
+#undef _DEFINE_VALARRAY_AUGMENTED_ASSIGNMENT
+
+#define _DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(_Op, _Name)          \
+  template<class _Tp> template<class _Dom>				\
+    inline valarray<_Tp>&						\
+    valarray<_Tp>::operator _Op##=(const _Expr<_Dom, _Tp>& __e)		\
+    {									\
+      _Array_augmented_##_Name(_Array<_Tp>(_M_data), __e, _M_size);	\
+      return *this;							\
+    }
+
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(+, __plus)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(-, __minus)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(*, __multiplies)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(/, __divides)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(%, __modulus)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(^, __bitwise_xor)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(&, __bitwise_and)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(|, __bitwise_or)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(<<, __shift_left)
+_DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT(>>, __shift_right)
+
+#undef _DEFINE_VALARRAY_EXPR_AUGMENTED_ASSIGNMENT
+
+
+#define _DEFINE_BINARY_OPERATOR(_Op, _Name)				\
+  template<typename _Tp>						\
+    inline _Expr<_BinClos<_Name, _ValArray, _ValArray, _Tp, _Tp>,	\
+		 typename __fun<_Name, _Tp>::result_type>		\
+    operator _Op(const valarray<_Tp>& __v, const valarray<_Tp>& __w)	\
+    {									\
+      __glibcxx_assert(__v.size() == __w.size());			\
+      typedef _BinClos<_Name, _ValArray, _ValArray, _Tp, _Tp> _Closure;	\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(__v, __w));			\
+    }									\
+									\
+  template<typename _Tp>						\
+    inline _Expr<_BinClos<_Name, _ValArray,_Constant, _Tp, _Tp>,	\
+		 typename __fun<_Name, _Tp>::result_type>		\
+    operator _Op(const valarray<_Tp>& __v,				\
+		 const typename valarray<_Tp>::value_type& __t)		\
+    {									\
+      typedef _BinClos<_Name, _ValArray, _Constant, _Tp, _Tp> _Closure;	\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(__v, __t));			\
+    }									\
+									\
+  template<typename _Tp>						\
+    inline _Expr<_BinClos<_Name, _Constant, _ValArray, _Tp, _Tp>,	\
+		 typename __fun<_Name, _Tp>::result_type>		\
+    operator _Op(const typename valarray<_Tp>::value_type& __t,		\
+		 const valarray<_Tp>& __v)				\
+    {									\
+      typedef _BinClos<_Name, _Constant, _ValArray, _Tp, _Tp> _Closure;	\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(__t, __v));			\
+    }
+
+_DEFINE_BINARY_OPERATOR(+, __plus)
+_DEFINE_BINARY_OPERATOR(-, __minus)
+_DEFINE_BINARY_OPERATOR(*, __multiplies)
+_DEFINE_BINARY_OPERATOR(/, __divides)
+_DEFINE_BINARY_OPERATOR(%, __modulus)
+_DEFINE_BINARY_OPERATOR(^, __bitwise_xor)
+_DEFINE_BINARY_OPERATOR(&, __bitwise_and)
+_DEFINE_BINARY_OPERATOR(|, __bitwise_or)
+_DEFINE_BINARY_OPERATOR(<<, __shift_left)
+_DEFINE_BINARY_OPERATOR(>>, __shift_right)
+_DEFINE_BINARY_OPERATOR(&&, __logical_and)
+_DEFINE_BINARY_OPERATOR(||, __logical_or)
+_DEFINE_BINARY_OPERATOR(==, __equal_to)
+_DEFINE_BINARY_OPERATOR(!=, __not_equal_to)
+_DEFINE_BINARY_OPERATOR(<, __less)
+_DEFINE_BINARY_OPERATOR(>, __greater)
+_DEFINE_BINARY_OPERATOR(<=, __less_equal)
+_DEFINE_BINARY_OPERATOR(>=, __greater_equal)
+
+#undef _DEFINE_BINARY_OPERATOR
+
+#if __cplusplus >= 201103L
+  /**
+   *  @brief  Return an iterator pointing to the first element of
+   *          the valarray.
+   *  @param  __va  valarray.
+   */
+  template<class _Tp>
+    inline _Tp*
+    begin(valarray<_Tp>& __va) noexcept
+    { return __va.size() ? std::__addressof(__va[0]) : nullptr; }
+
+  /**
+   *  @brief  Return an iterator pointing to the first element of
+   *          the const valarray.
+   *  @param  __va  valarray.
+   */
+  template<class _Tp>
+    inline const _Tp*
+    begin(const valarray<_Tp>& __va) noexcept
+    { return __va.size() ? std::__addressof(__va[0]) : nullptr; }
+
+  /**
+   *  @brief  Return an iterator pointing to one past the last element of
+   *          the valarray.
+   *  @param  __va  valarray.
+   */
+  template<class _Tp>
+    inline _Tp*
+    end(valarray<_Tp>& __va) noexcept
+    {
+      if (auto __n = __va.size())
+	return std::__addressof(__va[0]) + __n;
+      else
+	return nullptr;
+    }
+
+  /**
+   *  @brief  Return an iterator pointing to one past the last element of
+   *          the const valarray.
+   *  @param  __va  valarray.
+   */
+  template<class _Tp>
+    inline const _Tp*
+    end(const valarray<_Tp>& __va) noexcept
+    {
+      if (auto __n = __va.size())
+	return std::__addressof(__va[0]) + __n;
+      else
+	return nullptr;
+    }
+#endif // C++11
+
+  /// @} group numeric_arrays
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace
+
+#endif /* _GLIBCXX_VALARRAY */
+                                                                                                                                                                                                                                                                                                                                                                                                          // <variant> -*- C++ -*-
+
+// Copyright (C) 2016-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file variant
+ *  This is the `<variant>` C++ Library header.
+ */
+
+#ifndef _GLIBCXX_VARIANT
+#define _GLIBCXX_VARIANT 1
+
+#pragma GCC system_header
+
+#if __cplusplus >= 201703L
+
+#include <type_traits>
+#include <utility>
+#include <bits/enable_special_members.h>
+#include <bits/functexcept.h>
+#include <bits/move.h>
+#include <bits/functional_hash.h>
+#include <bits/invoke.h>
+#include <ext/aligned_buffer.h>
+#include <bits/parse_numbers.h>
+#include <bits/stl_iterator_base_types.h>
+#include <bits/stl_iterator_base_funcs.h>
+#include <bits/stl_construct.h>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+namespace __detail
+{
+namespace __variant
+{
+  template<size_t _Np, typename... _Types>
+    struct _Nth_type;
+
+  template<size_t _Np, typename _First, typename... _Rest>
+    struct _Nth_type<_Np, _First, _Rest...>
+    : _Nth_type<_Np-1, _Rest...> { };
+
+  template<typename _First, typename... _Rest>
+    struct _Nth_type<0, _First, _Rest...>
+    { using type = _First; };
+
+} // namespace __variant
+} // namespace __detail
+
+#define __cpp_lib_variant 201606L
+
+  template<typename... _Types> class tuple;
+  template<typename... _Types> class variant;
+  template <typename> struct hash;
+
+  template<typename _Variant>
+    struct variant_size;
+
+  template<typename _Variant>
+    struct variant_size<const _Variant> : variant_size<_Variant> {};
+
+  template<typename _Variant>
+    struct variant_size<volatile _Variant> : variant_size<_Variant> {};
+
+  template<typename _Variant>
+    struct variant_size<const volatile _Variant> : variant_size<_Variant> {};
+
+  template<typename... _Types>
+    struct variant_size<variant<_Types...>>
+    : std::integral_constant<size_t, sizeof...(_Types)> {};
+
+  template<typename _Variant>
+    inline constexpr size_t variant_size_v = variant_size<_Variant>::value;
+
+  template<size_t _Np, typename _Variant>
+    struct variant_alternative;
+
+  template<size_t _Np, typename _First, typename... _Rest>
+    struct variant_alternative<_Np, variant<_First, _Rest...>>
+    : variant_alternative<_Np-1, variant<_Rest...>> {};
+
+  template<typename _First, typename... _Rest>
+    struct variant_alternative<0, variant<_First, _Rest...>>
+    { using type = _First; };
+
+  template<size_t _Np, typename _Variant>
+    using variant_alternative_t =
+      typename variant_alternative<_Np, _Variant>::type;
+
+  template<size_t _Np, typename _Variant>
+    struct variant_alternative<_Np, const _Variant>
+    { using type = add_const_t<variant_alternative_t<_Np, _Variant>>; };
+
+  template<size_t _Np, typename _Variant>
+    struct variant_alternative<_Np, volatile _Variant>
+    { using type = add_volatile_t<variant_alternative_t<_Np, _Variant>>; };
+
+  template<size_t _Np, typename _Variant>
+    struct variant_alternative<_Np, const volatile _Variant>
+    { using type = add_cv_t<variant_alternative_t<_Np, _Variant>>; };
+
+  inline constexpr size_t variant_npos = -1;
+
+  template<size_t _Np, typename... _Types>
+    constexpr variant_alternative_t<_Np, variant<_Types...>>&
+    get(v

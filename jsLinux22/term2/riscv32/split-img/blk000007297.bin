@@ -1,0 +1,785 @@
+/* mga_drm.h -- Public header for the Matrox g200/g400 driver -*- linux-c -*-
+ * Created: Tue Jan 25 01:50:01 1999 by jhartmann@precisioninsight.com
+ *
+ * Copyright 1999 Precision Insight, Inc., Cedar Park, Texas.
+ * Copyright 2000 VA Linux Systems, Inc., Sunnyvale, California.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Authors:
+ *    Jeff Hartmann <jhartmann@valinux.com>
+ *    Keith Whitwell <keith@tungstengraphics.com>
+ *
+ * Rewritten by:
+ *    Gareth Hughes <gareth@valinux.com>
+ */
+
+#ifndef __MGA_DRM_H__
+#define __MGA_DRM_H__
+
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/* WARNING: If you change any of these defines, make sure to change the
+ * defines in the Xserver file (mga_sarea.h)
+ */
+
+#ifndef __MGA_SAREA_DEFINES__
+#define __MGA_SAREA_DEFINES__
+
+/* WARP pipe flags
+ */
+#define MGA_F			0x1	/* fog */
+#define MGA_A			0x2	/* alpha */
+#define MGA_S			0x4	/* specular */
+#define MGA_T2			0x8	/* multitexture */
+
+#define MGA_WARP_TGZ		0
+#define MGA_WARP_TGZF		(MGA_F)
+#define MGA_WARP_TGZA		(MGA_A)
+#define MGA_WARP_TGZAF		(MGA_F|MGA_A)
+#define MGA_WARP_TGZS		(MGA_S)
+#define MGA_WARP_TGZSF		(MGA_S|MGA_F)
+#define MGA_WARP_TGZSA		(MGA_S|MGA_A)
+#define MGA_WARP_TGZSAF		(MGA_S|MGA_F|MGA_A)
+#define MGA_WARP_T2GZ		(MGA_T2)
+#define MGA_WARP_T2GZF		(MGA_T2|MGA_F)
+#define MGA_WARP_T2GZA		(MGA_T2|MGA_A)
+#define MGA_WARP_T2GZAF		(MGA_T2|MGA_A|MGA_F)
+#define MGA_WARP_T2GZS		(MGA_T2|MGA_S)
+#define MGA_WARP_T2GZSF		(MGA_T2|MGA_S|MGA_F)
+#define MGA_WARP_T2GZSA		(MGA_T2|MGA_S|MGA_A)
+#define MGA_WARP_T2GZSAF	(MGA_T2|MGA_S|MGA_F|MGA_A)
+
+#define MGA_MAX_G200_PIPES	8	/* no multitex */
+#define MGA_MAX_G400_PIPES	16
+#define MGA_MAX_WARP_PIPES	MGA_MAX_G400_PIPES
+#define MGA_WARP_UCODE_SIZE	32768	/* in bytes */
+
+#define MGA_CARD_TYPE_G200	1
+#define MGA_CARD_TYPE_G400	2
+#define MGA_CARD_TYPE_G450	3	/* not currently used */
+#define MGA_CARD_TYPE_G550	4
+
+#define MGA_FRONT		0x1
+#define MGA_BACK		0x2
+#define MGA_DEPTH		0x4
+
+/* What needs to be changed for the current vertex dma buffer?
+ */
+#define MGA_UPLOAD_CONTEXT	0x1
+#define MGA_UPLOAD_TEX0		0x2
+#define MGA_UPLOAD_TEX1		0x4
+#define MGA_UPLOAD_PIPE		0x8
+#define MGA_UPLOAD_TEX0IMAGE	0x10	/* handled client-side */
+#define MGA_UPLOAD_TEX1IMAGE	0x20	/* handled client-side */
+#define MGA_UPLOAD_2D		0x40
+#define MGA_WAIT_AGE		0x80	/* handled client-side */
+#define MGA_UPLOAD_CLIPRECTS	0x100	/* handled client-side */
+#if 0
+#define MGA_DMA_FLUSH		0x200	/* set when someone gets the lock
+					   quiescent */
+#endif
+
+/* 32 buffers of 64k each, total 2 meg.
+ */
+#define MGA_BUFFER_SIZE		(1 << 16)
+#define MGA_NUM_BUFFERS		128
+
+/* Keep these small for testing.
+ */
+#define MGA_NR_SAREA_CLIPRECTS	8
+
+/* 2 heaps (1 for card, 1 for agp), each divided into up to 128
+ * regions, subject to a minimum region size of (1<<16) == 64k.
+ *
+ * Clients may subdivide regions internally, but when sharing between
+ * clients, the region size is the minimum granularity.
+ */
+
+#define MGA_CARD_HEAP			0
+#define MGA_AGP_HEAP			1
+#define MGA_NR_TEX_HEAPS		2
+#define MGA_NR_TEX_REGIONS		16
+#define MGA_LOG_MIN_TEX_REGION_SIZE	16
+
+#define  DRM_MGA_IDLE_RETRY          2048
+
+#endif				/* __MGA_SAREA_DEFINES__ */
+
+/* Setup registers for 3D context
+ */
+typedef struct {
+	unsigned int dstorg;
+	unsigned int maccess;
+	unsigned int plnwt;
+	unsigned int dwgctl;
+	unsigned int alphactrl;
+	unsigned int fogcolor;
+	unsigned int wflag;
+	unsigned int tdualstage0;
+	unsigned int tdualstage1;
+	unsigned int fcol;
+	unsigned int stencil;
+	unsigned int stencilctl;
+} drm_mga_context_regs_t;
+
+/* Setup registers for 2D, X server
+ */
+typedef struct {
+	unsigned int pitch;
+} drm_mga_server_regs_t;
+
+/* Setup registers for each texture unit
+ */
+typedef struct {
+	unsigned int texctl;
+	unsigned int texctl2;
+	unsigned int texfilter;
+	unsigned int texbordercol;
+	unsigned int texorg;
+	unsigned int texwidth;
+	unsigned int texheight;
+	unsigned int texorg1;
+	unsigned int texorg2;
+	unsigned int texorg3;
+	unsigned int texorg4;
+} drm_mga_texture_regs_t;
+
+/* General aging mechanism
+ */
+typedef struct {
+	unsigned int head;	/* Position of head pointer          */
+	unsigned int wrap;	/* Primary DMA wrap count            */
+} drm_mga_age_t;
+
+typedef struct _drm_mga_sarea {
+	/* The channel for communication of state information to the kernel
+	 * on firing a vertex dma buffer.
+	 */
+	drm_mga_context_regs_t context_state;
+	drm_mga_server_regs_t server_state;
+	drm_mga_texture_regs_t tex_state[2];
+	unsigned int warp_pipe;
+	unsigned int dirty;
+	unsigned int vertsize;
+
+	/* The current cliprects, or a subset thereof.
+	 */
+	struct drm_clip_rect boxes[MGA_NR_SAREA_CLIPRECTS];
+	unsigned int nbox;
+
+	/* Information about the most recently used 3d drawable.  The
+	 * client fills in the req_* fields, the server fills in the
+	 * exported_ fields and puts the cliprects into boxes, above.
+	 *
+	 * The client clears the exported_drawable field before
+	 * clobbering the boxes data.
+	 */
+	unsigned int req_drawable;	/* the X drawable id */
+	unsigned int req_draw_buffer;	/* MGA_FRONT or MGA_BACK */
+
+	unsigned int exported_drawable;
+	unsigned int exported_index;
+	unsigned int exported_stamp;
+	unsigned int exported_buffers;
+	unsigned int exported_nfront;
+	unsigned int exported_nback;
+	int exported_back_x, exported_front_x, exported_w;
+	int exported_back_y, exported_front_y, exported_h;
+	struct drm_clip_rect exported_boxes[MGA_NR_SAREA_CLIPRECTS];
+
+	/* Counters for aging textures and for client-side throttling.
+	 */
+	unsigned int status[4];
+	unsigned int last_wrap;
+
+	drm_mga_age_t last_frame;
+	unsigned int last_enqueue;	/* last time a buffer was enqueued */
+	unsigned int last_dispatch;	/* age of the most recently dispatched buffer */
+	unsigned int last_quiescent;	/*  */
+
+	/* LRU lists for texture memory in agp space and on the card.
+	 */
+	struct drm_tex_region texList[MGA_NR_TEX_HEAPS][MGA_NR_TEX_REGIONS + 1];
+	unsigned int texAge[MGA_NR_TEX_HEAPS];
+
+	/* Mechanism to validate card state.
+	 */
+	int ctxOwner;
+} drm_mga_sarea_t;
+
+/* MGA specific ioctls
+ * The device specific ioctl range is 0x40 to 0x79.
+ */
+#define DRM_MGA_INIT     0x00
+#define DRM_MGA_FLUSH    0x01
+#define DRM_MGA_RESET    0x02
+#define DRM_MGA_SWAP     0x03
+#define DRM_MGA_CLEAR    0x04
+#define DRM_MGA_VERTEX   0x05
+#define DRM_MGA_INDICES  0x06
+#define DRM_MGA_ILOAD    0x07
+#define DRM_MGA_BLIT     0x08
+#define DRM_MGA_GETPARAM 0x09
+
+/* 3.2:
+ * ioctls for operating on fences.
+ */
+#define DRM_MGA_SET_FENCE      0x0a
+#define DRM_MGA_WAIT_FENCE     0x0b
+#define DRM_MGA_DMA_BOOTSTRAP  0x0c
+
+#define DRM_IOCTL_MGA_INIT     DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_INIT, drm_mga_init_t)
+#define DRM_IOCTL_MGA_FLUSH    DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_FLUSH, struct drm_lock)
+#define DRM_IOCTL_MGA_RESET    DRM_IO(  DRM_COMMAND_BASE + DRM_MGA_RESET)
+#define DRM_IOCTL_MGA_SWAP     DRM_IO(  DRM_COMMAND_BASE + DRM_MGA_SWAP)
+#define DRM_IOCTL_MGA_CLEAR    DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_CLEAR, drm_mga_clear_t)
+#define DRM_IOCTL_MGA_VERTEX   DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_VERTEX, drm_mga_vertex_t)
+#define DRM_IOCTL_MGA_INDICES  DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_INDICES, drm_mga_indices_t)
+#define DRM_IOCTL_MGA_ILOAD    DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_ILOAD, drm_mga_iload_t)
+#define DRM_IOCTL_MGA_BLIT     DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_BLIT, drm_mga_blit_t)
+#define DRM_IOCTL_MGA_GETPARAM DRM_IOWR(DRM_COMMAND_BASE + DRM_MGA_GETPARAM, drm_mga_getparam_t)
+#define DRM_IOCTL_MGA_SET_FENCE     DRM_IOW( DRM_COMMAND_BASE + DRM_MGA_SET_FENCE, __u32)
+#define DRM_IOCTL_MGA_WAIT_FENCE    DRM_IOWR(DRM_COMMAND_BASE + DRM_MGA_WAIT_FENCE, __u32)
+#define DRM_IOCTL_MGA_DMA_BOOTSTRAP DRM_IOWR(DRM_COMMAND_BASE + DRM_MGA_DMA_BOOTSTRAP, drm_mga_dma_bootstrap_t)
+
+typedef struct _drm_mga_warp_index {
+	int installed;
+	unsigned long phys_addr;
+	int size;
+} drm_mga_warp_index_t;
+
+typedef struct drm_mga_init {
+	enum {
+		MGA_INIT_DMA = 0x01,
+		MGA_CLEANUP_DMA = 0x02
+	} func;
+
+	unsigned long sarea_priv_offset;
+
+	int chipset;
+	int sgram;
+
+	unsigned int maccess;
+
+	unsigned int fb_cpp;
+	unsigned int front_offset, front_pitch;
+	unsigned int back_offset, back_pitch;
+
+	unsigned int depth_cpp;
+	unsigned int depth_offset, depth_pitch;
+
+	unsigned int texture_offset[MGA_NR_TEX_HEAPS];
+	unsigned int texture_size[MGA_NR_TEX_HEAPS];
+
+	unsigned long fb_offset;
+	unsigned long mmio_offset;
+	unsigned long status_offset;
+	unsigned long warp_offset;
+	unsigned long primary_offset;
+	unsigned long buffers_offset;
+} drm_mga_init_t;
+
+typedef struct drm_mga_dma_bootstrap {
+	/**
+	 * \name AGP texture region
+	 *
+	 * On return from the DRM_MGA_DMA_BOOTSTRAP ioctl, these fields will
+	 * be filled in with the actual AGP texture settings.
+	 *
+	 * \warning
+	 * If these fields are non-zero, but dma_mga_dma_bootstrap::agp_mode
+	 * is zero, it means that PCI memory (most likely through the use of
+	 * an IOMMU) is being used for "AGP" textures.
+	 */
+	/*@{ */
+	unsigned long texture_handle; /**< Handle used to map AGP textures. */
+	__u32 texture_size;	      /**< Size of the AGP texture region. */
+	/*@} */
+
+	/**
+	 * Requested size of the primary DMA region.
+	 *
+	 * On return from the DRM_MGA_DMA_BOOTSTRAP ioctl, this field will be
+	 * filled in with the actual AGP mode.  If AGP was not available
+	 */
+	__u32 primary_size;
+
+	/**
+	 * Requested number of secondary DMA buffers.
+	 *
+	 * On return from the DRM_MGA_DMA_BOOTSTRAP ioctl, this field will be
+	 * filled in with the actual number of secondary DMA buffers
+	 * allocated.  Particularly when PCI DMA is used, this may be
+	 * (subtantially) less than the number requested.
+	 */
+	__u32 secondary_bin_count;
+
+	/**
+	 * Requested size of each secondary DMA buffer.
+	 *
+	 * While the kernel \b is free to reduce
+	 * dma_mga_dma_bootstrap::secondary_bin_count, it is \b not allowed
+	 * to reduce dma_mga_dma_bootstrap::secondary_bin_size.
+	 */
+	__u32 secondary_bin_size;
+
+	/**
+	 * Bit-wise mask of AGPSTAT2_* values.  Currently only \c AGPSTAT2_1X,
+	 * \c AGPSTAT2_2X, and \c AGPSTAT2_4X are supported.  If this value is
+	 * zero, it means that PCI DMA should be used, even if AGP is
+	 * possible.
+	 *
+	 * On return from the DRM_MGA_DMA_BOOTSTRAP ioctl, this field will be
+	 * filled in with the actual AGP mode.  If AGP was not available
+	 * (i.e., PCI DMA was used), this value will be zero.
+	 */
+	__u32 agp_mode;
+
+	/**
+	 * Desired AGP GART size, measured in megabytes.
+	 */
+	__u8 agp_size;
+} drm_mga_dma_bootstrap_t;
+
+typedef struct drm_mga_clear {
+	unsigned int flags;
+	unsigned int clear_color;
+	unsigned int clear_depth;
+	unsigned int color_mask;
+	unsigned int depth_mask;
+} drm_mga_clear_t;
+
+typedef struct drm_mga_vertex {
+	int idx;		/* buffer to queue */
+	int used;		/* bytes in use */
+	int discard;		/* client finished with buffer?  */
+} drm_mga_vertex_t;
+
+typedef struct drm_mga_indices {
+	int idx;		/* buffer to queue */
+	unsigned int start;
+	unsigned int end;
+	int discard;		/* client finished with buffer?  */
+} drm_mga_indices_t;
+
+typedef struct drm_mga_iload {
+	int idx;
+	unsigned int dstorg;
+	unsigned int length;
+} drm_mga_iload_t;
+
+typedef struct _drm_mga_blit {
+	unsigned int planemask;
+	unsigned int srcorg;
+	unsigned int dstorg;
+	int src_pitch, dst_pitch;
+	int delta_sx, delta_sy;
+	int delta_dx, delta_dy;
+	int height, ydir;	/* flip image vertically */
+	int source_pitch, dest_pitch;
+} drm_mga_blit_t;
+
+/* 3.1: An ioctl to get parameters that aren't available to the 3d
+ * client any other way.
+ */
+#define MGA_PARAM_IRQ_NR            1
+
+/* 3.2: Query the actual card type.  The DDX only distinguishes between
+ * G200 chips and non-G200 chips, which it calls G400.  It turns out that
+ * there are some very sublte differences between the G4x0 chips and the G550
+ * chips.  Using this parameter query, a client-side driver can detect the
+ * difference between a G4x0 and a G550.
+ */
+#define MGA_PARAM_CARD_TYPE         2
+
+typedef struct drm_mga_getparam {
+	int param;
+	void *value;
+} drm_mga_getparam_t;
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              /*
+ * Copyright (C) 2013 Red Hat
+ * Author: Rob Clark <robdclark@gmail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+#ifndef __MSM_DRM_H__
+#define __MSM_DRM_H__
+
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/* Please note that modifications to all structs defined here are
+ * subject to backwards-compatibility constraints:
+ *  1) Do not use pointers, use __u64 instead for 32 bit / 64 bit
+ *     user/kernel compatibility
+ *  2) Keep fields aligned to their size
+ *  3) Because of how drm_ioctl() works, we can add new fields at
+ *     the end of an ioctl if some care is taken: drm_ioctl() will
+ *     zero out the new fields at the tail of the ioctl, so a zero
+ *     value should have a backwards compatible meaning.  And for
+ *     output params, userspace won't see the newly added output
+ *     fields.. so that has to be somehow ok.
+ */
+
+#define MSM_PIPE_NONE        0x00
+#define MSM_PIPE_2D0         0x01
+#define MSM_PIPE_2D1         0x02
+#define MSM_PIPE_3D0         0x10
+
+/* The pipe-id just uses the lower bits, so can be OR'd with flags in
+ * the upper 16 bits (which could be extended further, if needed, maybe
+ * we extend/overload the pipe-id some day to deal with multiple rings,
+ * but even then I don't think we need the full lower 16 bits).
+ */
+#define MSM_PIPE_ID_MASK     0xffff
+#define MSM_PIPE_ID(x)       ((x) & MSM_PIPE_ID_MASK)
+#define MSM_PIPE_FLAGS(x)    ((x) & ~MSM_PIPE_ID_MASK)
+
+/* timeouts are specified in clock-monotonic absolute times (to simplify
+ * restarting interrupted ioctls).  The following struct is logically the
+ * same as 'struct timespec' but 32/64b ABI safe.
+ */
+struct drm_msm_timespec {
+	__s64 tv_sec;          /* seconds */
+	__s64 tv_nsec;         /* nanoseconds */
+};
+
+#define MSM_PARAM_GPU_ID     0x01
+#define MSM_PARAM_GMEM_SIZE  0x02
+#define MSM_PARAM_CHIP_ID    0x03
+#define MSM_PARAM_MAX_FREQ   0x04
+#define MSM_PARAM_TIMESTAMP  0x05
+#define MSM_PARAM_GMEM_BASE  0x06
+#define MSM_PARAM_NR_RINGS   0x07
+#define MSM_PARAM_PP_PGTABLE 0x08  /* => 1 for per-process pagetables, else 0 */
+#define MSM_PARAM_FAULTS     0x09
+
+struct drm_msm_param {
+	__u32 pipe;           /* in, MSM_PIPE_x */
+	__u32 param;          /* in, MSM_PARAM_x */
+	__u64 value;          /* out (get_param) or in (set_param) */
+};
+
+/*
+ * GEM buffers:
+ */
+
+#define MSM_BO_SCANOUT       0x00000001     /* scanout capable */
+#define MSM_BO_GPU_READONLY  0x00000002
+#define MSM_BO_CACHE_MASK    0x000f0000
+/* cache modes */
+#define MSM_BO_CACHED        0x00010000
+#define MSM_BO_WC            0x00020000
+#define MSM_BO_UNCACHED      0x00040000
+
+#define MSM_BO_FLAGS         (MSM_BO_SCANOUT | \
+                              MSM_BO_GPU_READONLY | \
+                              MSM_BO_CACHED | \
+                              MSM_BO_WC | \
+                              MSM_BO_UNCACHED)
+
+struct drm_msm_gem_new {
+	__u64 size;           /* in */
+	__u32 flags;          /* in, mask of MSM_BO_x */
+	__u32 handle;         /* out */
+};
+
+/* Get or set GEM buffer info.  The requested value can be passed
+ * directly in 'value', or for data larger than 64b 'value' is a
+ * pointer to userspace buffer, with 'len' specifying the number of
+ * bytes copied into that buffer.  For info returned by pointer,
+ * calling the GEM_INFO ioctl with null 'value' will return the
+ * required buffer size in 'len'
+ */
+#define MSM_INFO_GET_OFFSET	0x00   /* get mmap() offset, returned by value */
+#define MSM_INFO_GET_IOVA	0x01   /* get iova, returned by value */
+#define MSM_INFO_SET_NAME	0x02   /* set the debug name (by pointer) */
+#define MSM_INFO_GET_NAME	0x03   /* get debug name, returned by pointer */
+
+struct drm_msm_gem_info {
+	__u32 handle;         /* in */
+	__u32 info;           /* in - one of MSM_INFO_* */
+	__u64 value;          /* in or out */
+	__u32 len;            /* in or out */
+	__u32 pad;
+};
+
+#define MSM_PREP_READ        0x01
+#define MSM_PREP_WRITE       0x02
+#define MSM_PREP_NOSYNC      0x04
+
+#define MSM_PREP_FLAGS       (MSM_PREP_READ | MSM_PREP_WRITE | MSM_PREP_NOSYNC)
+
+struct drm_msm_gem_cpu_prep {
+	__u32 handle;         /* in */
+	__u32 op;             /* in, mask of MSM_PREP_x */
+	struct drm_msm_timespec timeout;   /* in */
+};
+
+struct drm_msm_gem_cpu_fini {
+	__u32 handle;         /* in */
+};
+
+/*
+ * Cmdstream Submission:
+ */
+
+/* The value written into the cmdstream is logically:
+ *
+ *   ((relocbuf->gpuaddr + reloc_offset) << shift) | or
+ *
+ * When we have GPU's w/ >32bit ptrs, it should be possible to deal
+ * with this by emit'ing two reloc entries with appropriate shift
+ * values.  Or a new MSM_SUBMIT_CMD_x type would also be an option.
+ *
+ * NOTE that reloc's must be sorted by order of increasing submit_offset,
+ * otherwise EINVAL.
+ */
+struct drm_msm_gem_submit_reloc {
+	__u32 submit_offset;  /* in, offset from submit_bo */
+	__u32 or;             /* in, value OR'd with result */
+	__s32 shift;          /* in, amount of left shift (can be negative) */
+	__u32 reloc_idx;      /* in, index of reloc_bo buffer */
+	__u64 reloc_offset;   /* in, offset from start of reloc_bo */
+};
+
+/* submit-types:
+ *   BUF - this cmd buffer is executed normally.
+ *   IB_TARGET_BUF - this cmd buffer is an IB target.  Reloc's are
+ *      processed normally, but the kernel does not setup an IB to
+ *      this buffer in the first-level ringbuffer
+ *   CTX_RESTORE_BUF - only executed if there has been a GPU context
+ *      switch since the last SUBMIT ioctl
+ */
+#define MSM_SUBMIT_CMD_BUF             0x0001
+#define MSM_SUBMIT_CMD_IB_TARGET_BUF   0x0002
+#define MSM_SUBMIT_CMD_CTX_RESTORE_BUF 0x0003
+struct drm_msm_gem_submit_cmd {
+	__u32 type;           /* in, one of MSM_SUBMIT_CMD_x */
+	__u32 submit_idx;     /* in, index of submit_bo cmdstream buffer */
+	__u32 submit_offset;  /* in, offset into submit_bo */
+	__u32 size;           /* in, cmdstream size */
+	__u32 pad;
+	__u32 nr_relocs;      /* in, number of submit_reloc's */
+	__u64 relocs;         /* in, ptr to array of submit_reloc's */
+};
+
+/* Each buffer referenced elsewhere in the cmdstream submit (ie. the
+ * cmdstream buffer(s) themselves or reloc entries) has one (and only
+ * one) entry in the submit->bos[] table.
+ *
+ * As a optimization, the current buffer (gpu virtual address) can be
+ * passed back through the 'presumed' field.  If on a subsequent reloc,
+ * userspace passes back a 'presumed' address that is still valid,
+ * then patching the cmdstream for this entry is skipped.  This can
+ * avoid kernel needing to map/access the cmdstream bo in the common
+ * case.
+ */
+#define MSM_SUBMIT_BO_READ             0x0001
+#define MSM_SUBMIT_BO_WRITE            0x0002
+#define MSM_SUBMIT_BO_DUMP             0x0004
+
+#define MSM_SUBMIT_BO_FLAGS            (MSM_SUBMIT_BO_READ | \
+					MSM_SUBMIT_BO_WRITE | \
+					MSM_SUBMIT_BO_DUMP)
+
+struct drm_msm_gem_submit_bo {
+	__u32 flags;          /* in, mask of MSM_SUBMIT_BO_x */
+	__u32 handle;         /* in, GEM handle */
+	__u64 presumed;       /* in/out, presumed buffer address */
+};
+
+/* Valid submit ioctl flags: */
+#define MSM_SUBMIT_NO_IMPLICIT   0x80000000 /* disable implicit sync */
+#define MSM_SUBMIT_FENCE_FD_IN   0x40000000 /* enable input fence_fd */
+#define MSM_SUBMIT_FENCE_FD_OUT  0x20000000 /* enable output fence_fd */
+#define MSM_SUBMIT_SUDO          0x10000000 /* run submitted cmds from RB */
+#define MSM_SUBMIT_SYNCOBJ_IN    0x08000000 /* enable input syncobj */
+#define MSM_SUBMIT_SYNCOBJ_OUT   0x04000000 /* enable output syncobj */
+#define MSM_SUBMIT_FLAGS                ( \
+		MSM_SUBMIT_NO_IMPLICIT   | \
+		MSM_SUBMIT_FENCE_FD_IN   | \
+		MSM_SUBMIT_FENCE_FD_OUT  | \
+		MSM_SUBMIT_SUDO          | \
+		MSM_SUBMIT_SYNCOBJ_IN    | \
+		MSM_SUBMIT_SYNCOBJ_OUT   | \
+		0)
+
+#define MSM_SUBMIT_SYNCOBJ_RESET 0x00000001 /* Reset syncobj after wait. */
+#define MSM_SUBMIT_SYNCOBJ_FLAGS        ( \
+		MSM_SUBMIT_SYNCOBJ_RESET | \
+		0)
+
+struct drm_msm_gem_submit_syncobj {
+	__u32 handle;     /* in, syncobj handle. */
+	__u32 flags;      /* in, from MSM_SUBMIT_SYNCOBJ_FLAGS */
+	__u64 point;      /* in, timepoint for timeline syncobjs. */
+};
+
+/* Each cmdstream submit consists of a table of buffers involved, and
+ * one or more cmdstream buffers.  This allows for conditional execution
+ * (context-restore), and IB buffers needed for per tile/bin draw cmds.
+ */
+struct drm_msm_gem_submit {
+	__u32 flags;          /* MSM_PIPE_x | MSM_SUBMIT_x */
+	__u32 fence;          /* out */
+	__u32 nr_bos;         /* in, number of submit_bo's */
+	__u32 nr_cmds;        /* in, number of submit_cmd's */
+	__u64 bos;            /* in, ptr to array of submit_bo's */
+	__u64 cmds;           /* in, ptr to array of submit_cmd's */
+	__s32 fence_fd;       /* in/out fence fd (see MSM_SUBMIT_FENCE_FD_IN/OUT) */
+	__u32 queueid;        /* in, submitqueue id */
+	__u64 in_syncobjs;    /* in, ptr to to array of drm_msm_gem_submit_syncobj */
+	__u64 out_syncobjs;   /* in, ptr to to array of drm_msm_gem_submit_syncobj */
+	__u32 nr_in_syncobjs; /* in, number of entries in in_syncobj */
+	__u32 nr_out_syncobjs; /* in, number of entries in out_syncobj. */
+	__u32 syncobj_stride; /* in, stride of syncobj arrays. */
+	__u32 pad;            /*in, reserved for future use, always 0. */
+
+};
+
+/* The normal way to synchronize with the GPU is just to CPU_PREP on
+ * a buffer if you need to access it from the CPU (other cmdstream
+ * submission from same or other contexts, PAGE_FLIP ioctl, etc, all
+ * handle the required synchronization under the hood).  This ioctl
+ * mainly just exists as a way to implement the gallium pipe_fence
+ * APIs without requiring a dummy bo to synchronize on.
+ */
+struct drm_msm_wait_fence {
+	__u32 fence;          /* in */
+	__u32 pad;
+	struct drm_msm_timespec timeout;   /* in */
+	__u32 queueid;         /* in, submitqueue id */
+};
+
+/* madvise provides a way to tell the kernel in case a buffers contents
+ * can be discarded under memory pressure, which is useful for userspace
+ * bo cache where we want to optimistically hold on to buffer allocate
+ * and potential mmap, but allow the pages to be discarded under memory
+ * pressure.
+ *
+ * Typical usage would involve madvise(DONTNEED) when buffer enters BO
+ * cache, and madvise(WILLNEED) if trying to recycle buffer from BO cache.
+ * In the WILLNEED case, 'retained' indicates to userspace whether the
+ * backing pages still exist.
+ */
+#define MSM_MADV_WILLNEED 0       /* backing pages are needed, status returned in 'retained' */
+#define MSM_MADV_DONTNEED 1       /* backing pages not needed */
+#define __MSM_MADV_PURGED 2       /* internal state */
+
+struct drm_msm_gem_madvise {
+	__u32 handle;         /* in, GEM handle */
+	__u32 madv;           /* in, MSM_MADV_x */
+	__u32 retained;       /* out, whether backing store still exists */
+};
+
+/*
+ * Draw queues allow the user to set specific submission parameter. Command
+ * submissions specify a specific submitqueue to use.  ID 0 is reserved for
+ * backwards compatibility as a "default" submitqueue
+ */
+
+#define MSM_SUBMITQUEUE_FLAGS (0)
+
+struct drm_msm_submitqueue {
+	__u32 flags;   /* in, MSM_SUBMITQUEUE_x */
+	__u32 prio;    /* in, Priority level */
+	__u32 id;      /* out, identifier */
+};
+
+#define MSM_SUBMITQUEUE_PARAM_FAULTS   0
+
+struct drm_msm_submitqueue_query {
+	__u64 data;
+	__u32 id;
+	__u32 param;
+	__u32 len;
+	__u32 pad;
+};
+
+#define DRM_MSM_GET_PARAM              0x00
+/* placeholder:
+#define DRM_MSM_SET_PARAM              0x01
+ */
+#define DRM_MSM_GEM_NEW                0x02
+#define DRM_MSM_GEM_INFO               0x03
+#define DRM_MSM_GEM_CPU_PREP           0x04
+#define DRM_MSM_GEM_CPU_FINI           0x05
+#define DRM_MSM_GEM_SUBMIT             0x06
+#define DRM_MSM_WAIT_FENCE             0x07
+#define DRM_MSM_GEM_MADVISE            0x08
+/* placeholder:
+#define DRM_MSM_GEM_SVM_NEW            0x09
+ */
+#define DRM_MSM_SUBMITQUEUE_NEW        0x0A
+#define DRM_MSM_SUBMITQUEUE_CLOSE      0x0B
+#define DRM_MSM_SUBMITQUEUE_QUERY      0x0C
+
+#define DRM_IOCTL_MSM_GET_PARAM        DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GET_PARAM, struct drm_msm_param)
+#define DRM_IOCTL_MSM_GEM_NEW          DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_NEW, struct drm_msm_gem_new)
+#define DRM_IOCTL_MSM_GEM_INFO         DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_INFO, struct drm_msm_gem_info)
+#define DRM_IOCTL_MSM_GEM_CPU_PREP     DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_GEM_CPU_PREP, struct drm_msm_gem_cpu_prep)
+#define DRM_IOCTL_MSM_GEM_CPU_FINI     DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_GEM_CPU_FINI, struct drm_msm_gem_cpu_fini)
+#define DRM_IOCTL_MSM_GEM_SUBMIT       DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_SUBMIT, struct drm_msm_gem_submit)
+#define DRM_IOCTL_MSM_WAIT_FENCE       DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_WAIT_FENCE, struct drm_msm_wait_fence)
+#define DRM_IOCTL_MSM_GEM_MADVISE      DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_GEM_MADVISE, struct drm_msm_gem_madvise)
+#define DRM_IOCTL_MSM_SUBMITQUEUE_NEW    DRM_IOWR(DRM_COMMAND_BASE + DRM_MSM_SUBMITQUEUE_NEW, struct drm_msm_submitqueue)
+#define DRM_IOCTL_MSM_SUBMITQUEUE_CLOSE  DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_SUBMITQUEUE_CLOSE, __u32)
+#define DRM_IOCTL_MSM_SUBMITQUEUE_QUERY  DRM_IOW (DRM_COMMAND_BASE + DRM_MSM_SUBMITQUEUE_QUERY, struct drm_msm_submitqueue_query)
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif /* __MSM_DRM_H__ */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         

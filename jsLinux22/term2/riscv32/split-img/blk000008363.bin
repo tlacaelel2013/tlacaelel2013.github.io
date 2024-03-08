@@ -1,0 +1,745 @@
+D>);/
+   (<U00010CCE>,<U00010C8E>);(<U00010CCF>,<U00010C8F>);/
+   (<U00010CD0>,<U00010C90>);(<U00010CD1>,<U00010C91>);/
+   (<U00010CD2>,<U00010C92>);(<U00010CD3>,<U00010C93>);/
+   (<U00010CD4>,<U00010C94>);(<U00010CD5>,<U00010C95>);/
+   (<U00010CD6>,<U00010C96>);(<U00010CD7>,<U00010C97>);/
+   (<U00010CD8>,<U00010C98>);(<U00010CD9>,<U00010C99>);/
+   (<U00010CDA>,<U00010C9A>);(<U00010CDB>,<U00010C9B>);/
+   (<U00010CDC>,<U00010C9C>);(<U00010CDD>,<U00010C9D>);/
+   (<U00010CDE>,<U00010C9E>);(<U00010CDF>,<U00010C9F>);/
+   (<U00010CE0>,<U00010CA0>);(<U00010CE1>,<U00010CA1>);/
+   (<U00010CE2>,<U00010CA2>);(<U00010CE3>,<U00010CA3>);/
+   (<U00010CE4>,<U00010CA4>);(<U00010CE5>,<U00010CA5>);/
+   (<U00010CE6>,<U00010CA6>);(<U00010CE7>,<U00010CA7>);/
+   (<U00010CE8>,<U00010CA8>);(<U00010CE9>,<U00010CA9>);/
+   (<U00010CEA>,<U00010CAA>);(<U00010CEB>,<U00010CAB>);/
+   (<U00010CEC>,<U00010CAC>);(<U00010CED>,<U00010CAD>);/
+   (<U00010CEE>,<U00010CAE>);(<U00010CEF>,<U00010CAF>);/
+   (<U00010CF0>,<U00010CB0>);(<U00010CF1>,<U00010CB1>);/
+   (<U00010CF2>,<U00010CB2>);(<U000118C0>,<U000118A0>);/
+   (<U000118C1>,<U000118A1>);(<U000118C2>,<U000118A2>);/
+   (<U000118C3>,<U000118A3>);(<U000118C4>,<U000118A4>);/
+   (<U000118C5>,<U000118A5>);(<U000118C6>,<U000118A6>);/
+   (<U000118C7>,<U000118A7>);(<U000118C8>,<U000118A8>);/
+   (<U000118C9>,<U000118A9>);(<U000118CA>,<U000118AA>);/
+   (<U000118CB>,<U000118AB>);(<U000118CC>,<U000118AC>);/
+   (<U000118CD>,<U000118AD>);(<U000118CE>,<U000118AE>);/
+   (<U000118CF>,<U000118AF>);(<U000118D0>,<U000118B0>);/
+   (<U000118D1>,<U000118B1>);(<U000118D2>,<U000118B2>);/
+   (<U000118D3>,<U000118B3>);(<U000118D4>,<U000118B4>);/
+   (<U000118D5>,<U000118B5>);(<U000118D6>,<U000118B6>);/
+   (<U000118D7>,<U000118B7>);(<U000118D8>,<U000118B8>);/
+   (<U000118D9>,<U000118B9>);(<U000118DA>,<U000118BA>);/
+   (<U000118DB>,<U000118BB>);(<U000118DC>,<U000118BC>);/
+   (<U000118DD>,<U000118BD>);(<U000118DE>,<U000118BE>);/
+   (<U000118DF>,<U000118BF>);(<U00016E60>,<U00016E40>);/
+   (<U00016E61>,<U00016E41>);(<U00016E62>,<U00016E42>);/
+   (<U00016E63>,<U00016E43>);(<U00016E64>,<U00016E44>);/
+   (<U00016E65>,<U00016E45>);(<U00016E66>,<U00016E46>);/
+   (<U00016E67>,<U00016E47>);(<U00016E68>,<U00016E48>);/
+   (<U00016E69>,<U00016E49>);(<U00016E6A>,<U00016E4A>);/
+   (<U00016E6B>,<U00016E4B>);(<U00016E6C>,<U00016E4C>);/
+   (<U00016E6D>,<U00016E4D>);(<U00016E6E>,<U00016E4E>);/
+   (<U00016E6F>,<U00016E4F>);(<U00016E70>,<U00016E50>);/
+   (<U00016E71>,<U00016E51>);(<U00016E72>,<U00016E52>);/
+   (<U00016E73>,<U00016E53>);(<U00016E74>,<U00016E54>);/
+   (<U00016E75>,<U00016E55>);(<U00016E76>,<U00016E56>);/
+   (<U00016E77>,<U00016E57>);(<U00016E78>,<U00016E58>);/
+   (<U00016E79>,<U00016E59>);(<U00016E7A>,<U00016E5A>);/
+   (<U00016E7B>,<U00016E5B>);(<U00016E7C>,<U00016E5C>);/
+   (<U00016E7D>,<U00016E5D>);(<U00016E7E>,<U00016E5E>);/
+   (<U00016E7F>,<U00016E5F>);(<U0001E922>,<U0001E900>);/
+   (<U0001E923>,<U0001E901>);(<U0001E924>,<U0001E902>);/
+   (<U0001E925>,<U0001E903>);(<U0001E926>,<U0001E904>);/
+   (<U0001E927>,<U0001E905>);(<U0001E928>,<U0001E906>);/
+   (<U0001E929>,<U0001E907>);(<U0001E92A>,<U0001E908>);/
+   (<U0001E92B>,<U0001E909>);(<U0001E92C>,<U0001E90A>);/
+   (<U0001E92D>,<U0001E90B>);(<U0001E92E>,<U0001E90C>);/
+   (<U0001E92F>,<U0001E90D>);(<U0001E930>,<U0001E90E>);/
+   (<U0001E931>,<U0001E90F>);(<U0001E932>,<U0001E910>);/
+   (<U0001E933>,<U0001E911>);(<U0001E934>,<U0001E912>);/
+   (<U0001E935>,<U0001E913>);(<U0001E936>,<U0001E914>);/
+   (<U0001E937>,<U0001E915>);(<U0001E938>,<U0001E916>);/
+   (<U0001E939>,<U0001E917>);(<U0001E93A>,<U0001E918>);/
+   (<U0001E93B>,<U0001E919>);(<U0001E93C>,<U0001E91A>);/
+   (<U0001E93D>,<U0001E91B>);(<U0001E93E>,<U0001E91C>);/
+   (<U0001E93F>,<U0001E91D>);(<U0001E940>,<U0001E91E>);/
+   (<U0001E941>,<U0001E91F>);(<U0001E942>,<U0001E920>);/
+   (<U0001E943>,<U0001E921>)
+
+% The "combining" class reflects ISO/IEC 10646-1 annex B.1
+% That is, all combining characters (level 2+3).
+class "combining"; /
+   <U0300>..<U036F>;<U0483>..<U0489>;<U0591>..<U05BD>;<U05BF>;/
+   <U05C1>..<U05C2>;<U05C4>..<U05C5>;<U05C7>;<U0610>..<U061A>;/
+   <U064B>..<U065F>;<U0670>;<U06D6>..<U06DC>;<U06DF>..<U06E4>;/
+   <U06E7>..<U06E8>;<U06EA>..<U06ED>;<U0711>;<U0730>..<U074A>;/
+   <U07A6>..<U07B0>;<U07EB>..<U07F3>;<U07FD>;<U0816>..<U0819>;/
+   <U081B>..<U0823>;<U0825>..<U0827>;<U0829>..<U082D>;<U0859>..<U085B>;/
+   <U08D3>..<U08E1>;<U08E3>..<U0903>;<U093A>..<U093C>;<U093E>..<U094F>;/
+   <U0951>..<U0957>;<U0962>..<U0963>;<U0981>..<U0983>;<U09BC>;/
+   <U09BE>..<U09C4>;<U09C7>..<U09C8>;<U09CB>..<U09CD>;<U09D7>;/
+   <U09E2>..<U09E3>;<U09FE>;<U0A01>..<U0A03>;<U0A3C>;<U0A3E>..<U0A42>;/
+   <U0A47>..<U0A48>;<U0A4B>..<U0A4D>;<U0A51>;<U0A70>..<U0A71>;<U0A75>;/
+   <U0A81>..<U0A83>;<U0ABC>;<U0ABE>..<U0AC5>;<U0AC7>..<U0AC9>;/
+   <U0ACB>..<U0ACD>;<U0AE2>..<U0AE3>;<U0AFA>..<U0AFF>;<U0B01>..<U0B03>;/
+   <U0B3C>;<U0B3E>..<U0B44>;<U0B47>..<U0B48>;<U0B4B>..<U0B4D>;/
+   <U0B55>..<U0B57>;<U0B62>..<U0B63>;<U0B82>;<U0BBE>..<U0BC2>;/
+   <U0BC6>..<U0BC8>;<U0BCA>..<U0BCD>;<U0BD7>;<U0C00>..<U0C04>;/
+   <U0C3E>..<U0C44>;<U0C46>..<U0C48>;<U0C4A>..<U0C4D>;<U0C55>..<U0C56>;/
+   <U0C62>..<U0C63>;<U0C81>..<U0C83>;<U0CBC>;<U0CBE>..<U0CC4>;/
+   <U0CC6>..<U0CC8>;<U0CCA>..<U0CCD>;<U0CD5>..<U0CD6>;<U0CE2>..<U0CE3>;/
+   <U0D00>..<U0D03>;<U0D3B>..<U0D3C>;<U0D3E>..<U0D44>;<U0D46>..<U0D48>;/
+   <U0D4A>..<U0D4D>;<U0D57>;<U0D62>..<U0D63>;<U0D81>..<U0D83>;<U0DCA>;/
+   <U0DCF>..<U0DD4>;<U0DD6>;<U0DD8>..<U0DDF>;<U0DF2>..<U0DF3>;<U0E31>;/
+   <U0E34>..<U0E3A>;<U0E47>..<U0E4E>;<U0EB1>;<U0EB4>..<U0EBC>;/
+   <U0EC8>..<U0ECD>;<U0F18>..<U0F19>;<U0F35>;<U0F37>;<U0F39>;/
+   <U0F3E>..<U0F3F>;<U0F71>..<U0F84>;<U0F86>..<U0F87>;<U0F8D>..<U0F97>;/
+   <U0F99>..<U0FBC>;<U0FC6>;<U102B>..<U103E>;<U1056>..<U1059>;/
+   <U105E>..<U1060>;<U1062>..<U1064>;<U1067>..<U106D>;<U1071>..<U1074>;/
+   <U1082>..<U108D>;<U108F>;<U109A>..<U109D>;<U135D>..<U135F>;/
+   <U1712>..<U1714>;<U1732>..<U1734>;<U1752>..<U1753>;<U1772>..<U1773>;/
+   <U17B4>..<U17D3>;<U17DD>;<U180B>..<U180D>;<U1885>..<U1886>;<U18A9>;/
+   <U1920>..<U192B>;<U1930>..<U193B>;<U1A17>..<U1A1B>;<U1A55>..<U1A5E>;/
+   <U1A60>..<U1A7C>;<U1A7F>;<U1AB0>..<U1AC0>;<U1B00>..<U1B04>;/
+   <U1B34>..<U1B44>;<U1B6B>..<U1B73>;<U1B80>..<U1B82>;<U1BA1>..<U1BAD>;/
+   <U1BE6>..<U1BF3>;<U1C24>..<U1C37>;<U1CD0>..<U1CD2>;<U1CD4>..<U1CE8>;/
+   <U1CED>;<U1CF4>;<U1CF7>..<U1CF9>;<U1DC0>..<U1DF9>;<U1DFB>..<U1DFF>;/
+   <U20D0>..<U20F0>;<U2CEF>..<U2CF1>;<U2D7F>;<U2DE0>..<U2DFF>;/
+   <U302A>..<U302F>;<U3099>..<U309A>;<UA66F>..<UA672>;<UA674>..<UA67D>;/
+   <UA69E>..<UA69F>;<UA6F0>..<UA6F1>;<UA802>;<UA806>;<UA80B>;/
+   <UA823>..<UA827>;<UA82C>;<UA880>..<UA881>;<UA8B4>..<UA8C5>;/
+   <UA8E0>..<UA8F1>;<UA8FF>;<UA926>..<UA92D>;<UA947>..<UA953>;/
+   <UA980>..<UA983>;<UA9B3>..<UA9C0>;<UA9E5>;<UAA29>..<UAA36>;<UAA43>;/
+   <UAA4C>..<UAA4D>;<UAA7B>..<UAA7D>;<UAAB0>;<UAAB2>..<UAAB4>;/
+   <UAAB7>..<UAAB8>;<UAABE>..<UAABF>;<UAAC1>;<UAAEB>..<UAAEF>;/
+   <UAAF5>..<UAAF6>;<UABE3>..<UABEA>;<UABEC>..<UABED>;<UFB1E>;/
+   <UFE00>..<UFE0F>;<UFE20>..<UFE2F>;<U000101FD>;<U000102E0>;/
+   <U00010376>..<U0001037A>;<U00010A01>..<U00010A03>;/
+   <U00010A05>..<U00010A06>;<U00010A0C>..<U00010A0F>;/
+   <U00010A38>..<U00010A3A>;<U00010A3F>;<U00010AE5>..<U00010AE6>;/
+   <U00010D24>..<U00010D27>;<U00010EAB>..<U00010EAC>;/
+   <U00010F46>..<U00010F50>;<U00011000>..<U00011002>;/
+   <U00011038>..<U00011046>;<U0001107F>..<U00011082>;/
+   <U000110B0>..<U000110BA>;<U00011100>..<U00011102>;/
+   <U00011127>..<U00011134>;<U00011145>..<U00011146>;<U00011173>;/
+   <U00011180>..<U00011182>;<U000111B3>..<U000111C0>;/
+   <U000111C9>..<U000111CC>;<U000111CE>..<U000111CF>;/
+   <U0001122C>..<U00011237>;<U0001123E>;<U000112DF>..<U000112EA>;/
+   <U00011300>..<U00011303>;<U0001133B>..<U0001133C>;/
+   <U0001133E>..<U00011344>;<U00011347>..<U00011348>;/
+   <U0001134B>..<U0001134D>;<U00011357>;<U00011362>..<U00011363>;/
+   <U00011366>..<U0001136C>;<U00011370>..<U00011374>;/
+   <U00011435>..<U00011446>;<U0001145E>;<U000114B0>..<U000114C3>;/
+   <U000115AF>..<U000115B5>;<U000115B8>..<U000115C0>;/
+   <U000115DC>..<U000115DD>;<U00011630>..<U00011640>;/
+   <U000116AB>..<U000116B7>;<U0001171D>..<U0001172B>;/
+   <U0001182C>..<U0001183A>;<U00011930>..<U00011935>;/
+   <U00011937>..<U00011938>;<U0001193B>..<U0001193E>;<U00011940>;/
+   <U00011942>..<U00011943>;<U000119D1>..<U000119D7>;/
+   <U000119DA>..<U000119E0>;<U000119E4>;<U00011A01>..<U00011A0A>;/
+   <U00011A33>..<U00011A39>;<U00011A3B>..<U00011A3E>;<U00011A47>;/
+   <U00011A51>..<U00011A5B>;<U00011A8A>..<U00011A99>;/
+   <U00011C2F>..<U00011C36>;<U00011C38>..<U00011C3F>;/
+   <U00011C92>..<U00011CA7>;<U00011CA9>..<U00011CB6>;/
+   <U00011D31>..<U00011D36>;<U00011D3A>;<U00011D3C>..<U00011D3D>;/
+   <U00011D3F>..<U00011D45>;<U00011D47>;<U00011D8A>..<U00011D8E>;/
+   <U00011D90>..<U00011D91>;<U00011D93>..<U00011D97>;/
+   <U00011EF3>..<U00011EF6>;<U00016AF0>..<U00016AF4>;/
+   <U00016B30>..<U00016B36>;<U00016F4F>;<U00016F51>..<U00016F87>;/
+   <U00016F8F>..<U00016F92>;<U00016FE4>;<U00016FF0>..<U00016FF1>;/
+   <U0001BC9D>..<U0001BC9E>;<U0001D165>..<U0001D169>;/
+   <U0001D16D>..<U0001D172>;<U0001D17B>..<U0001D182>;/
+   <U0001D185>..<U0001D18B>;<U0001D1AA>..<U0001D1AD>;/
+   <U0001D242>..<U0001D244>;<U0001DA00>..<U0001DA36>;/
+   <U0001DA3B>..<U0001DA6C>;<U0001DA75>;<U0001DA84>;/
+   <U0001DA9B>..<U0001DA9F>;<U0001DAA1>..<U0001DAAF>;/
+   <U0001E000>..<U0001E006>;<U0001E008>..<U0001E018>;/
+   <U0001E01B>..<U0001E021>;<U0001E023>..<U0001E024>;/
+   <U0001E026>..<U0001E02A>;<U0001E130>..<U0001E136>;/
+   <U0001E2EC>..<U0001E2EF>;<U0001E8D0>..<U0001E8D6>;/
+   <U0001E944>..<U0001E94A>;<U000E0100>..<U000E01EF>
+
+% The "combining_level3" class reflects ISO/IEC 10646-1 annex B.2
+% That is, combining characters of level 3.
+class "combining_level3"; /
+   <U0334>..<U0338>;<U034F>;<U0488>..<U0489>;<U05B0>..<U05BD>;<U05BF>;/
+   <U05C1>..<U05C2>;<U05C7>;<U0618>..<U061A>;<U064B>..<U0652>;<U0670>;/
+   <U0711>;<U07A6>..<U07B0>;<U08F0>..<U08F2>;<U0900>..<U0903>;/
+   <U093A>..<U093C>;<U093E>..<U094F>;<U0955>..<U0957>;<U0962>..<U0963>;/
+   <U0981>..<U0983>;<U09BC>;<U09BE>..<U09C4>;<U09C7>..<U09C8>;/
+   <U09CB>..<U09CD>;<U09D7>;<U09E2>..<U09E3>;<U0A01>..<U0A03>;<U0A3C>;/
+   <U0A3E>..<U0A42>;<U0A47>..<U0A48>;<U0A4B>..<U0A4D>;<U0A51>;/
+   <U0A70>..<U0A71>;<U0A75>;<U0A81>..<U0A83>;<U0ABC>;<U0ABE>..<U0AC5>;/
+   <U0AC7>..<U0AC9>;<U0ACB>..<U0ACD>;<U0AE2>..<U0AE3>;<U0AFA>..<U0AFF>;/
+   <U0B01>..<U0B03>;<U0B3C>;<U0B3E>..<U0B44>;<U0B47>..<U0B48>;/
+   <U0B4B>..<U0B4D>;<U0B55>..<U0B57>;<U0B62>..<U0B63>;<U0B82>;/
+   <U0BBE>..<U0BC2>;<U0BC6>..<U0BC8>;<U0BCA>..<U0BCD>;<U0BD7>;/
+   <U0C00>..<U0C04>;<U0C3E>..<U0C44>;<U0C46>..<U0C48>;<U0C4A>..<U0C4D>;/
+   <U0C55>..<U0C56>;<U0C62>..<U0C63>;<U0C81>..<U0C83>;<U0CBC>;/
+   <U0CBE>..<U0CC4>;<U0CC6>..<U0CC8>;<U0CCA>..<U0CCD>;<U0CD5>..<U0CD6>;/
+   <U0CE2>..<U0CE3>;<U0D00>..<U0D03>;<U0D3B>..<U0D3C>;<U0D3E>..<U0D44>;/
+   <U0D46>..<U0D48>;<U0D4A>..<U0D4D>;<U0D57>;<U0D62>..<U0D63>;/
+   <U0D81>..<U0D83>;<U0DCA>;<U0DCF>..<U0DD4>;<U0DD6>;<U0DD8>..<U0DDF>;/
+   <U0DF2>..<U0DF3>;<U0E31>;<U0E34>..<U0E3A>;<U0E47>..<U0E4E>;<U0EB1>;/
+   <U0EB4>..<U0EBC>;<U0EC8>..<U0ECD>;<U0F3E>..<U0F3F>;<U0F71>..<U0F81>;/
+   <U0F84>;<U0F8D>..<U0F97>;<U0F99>..<U0FBC>;<U102B>..<U103E>;/
+   <U1056>..<U1059>;<U105E>..<U1060>;<U1062>..<U1064>;<U1067>..<U106D>;/
+   <U1071>..<U1074>;<U1082>..<U108C>;<U108F>;<U109A>..<U109D>;/
+   <U1712>..<U1714>;<U1732>..<U1734>;<U1752>..<U1753>;<U1772>..<U1773>;/
+   <U17B4>..<U17D3>;<U180B>..<U180D>;<U1885>..<U1886>;<U1920>..<U192B>;/
+   <U1930>..<U1938>;<U1A19>..<U1A1B>;<U1A55>..<U1A5E>;<U1A60>..<U1A74>;/
+   <U1ABE>;<U1B00>..<U1B04>;<U1B34>..<U1B44>;<U1B80>..<U1B82>;/
+   <U1BA1>..<U1BAD>;<U1BE6>..<U1BF3>;<U1C24>..<U1C37>;<U1CD4>;/
+   <U1CE1>..<U1CE8>;<U1CF7>;<U20D2>..<U20D3>;<U20D8>..<U20DA>;/
+   <U20DD>..<U20E0>;<U20E2>..<U20E6>;<U20EA>..<U20EB>;<U2D7F>;/
+   <U3099>..<U309A>;<UA670>..<UA672>;<UA802>;<UA806>;<UA80B>;/
+   <UA823>..<UA827>;<UA82C>;<UA880>..<UA881>;<UA8B4>..<UA8C5>;<UA8FF>;/
+   <UA926>..<UA92A>;<UA947>..<UA953>;<UA980>..<UA983>;<UA9B3>..<UA9C0>;/
+   <UA9E5>;<UAA29>..<UAA36>;<UAA43>;<UAA4C>..<UAA4D>;<UAA7B>..<UAA7D>;/
+   <UAAEB>..<UAAEF>;<UAAF5>..<UAAF6>;<UABE3>..<UABEA>;<UABEC>..<UABED>;/
+   <UFB1E>;<UFE00>..<UFE0F>;<U00010A01>..<U00010A03>;/
+   <U00010A05>..<U00010A06>;<U00010A0C>;<U00010A0E>;<U00010A39>;<U00010A3F>;/
+   <U00011000>..<U00011002>;<U00011038>..<U00011046>;/
+   <U0001107F>..<U00011082>;<U000110B0>..<U000110BA>;/
+   <U00011127>..<U00011134>;<U00011145>..<U00011146>;<U00011173>;/
+   <U00011180>..<U00011182>;<U000111B3>..<U000111C0>;/
+   <U000111C9>..<U000111CC>;<U000111CE>..<U000111CF>;/
+   <U0001122C>..<U00011237>;<U0001123E>;<U000112DF>..<U000112EA>;/
+   <U00011300>..<U00011303>;<U0001133B>..<U0001133C>;/
+   <U0001133E>..<U00011344>;<U00011347>..<U00011348>;/
+   <U0001134B>..<U0001134D>;<U00011357>;<U00011362>..<U00011363>;/
+   <U00011435>..<U00011446>;<U000114B0>..<U000114C3>;/
+   <U000115AF>..<U000115B5>;<U000115B8>..<U000115C0>;/
+   <U000115DC>..<U000115DD>;<U00011630>..<U00011640>;/
+   <U000116AB>..<U000116B7>;<U0001171D>..<U0001172B>;/
+   <U0001182C>..<U0001183A>;<U00011930>..<U00011935>;/
+   <U00011937>..<U00011938>;<U0001193B>..<U0001193E>;<U00011940>;/
+   <U00011942>..<U00011943>;<U000119D1>..<U000119D7>;/
+   <U000119DA>..<U000119E0>;<U000119E4>;<U00011A01>..<U00011A0A>;/
+   <U00011A33>..<U00011A39>;<U00011A3B>..<U00011A3E>;<U00011A47>;/
+   <U00011A51>..<U00011A5B>;<U00011A8A>..<U00011A99>;/
+   <U00011C2F>..<U00011C36>;<U00011C38>..<U00011C3F>;/
+   <U00011C92>..<U00011CA7>;<U00011CA9>..<U00011CB6>;/
+   <U00011D31>..<U00011D36>;<U00011D3A>;<U00011D3C>..<U00011D3D>;/
+   <U00011D3F>..<U00011D45>;<U00011D47>;<U00011D8A>..<U00011D8E>;/
+   <U00011D90>..<U00011D91>;<U00011D93>..<U00011D97>;/
+   <U00011EF3>..<U00011EF6>;<U00016AF0>..<U00016AF4>;<U00016F4F>;/
+   <U00016F51>..<U00016F87>;<U00016F8F>..<U00016F92>;<U00016FE4>;/
+   <U00016FF0>..<U00016FF1>;<U0001BC9D>..<U0001BC9E>;/
+   <U0001D167>..<U0001D169>;<U0001DA00>..<U0001DA36>;/
+   <U0001DA3B>..<U0001DA6C>;<U0001DA75>;<U0001DA84>;/
+   <U0001DA9B>..<U0001DA9F>;<U0001DAA1>..<U0001DAAF>;<U0001E94A>;/
+   <U000E0100>..<U000E01EF>
+
+END LC_CTYPE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           comment_char %
+escape_char /
+
+% This file is part of the GNU C Library and contains locale data.
+% The Free Software Foundation does not claim any copyright interest
+% in the locale data contained in this file.  The foregoing does not
+% affect the license of the GNU C Library as a whole.  It does not
+% exempt you from the conditions of the license if your use would
+% otherwise be governed by that license.
+
+% Interlingua locale for France
+% Language: ia
+% Territory: FR
+% Revision: 1.0
+% Date: 2013-03-01
+% Application: general
+% Users: general
+
+LC_IDENTIFICATION
+title "Interlingua locale for France"
+source "Fedora Project"
+address ""
+contact "Nik Kalach"
+email "nikka@fedoraproject.org"
+tel ""
+fax ""
+language "Interlingua"
+territory "France"
+revision "1.0"
+date "2013-03-01"
+
+category "i18n:2012";LC_IDENTIFICATION
+category "i18n:2012";LC_CTYPE
+category "i18n:2012";LC_COLLATE
+category "i18n:2012";LC_TIME
+category "i18n:2012";LC_NUMERIC
+category "i18n:2012";LC_MONETARY
+category "i18n:2012";LC_MESSAGES
+category "i18n:2012";LC_MEASUREMENT
+category "i18n:2012";LC_PAPER
+category "i18n:2012";LC_NAME
+category "i18n:2012";LC_ADDRESS
+category "i18n:2012";LC_TELEPHONE
+END LC_IDENTIFICATION
+
+LC_CTYPE
+copy "fr_FR"
+END LC_CTYPE
+
+LC_COLLATE
+copy "fr_FR"
+END LC_COLLATE
+
+LC_TIME
+abday   "dom";"lun";/
+        "mar";"mer";/
+        "jov";"ven";/
+        "sab"
+day     "dominica";/
+        "lunedi";/
+        "martedi";/
+        "mercuridi";/
+        "jovedi";/
+        "venerdi";/
+        "sabbato"
+abmon   "jan";"feb";/
+        "mar";"apr";/
+        "mai";"jun";/
+        "jul";"aug";/
+        "sep";"oct";/
+        "nov";"dec"
+mon     "januario";/
+        "februario";/
+        "martio";/
+        "april";/
+        "maio";/
+        "junio";/
+        "julio";/
+        "augusto";/
+        "septembre";/
+        "octobre";/
+        "novembre";/
+        "decembre"
+d_t_fmt  "%a %d %b %Y %T"
+date_fmt "%a %d %b %Y %T %Z"
+d_fmt   "%d.%m.%Y"
+t_fmt   "%T"
+am_pm   "AM";"PM"
+t_fmt_ampm ""
+week    7;19971130;4
+first_weekday 2
+END LC_TIME
+
+LC_NUMERIC
+copy "fr_FR"
+END LC_NUMERIC
+
+LC_MONETARY
+copy "fr_FR"
+END LC_MONETARY
+
+LC_MESSAGES
+yesexpr "^[+1sSyY]"
+noexpr  "^[-0nN]"
+yesstr  "Si"
+nostr   "No"
+END LC_MESSAGES
+
+LC_MEASUREMENT
+copy "fr_FR"
+END LC_MEASUREMENT
+
+LC_PAPER
+copy "fr_FR"
+END LC_PAPER
+
+LC_NAME
+copy "fr_FR"
+END LC_NAME
+
+LC_ADDRESS
+postal_fmt    "%f%N%a%N%d%N%b%N%s%t%h%t%e%t%r%N%z%t%T%N%c%N"
+% https://ia.wikipedia.org/wiki/Francia
+country_name "Francia"
+country_post "F"
+country_ab2 "FR"
+country_ab3 "FRA"
+country_num 250
+country_isbn "979-10"
+country_car "F"
+lang_name "interlingua"
+lang_ab      "ia"
+lang_term    "ina"
+lang_lib     "ina"
+END LC_ADDRESS
+
+LC_TELEPHONE
+copy "fr_FR"
+END LC_TELEPHONE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               comment_char %
+escape_char /
+
+% This file is part of the GNU C Library and contains locale data.
+% The Free Software Foundation does not claim any copyright interest
+% in the locale data contained in this file.  The foregoing does not
+% affect the license of the GNU C Library as a whole.  It does not
+% exempt you from the conditions of the license if your use would
+% otherwise be governed by that license.
+
+% Indonesian language locale for Indonesia
+% Source:
+% Address:
+% Contact: Pablo Saratxaga, Mohammad DAMT
+% Email: srtxg@chanae.alphanet.ch, mdamt@cakraweb.com
+% Tel:
+% Fax:
+% Language: id
+% Territory: ID
+% Revision: 0.5
+% Date: 1999-09-08
+% Application: general
+% Users: general
+
+LC_IDENTIFICATION
+title      "Indonesian locale for Indonesia"
+source     ""
+address    ""
+contact    ""
+email      "bug-glibc-locales@gnu.org"
+tel        ""
+fax        ""
+language   "Indonesian"
+territory  "Indonesia"
+revision   "1.0"
+date       "2000-06-29"
+
+category "i18n:2012";LC_IDENTIFICATION
+category "i18n:2012";LC_CTYPE
+category "i18n:2012";LC_COLLATE
+category "i18n:2012";LC_TIME
+category "i18n:2012";LC_NUMERIC
+category "i18n:2012";LC_MONETARY
+category "i18n:2012";LC_MESSAGES
+category "i18n:2012";LC_PAPER
+category "i18n:2012";LC_NAME
+category "i18n:2012";LC_ADDRESS
+category "i18n:2012";LC_TELEPHONE
+category "i18n:2012";LC_MEASUREMENT
+END LC_IDENTIFICATION
+
+LC_CTYPE
+copy "i18n"
+
+translit_start
+include "translit_combining";""
+translit_end
+END LC_CTYPE
+
+LC_COLLATE
+copy "iso14651_t1"
+END LC_COLLATE
+
+LC_MONETARY
+int_curr_symbol         "IDR "
+currency_symbol         "Rp"
+mon_decimal_point       ","
+mon_thousands_sep       "."
+mon_grouping            3;3
+positive_sign           ""
+negative_sign           "-"
+int_frac_digits         2
+frac_digits             2
+p_cs_precedes           1
+p_sep_by_space          0
+n_cs_precedes           1
+n_sep_by_space          0
+p_sign_posn             1
+n_sign_posn             1
+END LC_MONETARY
+
+LC_NUMERIC
+decimal_point           ","
+thousands_sep           "."
+grouping                3;3
+END LC_NUMERIC
+
+LC_TIME
+abday       "Min";"Sen";/
+            "Sel";"Rab";/
+            "Kam";"Jum";/
+            "Sab"
+day         "Minggu";/
+            "Senin";/
+            "Selasa";/
+            "Rabu";/
+            "Kamis";/
+            "Jumat";/
+            "Sabtu"
+abmon       "Jan";"Feb";/
+            "Mar";"Apr";/
+            "Mei";"Jun";/
+            "Jul";"Agu";/
+            "Sep";"Okt";/
+            "Nov";"Des"
+mon         "Januari";/
+            "Februari";/
+            "Maret";/
+            "April";/
+            "Mei";/
+            "Juni";/
+            "Juli";/
+            "Agustus";/
+            "September";/
+            "Oktober";/
+            "November";/
+            "Desember"
+d_t_fmt     "%a %d %b %Y %r"
+date_fmt    "%a %d %b %Y %r %Z"
+d_fmt       "%d//%m//%y"
+t_fmt       "%T"
+am_pm       "";""
+t_fmt_ampm  ""
+week 7;19971130;1
+END LC_TIME
+
+LC_MESSAGES
+yesexpr "^[+1yY]"
+noexpr  "^[-0tTnN]"
+yesstr  "ya"
+nostr   "tidak"
+END LC_MESSAGES
+
+LC_PAPER
+copy "i18n"
+END LC_PAPER
+
+LC_TELEPHONE
+tel_int_fmt    "+%c %a %l"
+int_prefix     "62"
+int_select     "001,008,007,009"
+END LC_TELEPHONE
+
+LC_MEASUREMENT
+copy "i18n"
+END LC_MEASUREMENT
+
+LC_NAME
+name_fmt    "%d%t%g%t%m%t%f"
+END LC_NAME
+
+LC_ADDRESS
+postal_fmt    "%f%N%a%N%d%N%b%N%s %h %e %r%N%z %T%N%c%N"
+country_name "Indonesia"
+country_ab2 "ID"
+country_ab3 "IDN"
+country_num 360
+country_car    "RI"
+lang_name    "Indonesia"
+lang_ab      "id"
+lang_term    "ind"
+lang_lib    "ind"
+END LC_ADDRESS
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              comment_char %
+escape_char /
+
+% This file is part of the GNU C Library and contains locale data.
+% The Free Software Foundation does not claim any copyright interest
+% in the locale data contained in this file.  The foregoing does not
+% affect the license of the GNU C Library as a whole.  It does not
+% exempt you from the conditions of the license if your use would
+% otherwise be governed by that license.
+
+% Igbo language locale for Nigeria
+% Source:
+% Contact: Pablo Saratxaga
+% Email: pablo@mandriva.com
+% Language: ig
+% Territory: NG
+% Revision: 0.2
+% Date: 2005-12-14
+% Users: general
+
+LC_IDENTIFICATION
+title      "Igbo locale for Nigeria"
+source     ""
+address    ""
+contact    ""
+email      "pablo@mandriva.com"
+tel        ""
+fax        ""
+language   "Igbo"
+territory  "Nigeria"
+revision   "0.2"
+date       "2005-12-14"
+
+category "i18n:2012";LC_IDENTIFICATION
+category "i18n:2012";LC_CTYPE
+category "i18n:2012";LC_COLLATE
+category "i18n:2012";LC_TIME
+category "i18n:2012";LC_NUMERIC
+category "i18n:2012";LC_MONETARY
+category "i18n:2012";LC_MESSAGES
+category "i18n:2012";LC_PAPER
+category "i18n:2012";LC_NAME
+category "i18n:2012";LC_ADDRESS
+category "i18n:2012";LC_TELEPHONE
+category "i18n:2012";LC_MEASUREMENT
+END LC_IDENTIFICATION
+
+LC_COLLATE
+% CLDR collation rules for Igbo:
+% (see: https://unicode.org/cldr/trac/browser/trunk/common/collation/ig.xml)
+%
+% <collation type="standard">
+%   <cr><![CDATA[
+%     [normalization on]
+%     &B<ch<<<Ch<<<CH
+%     &G<gb<<<Gb<<<GB<gh<<<Gh<<<GH<gw<<<Gw<<<GW
+%     &I<ị<<<Ị
+%     &K<kp<<<Kp<<<KP<kw<<<Kw<<<KW
+%     &N<ṅ<<<Ṅ<nw<<<Nw<<<NW<ny<<<Ny<<<NY
+%     &O<ọ<<<Ọ
+%     &S<sh<<<Sh<<<SH
+%     &U<ụ<<<Ụ
+%   ]]></cr>
+% </collation>
+%
+% And CLDR also lists the following
+% index characters:
+% (see: https://unicode.org/cldr/trac/browser/trunk/common/main/ig.xml)
+%
+% <exemplarCharacters type="index">[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]</exemplarCharacters>
+%
+% The following rules implement the same order for glibc.
+
+
+copy "iso14651_t1"
+
+collating-symbol  <ch-digraph>
+collating-element <ch> from "ch"
+collating-element <cH> from "cH"
+collating-element <Ch> from "Ch"
+collating-element <CH> from "CH"
+collating-symbol  <gb-digraph>
+collating-element <gb> from "gb"
+collating-element <gB> from "gB"
+collating-element <Gb> from "Gb"
+collating-element <GB> from "GB"
+collating-symbol  <gh-digraph>
+collating-element <gh> from "gh"
+collating-element <gH> from "gH"
+collating-element <Gh> from "Gh"
+collating-element <GH> from "GH"
+collating-symbol  <gw-digraph>
+collating-element <gw> from "gw"
+collating-element <gW> from "gW"
+collating-element <Gw> from "Gw"
+collating-element <GW> from "GW"
+collating-symbol  <kp-digraph>
+collating-element <kp> from "kp"
+collating-element <kP> from "kP"
+collating-element <Kp> from "Kp"
+collating-element <KP> from "KP"
+collating-symbol  <kw-digraph>
+collating-element <kw> from "kw"
+collating-element <kW> from "kW"
+collating-element <Kw> from "Kw"
+collating-element <KW> from "KW"
+collating-symbol  <nw-digraph>
+collating-element <nw> from "nw"
+collating-element <nW> from "nW"
+collating-element <Nw> from "Nw"
+collating-element <NW> from "NW"
+collating-symbol  <ny-digraph>
+collating-element <ny> from "ny"
+collating-element <nY> from "nY"
+collating-element <Ny> from "Ny"
+collating-element <NY> from "NY"
+collating-symbol  <i-dot-below>
+collating-element <i-dot-below-combining>  from "i<U0323>"
+collating-element <I-dot-below-combining>  from "I<U0323>"
+collating-symbol  <o-dot-below>
+collating-element <o-dot-below-combining>  from "o<U0323>"
+collating-element <O-dot-below-combining>  from "O<U0323>"
+collating-symbol  <sh-digraph>
+collating-element <sh> from "sh"
+collating-element <sH> from "sH"
+collating-element <Sh> from "Sh"
+collating-element <SH> from "SH"
+collating-symbol  <u-dot-below>
+collating-element <u-dot-below-combining>  from "u<U0323>"
+collating-element <U-dot-below-combining>  from "U<U0323>"
+collating-symbol  <n-dot-above>
+collating-element <n-dot-above-combining> from "n<U0307>"
+collating-element <N-dot-above-combining> from "N<U0307>"
+
+reorder-after <AFTER-B>
+<ch-digraph>
+reorder-after <AFTER-G>
+<gb-digraph>
+<gh-digraph>
+<gw-digraph>
+reorder-after <AFTER-I>
+<i-dot-below>
+reorder-after <AFTER-K>
+<kp-digraph>
+<kw-digraph>
+reorder-after <AFTER-N>
+<n-dot-above>
+<nw-digraph>
+<ny-digraph>
+reorder-after <AFTER-O>
+<o-dot-below>
+reorder-after <AFTER-S>
+<sh-digraph>
+reorder-after <AFTER-U>
+<u-dot-below>
+
+<ch>                     <ch-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<cH>                     <ch-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Ch>                     <ch-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<CH>                     <ch-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<gb>                     <gb-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<gB>                     <gb-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Gb>                     <gb-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<GB>                     <gb-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<gh>                     <gh-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<gH>                     <gh-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Gh>                     <gh-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<GH>                     <gh-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<gw>                     <gw-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<gW>                     <gw-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Gw>                     <gw-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<GW>                     <gw-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<U1ECB>                 <i-dot-below>;"<BASE><BASE>";"<MIN><MIN>";<VRNT1> % ị
+<i-dot-below-combining> <i-dot-below>;"<BASE><BASE>";"<MIN><MIN>";<VRNT2>
+<U1ECA>                 <i-dot-below>;"<BASE><BASE>";"<CAP><MIN>";<VRNT1> % Ị
+<I-dot-below-combining> <i-dot-below>;"<BASE><BASE>";"<CAP><MIN>";<VRNT2>
+<kp>                     <kp-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<kP>                     <kp-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Kp>                     <kp-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<KP>                     <kp-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<kw>                     <kw-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<kW>                     <kw-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Kw>                     <kw-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<KW>                     <kw-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<U1E45>                 <n-dot-above>;"<BASE><BASE>";"<MIN><MIN>";<VRNT1> % ṅ
+<n-dot-above-combining> <n-dot-above>;"<BASE><BASE>";"<MIN><MIN>";<VRNT2>
+<U1E44>                 <n-dot-above>;"<BASE><BASE>";"<CAP><MIN>";<VRNT1> % Ṅ
+<N-dot-above-combining> <n-dot-above>;"<BASE><BASE>";"<CAP><MIN>";<VRNT2>
+<nw>                     <nw-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<nW>                     <nw-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Nw>                     <nw-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<NW>                     <nw-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<ny>                     <ny-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<nY>                     <ny-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Ny>                     <ny-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<NY>                     <ny-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<U1ECD>                 <o-dot-below>;"<BASE><BASE>";"<MIN><MIN>";<VRNT1> % ọ
+<o-dot-below-combining> <o-dot-below>;"<BASE><BASE>";"<MIN><MIN>";<VRNT2>
+<U1ECC>                 <o-dot-below>;"<BASE><BASE>";"<CAP><MIN>";<VRNT1> % Ọ
+<O-dot-below-combining> <o-dot-below>;"<BASE><BASE>";"<CAP><MIN>";<VRNT2>
+<sh>                     <sh-digraph>;"<BASE><BASE>";"<MIN><MIN>";IGNORE
+<sH>                     <sh-digraph>;"<BASE><BASE>";"<MIN><CAP>";IGNORE
+<Sh>                     <sh-digraph>;"<BASE><BASE>";"<CAP><MIN>";IGNORE
+<SH>                     <sh-digraph>;"<BASE><BASE>";"<CAP><CAP>";IGNORE
+<U1EE5>                 <u-dot-below>;"<BASE><BASE>";"<MIN><MIN>";<VRNT1> % ụ
+<u-dot-below-combining> <u-dot-below>;"<BASE><BASE>";"<MIN><MIN>";<VRNT2>
+<U1EE4>                 <u-dot-be

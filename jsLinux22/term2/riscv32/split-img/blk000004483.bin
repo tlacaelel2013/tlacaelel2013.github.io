@@ -1,0 +1,914 @@
+r input range.
+  */
+  template<typename _InputIterator1, typename _InputIterator2,
+	   typename _OutputIterator, typename _Compare>
+    inline _OutputIterator
+    set_symmetric_difference(_InputIterator1 __first1, _InputIterator1 __last1,
+			     _InputIterator2 __first2, _InputIterator2 __last2,
+			     _OutputIterator __result,
+			     _Compare __comp)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator1>)
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator2>)
+      __glibcxx_function_requires(_OutputIteratorConcept<_OutputIterator,
+	    typename iterator_traits<_InputIterator1>::value_type>)
+      __glibcxx_function_requires(_OutputIteratorConcept<_OutputIterator,
+	    typename iterator_traits<_InputIterator2>::value_type>)
+      __glibcxx_function_requires(_BinaryPredicateConcept<_Compare,
+	    typename iterator_traits<_InputIterator1>::value_type,
+	    typename iterator_traits<_InputIterator2>::value_type>)
+      __glibcxx_function_requires(_BinaryPredicateConcept<_Compare,
+	    typename iterator_traits<_InputIterator2>::value_type,
+	    typename iterator_traits<_InputIterator1>::value_type>)
+      __glibcxx_requires_sorted_set_pred(__first1, __last1, __first2, __comp);
+      __glibcxx_requires_sorted_set_pred(__first2, __last2, __first1, __comp);
+      __glibcxx_requires_irreflexive_pred2(__first1, __last1, __comp);
+      __glibcxx_requires_irreflexive_pred2(__first2, __last2, __comp);
+
+      return _GLIBCXX_STD_A::__set_symmetric_difference(__first1, __last1,
+				__first2, __last2, __result,
+				__gnu_cxx::__ops::__iter_comp_iter(__comp));
+    }
+
+  template<typename _ForwardIterator, typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    _ForwardIterator
+    __min_element(_ForwardIterator __first, _ForwardIterator __last,
+		  _Compare __comp)
+    {
+      if (__first == __last)
+	return __first;
+      _ForwardIterator __result = __first;
+      while (++__first != __last)
+	if (__comp(__first, __result))
+	  __result = __first;
+      return __result;
+    }
+
+  /**
+   *  @brief  Return the minimum element in a range.
+   *  @ingroup sorting_algorithms
+   *  @param  __first  Start of range.
+   *  @param  __last   End of range.
+   *  @return  Iterator referencing the first instance of the smallest value.
+  */
+  template<typename _ForwardIterator>
+    _GLIBCXX14_CONSTEXPR
+    _ForwardIterator
+    inline min_element(_ForwardIterator __first, _ForwardIterator __last)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+      __glibcxx_function_requires(_LessThanComparableConcept<
+	    typename iterator_traits<_ForwardIterator>::value_type>)
+      __glibcxx_requires_valid_range(__first, __last);
+      __glibcxx_requires_irreflexive(__first, __last);
+
+      return _GLIBCXX_STD_A::__min_element(__first, __last,
+				__gnu_cxx::__ops::__iter_less_iter());
+    }
+
+  /**
+   *  @brief  Return the minimum element in a range using comparison functor.
+   *  @ingroup sorting_algorithms
+   *  @param  __first  Start of range.
+   *  @param  __last   End of range.
+   *  @param  __comp   Comparison functor.
+   *  @return  Iterator referencing the first instance of the smallest value
+   *  according to __comp.
+  */
+  template<typename _ForwardIterator, typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    inline _ForwardIterator
+    min_element(_ForwardIterator __first, _ForwardIterator __last,
+		_Compare __comp)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+      __glibcxx_function_requires(_BinaryPredicateConcept<_Compare,
+	    typename iterator_traits<_ForwardIterator>::value_type,
+	    typename iterator_traits<_ForwardIterator>::value_type>)
+      __glibcxx_requires_valid_range(__first, __last);
+      __glibcxx_requires_irreflexive_pred(__first, __last, __comp);
+
+      return _GLIBCXX_STD_A::__min_element(__first, __last,
+				__gnu_cxx::__ops::__iter_comp_iter(__comp));
+    }
+
+  template<typename _ForwardIterator, typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    _ForwardIterator
+    __max_element(_ForwardIterator __first, _ForwardIterator __last,
+		  _Compare __comp)
+    {
+      if (__first == __last) return __first;
+      _ForwardIterator __result = __first;
+      while (++__first != __last)
+	if (__comp(__result, __first))
+	  __result = __first;
+      return __result;
+    }
+
+  /**
+   *  @brief  Return the maximum element in a range.
+   *  @ingroup sorting_algorithms
+   *  @param  __first  Start of range.
+   *  @param  __last   End of range.
+   *  @return  Iterator referencing the first instance of the largest value.
+  */
+  template<typename _ForwardIterator>
+    _GLIBCXX14_CONSTEXPR
+    inline _ForwardIterator
+    max_element(_ForwardIterator __first, _ForwardIterator __last)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+      __glibcxx_function_requires(_LessThanComparableConcept<
+	    typename iterator_traits<_ForwardIterator>::value_type>)
+      __glibcxx_requires_valid_range(__first, __last);
+      __glibcxx_requires_irreflexive(__first, __last);
+
+      return _GLIBCXX_STD_A::__max_element(__first, __last,
+				__gnu_cxx::__ops::__iter_less_iter());
+    }
+
+  /**
+   *  @brief  Return the maximum element in a range using comparison functor.
+   *  @ingroup sorting_algorithms
+   *  @param  __first  Start of range.
+   *  @param  __last   End of range.
+   *  @param  __comp   Comparison functor.
+   *  @return  Iterator referencing the first instance of the largest value
+   *  according to __comp.
+  */
+  template<typename _ForwardIterator, typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    inline _ForwardIterator
+    max_element(_ForwardIterator __first, _ForwardIterator __last,
+		_Compare __comp)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+      __glibcxx_function_requires(_BinaryPredicateConcept<_Compare,
+	    typename iterator_traits<_ForwardIterator>::value_type,
+	    typename iterator_traits<_ForwardIterator>::value_type>)
+      __glibcxx_requires_valid_range(__first, __last);
+      __glibcxx_requires_irreflexive_pred(__first, __last, __comp);
+
+      return _GLIBCXX_STD_A::__max_element(__first, __last,
+				__gnu_cxx::__ops::__iter_comp_iter(__comp));
+    }
+
+#if __cplusplus >= 201402L
+  /// Reservoir sampling algorithm.
+  template<typename _InputIterator, typename _RandomAccessIterator,
+           typename _Size, typename _UniformRandomBitGenerator>
+    _RandomAccessIterator
+    __sample(_InputIterator __first, _InputIterator __last, input_iterator_tag,
+	     _RandomAccessIterator __out, random_access_iterator_tag,
+	     _Size __n, _UniformRandomBitGenerator&& __g)
+    {
+      using __distrib_type = uniform_int_distribution<_Size>;
+      using __param_type = typename __distrib_type::param_type;
+      __distrib_type __d{};
+      _Size __sample_sz = 0;
+      while (__first != __last && __sample_sz != __n)
+	{
+	  __out[__sample_sz++] = *__first;
+	  ++__first;
+	}
+      for (auto __pop_sz = __sample_sz; __first != __last;
+	  ++__first, (void) ++__pop_sz)
+	{
+	  const auto __k = __d(__g, __param_type{0, __pop_sz});
+	  if (__k < __n)
+	    __out[__k] = *__first;
+	}
+      return __out + __sample_sz;
+    }
+
+  /// Selection sampling algorithm.
+  template<typename _ForwardIterator, typename _OutputIterator, typename _Cat,
+           typename _Size, typename _UniformRandomBitGenerator>
+    _OutputIterator
+    __sample(_ForwardIterator __first, _ForwardIterator __last,
+	     forward_iterator_tag,
+	     _OutputIterator __out, _Cat,
+	     _Size __n, _UniformRandomBitGenerator&& __g)
+    {
+      using __distrib_type = uniform_int_distribution<_Size>;
+      using __param_type = typename __distrib_type::param_type;
+      using _USize = make_unsigned_t<_Size>;
+      using _Gen = remove_reference_t<_UniformRandomBitGenerator>;
+      using __uc_type = common_type_t<typename _Gen::result_type, _USize>;
+
+      if (__first == __last)
+	return __out;
+
+      __distrib_type __d{};
+      _Size __unsampled_sz = std::distance(__first, __last);
+      __n = std::min(__n, __unsampled_sz);
+
+      // If possible, we use __gen_two_uniform_ints to efficiently produce
+      // two random numbers using a single distribution invocation:
+
+      const __uc_type __urngrange = __g.max() - __g.min();
+      if (__urngrange / __uc_type(__unsampled_sz) >= __uc_type(__unsampled_sz))
+        // I.e. (__urngrange >= __unsampled_sz * __unsampled_sz) but without
+	// wrapping issues.
+        {
+	  while (__n != 0 && __unsampled_sz >= 2)
+	    {
+	      const pair<_Size, _Size> __p =
+		__gen_two_uniform_ints(__unsampled_sz, __unsampled_sz - 1, __g);
+
+	      --__unsampled_sz;
+	      if (__p.first < __n)
+		{
+		  *__out++ = *__first;
+		  --__n;
+		}
+
+	      ++__first;
+
+	      if (__n == 0) break;
+
+	      --__unsampled_sz;
+	      if (__p.second < __n)
+		{
+		  *__out++ = *__first;
+		  --__n;
+		}
+
+	      ++__first;
+	    }
+        }
+
+      // The loop above is otherwise equivalent to this one-at-a-time version:
+
+      for (; __n != 0; ++__first)
+	if (__d(__g, __param_type{0, --__unsampled_sz}) < __n)
+	  {
+	    *__out++ = *__first;
+	    --__n;
+	  }
+      return __out;
+    }
+
+#if __cplusplus > 201402L
+#define __cpp_lib_sample 201603
+  /// Take a random sample from a population.
+  template<typename _PopulationIterator, typename _SampleIterator,
+           typename _Distance, typename _UniformRandomBitGenerator>
+    _SampleIterator
+    sample(_PopulationIterator __first, _PopulationIterator __last,
+	   _SampleIterator __out, _Distance __n,
+	   _UniformRandomBitGenerator&& __g)
+    {
+      using __pop_cat = typename
+	std::iterator_traits<_PopulationIterator>::iterator_category;
+      using __samp_cat = typename
+	std::iterator_traits<_SampleIterator>::iterator_category;
+
+      static_assert(
+	  __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+		is_convertible<__samp_cat, random_access_iterator_tag>>::value,
+	  "output range must use a RandomAccessIterator when input range"
+	  " does not meet the ForwardIterator requirements");
+
+      static_assert(is_integral<_Distance>::value,
+		    "sample size must be an integer type");
+
+      typename iterator_traits<_PopulationIterator>::difference_type __d = __n;
+      return _GLIBCXX_STD_A::
+	__sample(__first, __last, __pop_cat{}, __out, __samp_cat{}, __d,
+		 std::forward<_UniformRandomBitGenerator>(__g));
+    }
+#endif // C++17
+#endif // C++14
+
+_GLIBCXX_END_NAMESPACE_ALGO
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif /* _STL_ALGO_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // Core algorithmic facilities -*- C++ -*-
+
+// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/*
+ *
+ * Copyright (c) 1994
+ * Hewlett-Packard Company
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Hewlett-Packard Company makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ *
+ *
+ * Copyright (c) 1996-1998
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Silicon Graphics makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
+
+/** @file bits/stl_algobase.h
+ *  This is an internal header file, included by other library headers.
+ *  Do not attempt to use it directly. @headername{algorithm}
+ */
+
+#ifndef _STL_ALGOBASE_H
+#define _STL_ALGOBASE_H 1
+
+#include <bits/c++config.h>
+#include <bits/functexcept.h>
+#include <bits/cpp_type_traits.h>
+#include <ext/type_traits.h>
+#include <ext/numeric_traits.h>
+#include <bits/stl_pair.h>
+#include <bits/stl_iterator_base_types.h>
+#include <bits/stl_iterator_base_funcs.h>
+#include <bits/stl_iterator.h>
+#include <bits/concept_check.h>
+#include <debug/debug.h>
+#include <bits/move.h> // For std::swap
+#include <bits/predefined_ops.h>
+#if __cplusplus >= 201103L
+# include <type_traits>
+#endif
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+#if __cplusplus < 201103L
+  // See http://gcc.gnu.org/ml/libstdc++/2004-08/msg00167.html: in a
+  // nutshell, we are partially implementing the resolution of DR 187,
+  // when it's safe, i.e., the value_types are equal.
+  template<bool _BoolType>
+    struct __iter_swap
+    {
+      template<typename _ForwardIterator1, typename _ForwardIterator2>
+	static void
+	iter_swap(_ForwardIterator1 __a, _ForwardIterator2 __b)
+	{
+	  typedef typename iterator_traits<_ForwardIterator1>::value_type
+	    _ValueType1;
+	  _ValueType1 __tmp = *__a;
+	  *__a = *__b;
+	  *__b = __tmp;
+	}
+    };
+
+  template<>
+    struct __iter_swap<true>
+    {
+      template<typename _ForwardIterator1, typename _ForwardIterator2>
+	static void
+	iter_swap(_ForwardIterator1 __a, _ForwardIterator2 __b)
+	{
+	  swap(*__a, *__b);
+	}
+    };
+#endif
+
+  /**
+   *  @brief Swaps the contents of two iterators.
+   *  @ingroup mutating_algorithms
+   *  @param  __a  An iterator.
+   *  @param  __b  Another iterator.
+   *  @return   Nothing.
+   *
+   *  This function swaps the values pointed to by two iterators, not the
+   *  iterators themselves.
+  */
+  template<typename _ForwardIterator1, typename _ForwardIterator2>
+    inline void
+    iter_swap(_ForwardIterator1 __a, _ForwardIterator2 __b)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_Mutable_ForwardIteratorConcept<
+				  _ForwardIterator1>)
+      __glibcxx_function_requires(_Mutable_ForwardIteratorConcept<
+				  _ForwardIterator2>)
+
+#if __cplusplus < 201103L
+      typedef typename iterator_traits<_ForwardIterator1>::value_type
+	_ValueType1;
+      typedef typename iterator_traits<_ForwardIterator2>::value_type
+	_ValueType2;
+
+      __glibcxx_function_requires(_ConvertibleConcept<_ValueType1,
+				  _ValueType2>)
+      __glibcxx_function_requires(_ConvertibleConcept<_ValueType2,
+				  _ValueType1>)
+
+      typedef typename iterator_traits<_ForwardIterator1>::reference
+	_ReferenceType1;
+      typedef typename iterator_traits<_ForwardIterator2>::reference
+	_ReferenceType2;
+      std::__iter_swap<__are_same<_ValueType1, _ValueType2>::__value
+	&& __are_same<_ValueType1&, _ReferenceType1>::__value
+	&& __are_same<_ValueType2&, _ReferenceType2>::__value>::
+	iter_swap(__a, __b);
+#else
+      swap(*__a, *__b);
+#endif
+    }
+
+  /**
+   *  @brief Swap the elements of two sequences.
+   *  @ingroup mutating_algorithms
+   *  @param  __first1  A forward iterator.
+   *  @param  __last1   A forward iterator.
+   *  @param  __first2  A forward iterator.
+   *  @return   An iterator equal to @p first2+(last1-first1).
+   *
+   *  Swaps each element in the range @p [first1,last1) with the
+   *  corresponding element in the range @p [first2,(last1-first1)).
+   *  The ranges must not overlap.
+  */
+  template<typename _ForwardIterator1, typename _ForwardIterator2>
+    _ForwardIterator2
+    swap_ranges(_ForwardIterator1 __first1, _ForwardIterator1 __last1,
+		_ForwardIterator2 __first2)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_Mutable_ForwardIteratorConcept<
+				  _ForwardIterator1>)
+      __glibcxx_function_requires(_Mutable_ForwardIteratorConcept<
+				  _ForwardIterator2>)
+      __glibcxx_requires_valid_range(__first1, __last1);
+
+      for (; __first1 != __last1; ++__first1, (void)++__first2)
+	std::iter_swap(__first1, __first2);
+      return __first2;
+    }
+
+  /**
+   *  @brief This does what you think it does.
+   *  @ingroup sorting_algorithms
+   *  @param  __a  A thing of arbitrary type.
+   *  @param  __b  Another thing of arbitrary type.
+   *  @return   The lesser of the parameters.
+   *
+   *  This is the simple classic generic implementation.  It will work on
+   *  temporary expressions, since they are only evaluated once, unlike a
+   *  preprocessor macro.
+  */
+  template<typename _Tp>
+    _GLIBCXX14_CONSTEXPR
+    inline const _Tp&
+    min(const _Tp& __a, const _Tp& __b)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_LessThanComparableConcept<_Tp>)
+      //return __b < __a ? __b : __a;
+      if (__b < __a)
+	return __b;
+      return __a;
+    }
+
+  /**
+   *  @brief This does what you think it does.
+   *  @ingroup sorting_algorithms
+   *  @param  __a  A thing of arbitrary type.
+   *  @param  __b  Another thing of arbitrary type.
+   *  @return   The greater of the parameters.
+   *
+   *  This is the simple classic generic implementation.  It will work on
+   *  temporary expressions, since they are only evaluated once, unlike a
+   *  preprocessor macro.
+  */
+  template<typename _Tp>
+    _GLIBCXX14_CONSTEXPR
+    inline const _Tp&
+    max(const _Tp& __a, const _Tp& __b)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_LessThanComparableConcept<_Tp>)
+      //return  __a < __b ? __b : __a;
+      if (__a < __b)
+	return __b;
+      return __a;
+    }
+
+  /**
+   *  @brief This does what you think it does.
+   *  @ingroup sorting_algorithms
+   *  @param  __a  A thing of arbitrary type.
+   *  @param  __b  Another thing of arbitrary type.
+   *  @param  __comp  A @link comparison_functors comparison functor@endlink.
+   *  @return   The lesser of the parameters.
+   *
+   *  This will work on temporary expressions, since they are only evaluated
+   *  once, unlike a preprocessor macro.
+  */
+  template<typename _Tp, typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    inline const _Tp&
+    min(const _Tp& __a, const _Tp& __b, _Compare __comp)
+    {
+      //return __comp(__b, __a) ? __b : __a;
+      if (__comp(__b, __a))
+	return __b;
+      return __a;
+    }
+
+  /**
+   *  @brief This does what you think it does.
+   *  @ingroup sorting_algorithms
+   *  @param  __a  A thing of arbitrary type.
+   *  @param  __b  Another thing of arbitrary type.
+   *  @param  __comp  A @link comparison_functors comparison functor@endlink.
+   *  @return   The greater of the parameters.
+   *
+   *  This will work on temporary expressions, since they are only evaluated
+   *  once, unlike a preprocessor macro.
+  */
+  template<typename _Tp, typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    inline const _Tp&
+    max(const _Tp& __a, const _Tp& __b, _Compare __comp)
+    {
+      //return __comp(__a, __b) ? __b : __a;
+      if (__comp(__a, __b))
+	return __b;
+      return __a;
+    }
+
+  // Fallback implementation of the function in bits/stl_iterator.h used to
+  // remove the __normal_iterator wrapper. See copy, fill, ...
+  template<typename _Iterator>
+    inline _Iterator
+    __niter_base(_Iterator __it)
+    _GLIBCXX_NOEXCEPT_IF(std::is_nothrow_copy_constructible<_Iterator>::value)
+    { return __it; }
+
+  // Reverse the __niter_base transformation to get a
+  // __normal_iterator back again (this assumes that __normal_iterator
+  // is only used to wrap random access iterators, like pointers).
+  template<typename _From, typename _To>
+    inline _From
+    __niter_wrap(_From __from, _To __res)
+    { return __from + (__res - std::__niter_base(__from)); }
+
+  // No need to wrap, iterator already has the right type.
+  template<typename _Iterator>
+    inline _Iterator
+    __niter_wrap(const _Iterator&, _Iterator __res)
+    { return __res; }
+
+  // All of these auxiliary structs serve two purposes.  (1) Replace
+  // calls to copy with memmove whenever possible.  (Memmove, not memcpy,
+  // because the input and output ranges are permitted to overlap.)
+  // (2) If we're using random access iterators, then write the loop as
+  // a for loop with an explicit count.
+
+  template<bool _IsMove, bool _IsSimple, typename _Category>
+    struct __copy_move
+    {
+      template<typename _II, typename _OI>
+	static _OI
+	__copy_m(_II __first, _II __last, _OI __result)
+	{
+	  for (; __first != __last; ++__result, (void)++__first)
+	    *__result = *__first;
+	  return __result;
+	}
+    };
+
+#if __cplusplus >= 201103L
+  template<typename _Category>
+    struct __copy_move<true, false, _Category>
+    {
+      template<typename _II, typename _OI>
+	static _OI
+	__copy_m(_II __first, _II __last, _OI __result)
+	{
+	  for (; __first != __last; ++__result, (void)++__first)
+	    *__result = std::move(*__first);
+	  return __result;
+	}
+    };
+#endif
+
+  template<>
+    struct __copy_move<false, false, random_access_iterator_tag>
+    {
+      template<typename _II, typename _OI>
+	static _OI
+	__copy_m(_II __first, _II __last, _OI __result)
+	{
+	  typedef typename iterator_traits<_II>::difference_type _Distance;
+	  for(_Distance __n = __last - __first; __n > 0; --__n)
+	    {
+	      *__result = *__first;
+	      ++__first;
+	      ++__result;
+	    }
+	  return __result;
+	}
+    };
+
+#if __cplusplus >= 201103L
+  template<>
+    struct __copy_move<true, false, random_access_iterator_tag>
+    {
+      template<typename _II, typename _OI>
+	static _OI
+	__copy_m(_II __first, _II __last, _OI __result)
+	{
+	  typedef typename iterator_traits<_II>::difference_type _Distance;
+	  for(_Distance __n = __last - __first; __n > 0; --__n)
+	    {
+	      *__result = std::move(*__first);
+	      ++__first;
+	      ++__result;
+	    }
+	  return __result;
+	}
+    };
+#endif
+
+  template<bool _IsMove>
+    struct __copy_move<_IsMove, true, random_access_iterator_tag>
+    {
+      template<typename _Tp>
+	static _Tp*
+	__copy_m(const _Tp* __first, const _Tp* __last, _Tp* __result)
+	{
+#if __cplusplus >= 201103L
+	  using __assignable = conditional<_IsMove,
+					   is_move_assignable<_Tp>,
+					   is_copy_assignable<_Tp>>;
+	  // trivial types can have deleted assignment
+	  static_assert( __assignable::type::value, "type is not assignable" );
+#endif
+	  const ptrdiff_t _Num = __last - __first;
+	  if (_Num)
+	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	  return __result + _Num;
+	}
+    };
+
+  template<bool _IsMove, typename _II, typename _OI>
+    inline _OI
+    __copy_move_a(_II __first, _II __last, _OI __result)
+    {
+      typedef typename iterator_traits<_II>::value_type _ValueTypeI;
+      typedef typename iterator_traits<_OI>::value_type _ValueTypeO;
+      typedef typename iterator_traits<_II>::iterator_category _Category;
+      const bool __simple = (__is_trivially_copyable(_ValueTypeI)
+			     && __is_pointer<_II>::__value
+			     && __is_pointer<_OI>::__value
+			     && __are_same<_ValueTypeI, _ValueTypeO>::__value);
+
+      return std::__copy_move<_IsMove, __simple,
+			      _Category>::__copy_m(__first, __last, __result);
+    }
+
+  // Helpers for streambuf iterators (either istream or ostream).
+  // NB: avoid including <iosfwd>, relatively large.
+  template<typename _CharT>
+    struct char_traits;
+
+  template<typename _CharT, typename _Traits>
+    class istreambuf_iterator;
+
+  template<typename _CharT, typename _Traits>
+    class ostreambuf_iterator;
+
+  template<bool _IsMove, typename _CharT>
+    typename __gnu_cxx::__enable_if<__is_char<_CharT>::__value,
+	     ostreambuf_iterator<_CharT, char_traits<_CharT> > >::__type
+    __copy_move_a2(_CharT*, _CharT*,
+		   ostreambuf_iterator<_CharT, char_traits<_CharT> >);
+
+  template<bool _IsMove, typename _CharT>
+    typename __gnu_cxx::__enable_if<__is_char<_CharT>::__value,
+	     ostreambuf_iterator<_CharT, char_traits<_CharT> > >::__type
+    __copy_move_a2(const _CharT*, const _CharT*,
+		   ostreambuf_iterator<_CharT, char_traits<_CharT> >);
+
+  template<bool _IsMove, typename _CharT>
+    typename __gnu_cxx::__enable_if<__is_char<_CharT>::__value,
+				    _CharT*>::__type
+    __copy_move_a2(istreambuf_iterator<_CharT, char_traits<_CharT> >,
+		   istreambuf_iterator<_CharT, char_traits<_CharT> >, _CharT*);
+
+  template<bool _IsMove, typename _II, typename _OI>
+    inline _OI
+    __copy_move_a2(_II __first, _II __last, _OI __result)
+    {
+      return std::__niter_wrap(__result,
+		std::__copy_move_a<_IsMove>(std::__niter_base(__first),
+					    std::__niter_base(__last),
+					    std::__niter_base(__result)));
+    }
+
+  /**
+   *  @brief Copies the range [first,last) into result.
+   *  @ingroup mutating_algorithms
+   *  @param  __first  An input iterator.
+   *  @param  __last   An input iterator.
+   *  @param  __result An output iterator.
+   *  @return   result + (last - first)
+   *
+   *  This inline function will boil down to a call to @c memmove whenever
+   *  possible.  Failing that, if random access iterators are passed, then the
+   *  loop count will be known (and therefore a candidate for compiler
+   *  optimizations such as unrolling).  Result may not be contained within
+   *  [first,last); the copy_backward function should be used instead.
+   *
+   *  Note that the end of the output range is permitted to be contained
+   *  within [first,last).
+  */
+  template<typename _II, typename _OI>
+    inline _OI
+    copy(_II __first, _II __last, _OI __result)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_II>)
+      __glibcxx_function_requires(_OutputIteratorConcept<_OI,
+	    typename iterator_traits<_II>::value_type>)
+      __glibcxx_requires_can_increment_range(__first, __last, __result);
+
+      return std::__copy_move_a2<__is_move_iterator<_II>::__value>
+	     (std::__miter_base(__first), std::__miter_base(__last), __result);
+    }
+
+#if __cplusplus >= 201103L
+  /**
+   *  @brief Moves the range [first,last) into result.
+   *  @ingroup mutating_algorithms
+   *  @param  __first  An input iterator.
+   *  @param  __last   An input iterator.
+   *  @param  __result An output iterator.
+   *  @return   result + (last - first)
+   *
+   *  This inline function will boil down to a call to @c memmove whenever
+   *  possible.  Failing that, if random access iterators are passed, then the
+   *  loop count will be known (and therefore a candidate for compiler
+   *  optimizations such as unrolling).  Result may not be contained within
+   *  [first,last); the move_backward function should be used instead.
+   *
+   *  Note that the end of the output range is permitted to be contained
+   *  within [first,last).
+  */
+  template<typename _II, typename _OI>
+    inline _OI
+    move(_II __first, _II __last, _OI __result)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_II>)
+      __glibcxx_function_requires(_OutputIteratorConcept<_OI,
+	    typename iterator_traits<_II>::value_type>)
+      __glibcxx_requires_can_increment_range(__first, __last, __result);
+
+      return std::__copy_move_a2<true>(std::__miter_base(__first),
+				       std::__miter_base(__last), __result);
+    }
+
+#define _GLIBCXX_MOVE3(_Tp, _Up, _Vp) std::move(_Tp, _Up, _Vp)
+#else
+#define _GLIBCXX_MOVE3(_Tp, _Up, _Vp) std::copy(_Tp, _Up, _Vp)
+#endif
+
+  template<bool, bool, typename>
+    struct __copy_move_backward
+    {
+      template<typename _BI1, typename _BI2>
+	static _BI2
+	__copy_move_b(_BI1 __first, _BI1 __last, _BI2 __result)
+	{
+	  while (__first != __last)
+	    *--__result = *--__last;
+	  return __result;
+	}
+    };
+
+#if __cplusplus >= 201103L
+  template<typename _Category>
+    struct __copy_move_backward<true, false, _Category>
+    {
+      template<typename _BI1, typename _BI2>
+	static _BI2
+	__copy_move_b(_BI1 __first, _BI1 __last, _BI2 __result)
+	{
+	  while (__first != __last)
+	    *--__result = std::move(*--__last);
+	  return __result;
+	}
+    };
+#endif
+
+  template<>
+    struct __copy_move_backward<false, false, random_access_iterator_tag>
+    {
+      template<typename _BI1, typename _BI2>
+	static _BI2
+	__copy_move_b(_BI1 __first, _BI1 __last, _BI2 __result)
+	{
+	  typename iterator_traits<_BI1>::difference_type __n;
+	  for (__n = __last - __first; __n > 0; --__n)
+	    *--__result = *--__last;
+	  return __result;
+	}
+    };
+
+#if __cplusplus >= 201103L
+  template<>
+    struct __copy_move_backward<true, false, random_access_iterator_tag>
+    {
+      template<typename _BI1, typename _BI2>
+	static _BI2
+	__copy_move_b(_BI1 __first, _BI1 __last, _BI2 __result)
+	{
+	  typename iterator_traits<_BI1>::difference_type __n;
+	  for (__n = __last - __first; __n > 0; --__n)
+	    *--__result = std::move(*--__last);
+	  return __result;
+	}
+    };
+#endif
+
+  template<bool _IsMove>
+    struct __copy_move_backward<_IsMove, true, random_access_iterator_tag>
+    {
+      template<typename _Tp>
+	static _Tp*
+	__copy_move_b(const _Tp* __first, const _Tp* __last, _Tp* __result)
+	{
+#if __cplusplus >= 201103L
+	  using __assignable = conditional<_IsMove,
+					   is_move_assignable<_Tp>,
+					   is_copy_assignable<_Tp>>;
+	  // trivial types can have deleted assignment
+	  static_assert( __assignable::type::value, "type is not assignable" );
+#endif
+	  const ptrdiff_t _Num = __last - __first;
+	  if (_Num)
+	    __builtin_memmove(__result - _Num, __first, sizeof(_Tp) * _Num);
+	  return __result - _Num;
+	}
+    };
+
+  template<bool _IsMove, typename _BI1, typename _BI2>
+    inline _BI2
+    __copy_move_backward_a(_BI1 __first, _BI1 __last, _BI2 __result)
+    {
+      typedef typename iterator_traits<_BI1>::value_type _ValueType1;
+      typedef typename iterator_traits<_BI2>::value_type _ValueType2;
+      typedef typename iterator_traits<_BI1>::iterator_category _Category;
+      const bool __simple = (__is_trivially_copyable(_ValueType1)
+			     && __is_pointer<_BI1>::__value
+			     && __is_pointer<_BI2>::__value
+			     && __are_same<_ValueType1, _ValueType2>::__value);
+
+      return std::__copy_move_backward<_IsMove, __simple,
+				       _Category>::__copy_move_b(__first,
+								 __last,
+								 __result);
+    }
+
+  template<bool _IsMove, typename _BI1, typename _BI2>
+    inline _BI2
+    __copy_move_backward_a2(_BI1 __first, _BI1 __last, _BI2 __result)
+    {
+      return std::__niter_wrap(__result,
+		std::__copy_move_backward_a<_IsMove>
+		  (std::__niter_base(__first), std::__niter_base(__last),
+		   std::__niter_base(__result)));
+ 

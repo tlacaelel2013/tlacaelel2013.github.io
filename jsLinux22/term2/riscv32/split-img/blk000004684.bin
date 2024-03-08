@@ -1,0 +1,773 @@
+// Profile array implementation -*- C++ -*-
+
+// Copyright (C) 2012-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file profile/array
+ *  This is a Standard C++ Library header.
+ */
+
+#ifndef _GLIBCXX_PROFILE_ARRAY
+#define _GLIBCXX_PROFILE_ARRAY 1
+
+#pragma GCC system_header
+
+#include <array>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+namespace __profile
+{
+  template<typename _Tp, std::size_t _Nm>
+    struct array
+    {
+      typedef _Tp 	    			      value_type;
+      typedef value_type*			      pointer;
+      typedef const value_type*                       const_pointer;
+      typedef value_type&                   	      reference;
+      typedef const value_type&             	      const_reference;
+      typedef value_type*                             iterator;
+      typedef const value_type*                       const_iterator;
+      typedef std::size_t                    	      size_type;
+      typedef std::ptrdiff_t                   	      difference_type;
+      typedef std::reverse_iterator<iterator>	      reverse_iterator;
+      typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
+
+      // Support for zero-sized arrays mandatory.
+      typedef _GLIBCXX_STD_C::__array_traits<_Tp, _Nm> _AT_Type;
+      typename _AT_Type::_Type                         _M_elems;
+
+      // No explicit construct/copy/destroy for aggregate type.
+
+      // DR 776.
+      void
+      fill(const value_type& __u)
+      { std::fill_n(begin(), size(), __u); }
+
+      void
+      swap(array& __other)
+      noexcept(_AT_Type::_Is_nothrow_swappable::value)
+      { std::swap_ranges(begin(), end(), __other.begin()); }
+
+      // Iterators.
+      _GLIBCXX17_CONSTEXPR iterator
+      begin() noexcept
+      { return iterator(data()); }
+
+      _GLIBCXX17_CONSTEXPR const_iterator
+      begin() const noexcept
+      { return const_iterator(data()); }
+
+      _GLIBCXX17_CONSTEXPR iterator
+      end() noexcept
+      { return iterator(data() + _Nm); }
+
+      _GLIBCXX17_CONSTEXPR const_iterator
+      end() const noexcept
+      { return const_iterator(data() + _Nm); }
+
+      _GLIBCXX17_CONSTEXPR reverse_iterator
+      rbegin() noexcept
+      { return reverse_iterator(end()); }
+
+      _GLIBCXX17_CONSTEXPR const_reverse_iterator
+      rbegin() const noexcept
+      { return const_reverse_iterator(end()); }
+
+      _GLIBCXX17_CONSTEXPR reverse_iterator
+      rend() noexcept
+      { return reverse_iterator(begin()); }
+
+      _GLIBCXX17_CONSTEXPR const_reverse_iterator
+      rend() const noexcept
+      { return const_reverse_iterator(begin()); }
+
+      _GLIBCXX17_CONSTEXPR const_iterator
+      cbegin() const noexcept
+      { return const_iterator(data()); }
+
+      _GLIBCXX17_CONSTEXPR const_iterator
+      cend() const noexcept
+      { return const_iterator(data() + _Nm); }
+
+      _GLIBCXX17_CONSTEXPR const_reverse_iterator
+      crbegin() const noexcept
+      { return const_reverse_iterator(end()); }
+
+      _GLIBCXX17_CONSTEXPR const_reverse_iterator
+      crend() const noexcept
+      { return const_reverse_iterator(begin()); }
+
+      // Capacity.
+      constexpr size_type
+      size() const noexcept { return _Nm; }
+
+      constexpr size_type
+      max_size() const noexcept { return _Nm; }
+
+      _GLIBCXX_NODISCARD constexpr bool
+      empty() const noexcept { return size() == 0; }
+
+      // Element access.
+      reference
+      operator[](size_type __n) noexcept
+      {	return _AT_Type::_S_ref(_M_elems, __n); }
+
+      constexpr const_reference
+      operator[](size_type __n) const noexcept
+      { return _AT_Type::_S_ref(_M_elems, __n); }
+
+      _GLIBCXX17_CONSTEXPR reference
+      at(size_type __n)
+      {
+	if (__n >= _Nm)
+	  std::__throw_out_of_range_fmt(__N("array::at: __n "
+				            "(which is %zu) >= _Nm "
+					    "(which is %zu)"),
+					__n, _Nm);
+	return _AT_Type::_S_ref(_M_elems, __n);
+      }
+
+      constexpr const_reference
+      at(size_type __n) const
+      {
+	// Result of conditional expression must be an lvalue so use
+	// boolean ? lvalue : (throw-expr, lvalue)
+	return __n < _Nm ? _AT_Type::_S_ref(_M_elems, __n)
+	  : (std::__throw_out_of_range_fmt(__N("array::at: __n (which is %zu) "
+					       ">= _Nm (which is %zu)"),
+					   __n, _Nm),
+	     _AT_Type::_S_ref(_M_elems, 0));
+      }
+
+      _GLIBCXX17_CONSTEXPR reference
+      front() noexcept
+      { return *begin(); }
+
+      constexpr const_reference
+      front() const noexcept
+      { return _AT_Type::_S_ref(_M_elems, 0); }
+
+      _GLIBCXX17_CONSTEXPR reference
+      back() noexcept
+      { return _Nm ? *(end() - 1) : *end(); }
+
+      constexpr const_reference
+      back() const noexcept
+      {
+	return _Nm ? _AT_Type::_S_ref(_M_elems, _Nm - 1)
+		   : _AT_Type::_S_ref(_M_elems, 0);
+      }
+
+      _GLIBCXX17_CONSTEXPR pointer
+      data() noexcept
+      { return _AT_Type::_S_ptr(_M_elems); }
+
+      _GLIBCXX17_CONSTEXPR const_pointer
+      data() const noexcept
+      { return _AT_Type::_S_ptr(_M_elems); }
+    };
+
+  // Array comparisons.
+  template<typename _Tp, std::size_t _Nm>
+    inline bool
+    operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+    { return std::equal(__one.begin(), __one.end(), __two.begin()); }
+
+  template<typename _Tp, std::size_t _Nm>
+    inline bool
+    operator!=(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+    { return !(__one == __two); }
+
+  template<typename _Tp, std::size_t _Nm>
+    inline bool
+    operator<(const array<_Tp, _Nm>& __a, const array<_Tp, _Nm>& __b)
+    {
+      return std::lexicographical_compare(__a.begin(), __a.end(),
+					  __b.begin(), __b.end());
+    }
+
+  template<typename _Tp, std::size_t _Nm>
+    inline bool
+    operator>(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+    { return __two < __one; }
+
+  template<typename _Tp, std::size_t _Nm>
+    inline bool
+    operator<=(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+    { return !(__one > __two); }
+
+  template<typename _Tp, std::size_t _Nm>
+    inline bool
+    operator>=(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+    { return !(__one < __two); }
+
+  // Specialized algorithms.
+  template<typename _Tp, std::size_t _Nm>
+    inline void
+    swap(array<_Tp, _Nm>& __one, array<_Tp, _Nm>& __two)
+    noexcept(noexcept(__one.swap(__two)))
+    { __one.swap(__two); }
+
+  template<std::size_t _Int, typename _Tp, std::size_t _Nm>
+    constexpr _Tp&
+    get(array<_Tp, _Nm>& __arr) noexcept
+    {
+      static_assert(_Int < _Nm, "index is out of bounds");
+      return _GLIBCXX_STD_C::__array_traits<_Tp, _Nm>::
+	_S_ref(__arr._M_elems, _Int);
+    }
+
+  template<std::size_t _Int, typename _Tp, std::size_t _Nm>
+    constexpr _Tp&&
+    get(array<_Tp, _Nm>&& __arr) noexcept
+    {
+      static_assert(_Int < _Nm, "index is out of bounds");
+      return std::move(__profile::get<_Int>(__arr));
+    }
+
+  template<std::size_t _Int, typename _Tp, std::size_t _Nm>
+    constexpr const _Tp&
+    get(const array<_Tp, _Nm>& __arr) noexcept
+    {
+      static_assert(_Int < _Nm, "index is out of bounds");
+      return _GLIBCXX_STD_C::__array_traits<_Tp, _Nm>::
+	_S_ref(__arr._M_elems, _Int);
+    }
+} // namespace __profile
+
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+  // Tuple interface to class template array.
+
+  /// tuple_size
+  template<typename _Tp, std::size_t _Nm>
+    struct tuple_size<std::__profile::array<_Tp, _Nm>>
+    : public integral_constant<std::size_t, _Nm> { };
+
+  /// tuple_element
+  template<std::size_t _Int, typename _Tp, std::size_t _Nm>
+    struct tuple_element<_Int, std::__profile::array<_Tp, _Nm>>
+    {
+      static_assert(_Int < _Nm, "index is out of bounds");
+      typedef _Tp type;
+    };
+
+  template<typename _Tp, std::size_t _Nm>
+    struct __is_tuple_like_impl<std::__profile::array<_Tp, _Nm>> : true_type
+    { };
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace std
+
+#endif // _GLIBCXX_PROFILE_ARRAY
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // -*- C++ -*-
+
+// Copyright (C) 2009-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License along
+// with this library; see the file COPYING3.  If not see
+// <http://www.gnu.org/licenses/>.
+
+/** @file profile/base.h
+ *  @brief Sequential helper functions.
+ *  This file is a GNU profile extension to the Standard C++ Library.
+ */
+
+// Written by Lixia Liu
+
+#ifndef _GLIBCXX_PROFILE_BASE_H
+#define _GLIBCXX_PROFILE_BASE_H 1
+
+#include <profile/impl/profiler.h>
+
+// Profiling mode namespaces.
+
+/**
+ * @namespace std::__profile
+ * @brief GNU profile code, replaces standard behavior with profile behavior.
+ */
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+  namespace __profile { }
+}
+
+/**
+ * @namespace __gnu_profile
+ * @brief GNU profile code for public use.
+ */
+namespace __gnu_profile
+{
+  // Import all the profile versions of components in namespace std.
+  using namespace std::__profile;
+}
+
+
+#endif /* _GLIBCXX_PROFILE_BASE_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // Profiling bitset implementation -*- C++ -*-
+
+// Copyright (C) 2009-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file profile/bitset
+ *  This file is a GNU profile extension to the Standard C++ Library.
+ */
+
+#ifndef _GLIBCXX_PROFILE_BITSET
+#define _GLIBCXX_PROFILE_BITSET
+
+#include <bitset>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+namespace __profile
+{
+  /// Class std::bitset wrapper with performance instrumentation, none at the
+  /// moment.
+  template<size_t _Nb>
+    class bitset
+    : public _GLIBCXX_STD_C::bitset<_Nb>
+    {
+      typedef _GLIBCXX_STD_C::bitset<_Nb> _Base;
+
+    public:
+      // 23.3.5.1 constructors:
+#if __cplusplus < 201103L
+      bitset()
+      : _Base() { }
+#else
+      constexpr bitset() = default;
+#endif
+
+#if __cplusplus >= 201103L
+      constexpr bitset(unsigned long long __val) noexcept
+#else
+      bitset(unsigned long __val)
+#endif
+      : _Base(__val) { }
+
+      template<typename _CharT, typename _Traits, typename _Alloc>
+	explicit
+	bitset(const std::basic_string<_CharT, _Traits, _Alloc>& __str,
+	       typename std::basic_string<_CharT, _Traits, _Alloc>::size_type
+	       __pos = 0,
+	       typename std::basic_string<_CharT, _Traits, _Alloc>::size_type
+	       __n = (std::basic_string<_CharT, _Traits, _Alloc>::npos))
+	: _Base(__str, __pos, __n) { }
+
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 396. what are characters zero and one.
+      template<class _CharT, class _Traits, class _Alloc>
+	bitset(const std::basic_string<_CharT, _Traits, _Alloc>& __str,
+	       typename std::basic_string<_CharT, _Traits, _Alloc>::size_type
+	       __pos,
+	       typename std::basic_string<_CharT, _Traits, _Alloc>::size_type
+	       __n,
+	       _CharT __zero, _CharT __one = _CharT('1'))
+	: _Base(__str, __pos, __n, __zero, __one) { }
+
+      bitset(const _Base& __x) : _Base(__x) { }
+
+#if __cplusplus >= 201103L
+      template<typename _CharT>
+	explicit
+	bitset(const _CharT* __str,
+	       typename std::basic_string<_CharT>::size_type __n
+	       = std::basic_string<_CharT>::npos,
+	       _CharT __zero = _CharT('0'), _CharT __one = _CharT('1'))
+	: _Base(__str, __n, __zero, __one) { }
+#endif
+
+      // 23.3.5.2 bitset operations:
+      bitset<_Nb>&
+      operator&=(const bitset<_Nb>& __rhs) _GLIBCXX_NOEXCEPT
+      {
+	_M_base() &= __rhs;
+	return *this;
+      }
+
+      bitset<_Nb>&
+      operator|=(const bitset<_Nb>& __rhs) _GLIBCXX_NOEXCEPT
+      {
+	_M_base() |= __rhs;
+	return *this;
+      }
+
+      bitset<_Nb>&
+      operator^=(const bitset<_Nb>& __rhs) _GLIBCXX_NOEXCEPT
+      {
+	_M_base() ^= __rhs;
+	return *this;
+      }
+
+      bitset<_Nb>&
+      operator<<=(size_t __pos) _GLIBCXX_NOEXCEPT
+      {
+	_M_base() <<= __pos;
+	return *this;
+      }
+
+      bitset<_Nb>&
+      operator>>=(size_t __pos) _GLIBCXX_NOEXCEPT
+      {
+	_M_base() >>= __pos;
+	return *this;
+      }
+
+      bitset<_Nb>&
+      set() _GLIBCXX_NOEXCEPT
+      {
+	_Base::set();
+	return *this;
+      }
+
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 186. bitset::set() second parameter should be bool
+      bitset<_Nb>&
+      set(size_t __pos, bool __val = true)
+      {
+	_Base::set(__pos, __val);
+	return *this;
+      }
+
+      bitset<_Nb>&
+      reset() _GLIBCXX_NOEXCEPT
+      {
+	_Base::reset();
+	return *this;
+      }
+
+      bitset<_Nb>&
+      reset(size_t __pos)
+      {
+	_Base::reset(__pos);
+	return *this;
+      }
+
+      bitset<_Nb>
+      operator~() const _GLIBCXX_NOEXCEPT
+      { return bitset(~_M_base()); }
+
+      bitset<_Nb>&
+      flip() _GLIBCXX_NOEXCEPT
+      {
+	_Base::flip();
+	return *this;
+      }
+
+      bitset<_Nb>&
+      flip(size_t __pos)
+      {
+	_Base::flip(__pos);
+	return *this;
+      }
+
+      bool
+      operator==(const bitset<_Nb>& __rhs) const _GLIBCXX_NOEXCEPT
+      { return _M_base() == __rhs; }
+
+      bool
+      operator!=(const bitset<_Nb>& __rhs) const _GLIBCXX_NOEXCEPT
+      { return _M_base() != __rhs; }
+
+      bitset<_Nb>
+      operator<<(size_t __pos) const _GLIBCXX_NOEXCEPT
+      { return bitset<_Nb>(_M_base() << __pos); }
+
+      bitset<_Nb>
+      operator>>(size_t __pos) const _GLIBCXX_NOEXCEPT
+      { return bitset<_Nb>(_M_base() >> __pos); }
+
+      _Base&
+      _M_base() _GLIBCXX_NOEXCEPT
+      { return *this; }
+
+      const _Base&
+      _M_base() const _GLIBCXX_NOEXCEPT
+      { return *this; }
+    };
+
+  template<size_t _Nb>
+    bitset<_Nb>
+    operator&(const bitset<_Nb>& __x, const bitset<_Nb>& __y) _GLIBCXX_NOEXCEPT
+    { return bitset<_Nb>(__x) &= __y; }
+
+  template<size_t _Nb>
+    bitset<_Nb>
+    operator|(const bitset<_Nb>& __x, const bitset<_Nb>& __y) _GLIBCXX_NOEXCEPT
+    { return bitset<_Nb>(__x) |= __y; }
+
+  template<size_t _Nb>
+    bitset<_Nb>
+    operator^(const bitset<_Nb>& __x, const bitset<_Nb>& __y) _GLIBCXX_NOEXCEPT
+    { return bitset<_Nb>(__x) ^= __y; }
+
+  template<typename _CharT, typename _Traits, size_t _Nb>
+    std::basic_istream<_CharT, _Traits>&
+    operator>>(std::basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x)
+    { return __is >> __x._M_base(); }
+
+  template<typename _CharT, typename _Traits, size_t _Nb>
+    std::basic_ostream<_CharT, _Traits>&
+    operator<<(std::basic_ostream<_CharT, _Traits>& __os,
+	       const bitset<_Nb>& __x)
+    { return __os << __x._M_base(); }
+} // namespace __profile
+
+#if __cplusplus >= 201103L
+  // DR 1182.
+  /// std::hash specialization for bitset.
+  template<size_t _Nb>
+    struct hash<__profile::bitset<_Nb>>
+    : public __hash_base<size_t, __profile::bitset<_Nb>>
+    {
+      size_t
+      operator()(const __profile::bitset<_Nb>& __b) const noexcept
+      { return std::hash<_GLIBCXX_STD_C::bitset<_Nb>>()(__b._M_base()); }
+    };
+#endif
+
+} // namespace std
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // Profiling deque implementation -*- C++ -*-
+
+// Copyright (C) 2009-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file profile/deque
+ *  This file is a GNU profile extension to the Standard C++ Library.
+ */
+
+#ifndef _GLIBCXX_PROFILE_DEQUE
+#define _GLIBCXX_PROFILE_DEQUE 1
+
+#include <deque>
+
+namespace std _GLIBCXX_VISIBILITY(default)
+{
+namespace __profile
+{
+  /// Class std::deque wrapper with performance instrumentation.
+  template<typename _Tp, typename _Allocator = std::allocator<_Tp> >
+    class deque
+    : public _GLIBCXX_STD_C::deque<_Tp, _Allocator>
+    {
+      typedef  _GLIBCXX_STD_C::deque<_Tp, _Allocator> _Base;
+
+    public:
+      typedef typename _Base::size_type			size_type;
+      typedef typename _Base::value_type		value_type;
+
+      // 23.2.1.1 construct/copy/destroy:
+
+#if __cplusplus < 201103L
+      deque()
+      : _Base() { }
+      deque(const deque& __x)
+      : _Base(__x) { }
+
+      ~deque() { }
+#else
+      deque() = default;
+      deque(const deque&) = default;
+      deque(deque&&) = default;
+
+      deque(const deque& __d, const _Allocator& __a)
+      : _Base(__d, __a) { }
+
+      deque(deque&& __d, const _Allocator& __a)
+      : _Base(std::move(__d), __a) { }
+
+      ~deque() = default;
+
+      deque(initializer_list<value_type> __l,
+	    const _Allocator& __a = _Allocator())
+      : _Base(__l, __a) { }
+#endif
+
+      explicit
+      deque(const _Allocator& __a)
+      : _Base(__a) { }
+
+#if __cplusplus >= 201103L
+      explicit
+      deque(size_type __n, const _Allocator& __a = _Allocator())
+      : _Base(__n, __a) { }
+
+      deque(size_type __n, const _Tp& __value,
+	    const _Allocator& __a = _Allocator())
+      : _Base(__n, __value, __a) { }
+#else
+      explicit
+      deque(size_type __n, const _Tp& __value = _Tp(),
+	    const _Allocator& __a = _Allocator())
+      : _Base(__n, __value, __a) { }
+#endif
+
+#if __cplusplus >= 201103L
+      template<typename _InputIterator,
+	       typename = std::_RequireInputIter<_InputIterator>>
+#else
+      template<typename _InputIterator>
+#endif
+	deque(_InputIterator __first, _InputIterator __last,
+	      const _Allocator& __a = _Allocator())
+	: _Base(__first, __last, __a)
+	{ }
+
+      deque(const _Base& __x)
+      : _Base(__x) { }
+
+#if __cplusplus < 201103L
+      deque&
+      operator=(const deque& __x)
+      {
+	_M_base() = __x;
+	return *this;
+      }
+#else
+      deque&
+      operator=(const deque&) = default;
+
+      deque&
+      operator=(deque&&) = default;
+
+      deque&
+      operator=(initializer_list<value_type> __l)
+      {
+	_M_base() = __l;
+	return *this;
+      }
+#endif
+
+      void
+      swap(deque& __x)
+      _GLIBCXX_NOEXCEPT_IF( noexcept(declval<_Base&>().swap(__x)) )
+      { _Base::swap(__x); }
+
+      _Base&
+      _M_base() _GLIBCXX_NOEXCEPT	{ return *this; }
+
+      const _Base&
+      _M_base() const _GLIBCXX_NOEXCEPT	{ return *this; }
+    };
+
+  template<typename _Tp, typename _Alloc>
+    inline bool
+    operator==(const deque<_Tp, _Alloc>& __lhs,
+	       const deque<_Tp, _Alloc>& __rhs)
+    { return __lhs._M_base() == __rhs._M_base(); }
+
+  template<typename _Tp, typename _Alloc>
+    inline bool
+    operator!=(const deque<_Tp, _Alloc>& __lhs,
+	       const deque<_Tp, _Alloc>& __rhs)
+    { return __lhs._M_base() != __rhs._M_base(); }
+
+  template<typename _Tp, typename _Alloc>
+    inline bool
+    operator<(const deque<_Tp, _Alloc>& __lhs,
+	      const deque<_Tp, _Alloc>& __rhs)
+    { return __lhs._M_base() < __rhs._M_base(); }
+
+  template<typename _Tp, typename _Alloc>
+    inline bool
+    operator<=(const deque<_Tp, _Alloc>& __lhs,
+	       const deque<_Tp, _Alloc>& __rhs)
+    { return __lhs._M_base() <= __rhs._M_base(); }
+
+  template<typename _Tp, typename _Alloc>
+    inline bool
+    operator>=(const deque<_Tp, _Alloc>& __lhs,
+	       const deque<_Tp, _Alloc>& __rhs)
+    { return __lhs._M_base() >= __rhs._M_base(); }
+
+  template<typename _Tp, typename _Alloc>
+    inline bool
+    operator>(const deque<_Tp, _Alloc>& __lhs,
+	      const deque<_Tp, _Alloc>& __rhs)
+    { return __lhs._M_base() > __rhs._M_base(); }
+
+  template<typename _Tp, typename _Alloc>
+    inline void
+    swap(deque<_Tp, _Alloc>& __lhs, deque<_Tp, _Alloc>& __rhs)
+    _GLIBCXX_NOEXCEPT_IF(noexcept(__lhs.swap(__rhs)))
+    { __lhs.swap(__rhs); }
+
+} // namespace __profile
+} // namespace std
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

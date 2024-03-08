@@ -1,0 +1,696 @@
+lias	ISO2022CN//		ISO-2022-CN//
+module	ISO-2022-CN//		INTERNAL		ISO-2022-CN	1
+module	INTERNAL		ISO-2022-CN//		ISO-2022-CN	1
+
+#	from			to			module		cost
+alias	ISO2022CNEXT//		ISO-2022-CN-EXT//
+module	ISO-2022-CN-EXT//	INTERNAL		ISO-2022-CN-EXT	1
+module	INTERNAL		ISO-2022-CN-EXT//	ISO-2022-CN-EXT	1
+
+#	from			to			module		cost
+alias	MAC//			MACINTOSH//
+alias	CSMACINTOSH//		MACINTOSH//
+module	MACINTOSH//		INTERNAL		MACINTOSH	1
+module	INTERNAL		MACINTOSH//		MACINTOSH	1
+
+#	from			to			module		cost
+alias	ISO-IR-143//		IEC_P27-1//
+alias	CSISO143IECP271//	IEC_P27-1//
+alias	IEC_P271//		IEC_P27-1//
+module	IEC_P27-1//		INTERNAL		IEC_P27-1	1
+module	INTERNAL		IEC_P27-1//		IEC_P27-1	1
+
+#	from			to			module		cost
+alias	ISO_9036//		ASMO_449//
+alias	ARABIC7//		ASMO_449//
+alias	ISO-IR-89//		ASMO_449//
+alias	CSISO89ASMO449//	ASMO_449//
+module	ASMO_449//		INTERNAL		ASMO_449	1
+module	INTERNAL		ASMO_449//		ASMO_449	1
+
+#	from			to			module		cost
+alias	ANSI_X3.110-1983//	ANSI_X3.110//
+alias	ISO-IR-99//		ANSI_X3.110//
+alias	CSA_T500-1983//		ANSI_X3.110//
+alias	CSA_T500//		ANSI_X3.110//
+alias	NAPLPS//		ANSI_X3.110//
+alias	CSISO99NAPLPS//		ANSI_X3.110//
+module	ANSI_X3.110//		INTERNAL		ANSI_X3.110	1
+module	INTERNAL		ANSI_X3.110//		ANSI_X3.110	1
+
+#	from			to			module		cost
+alias	ISO-IR-139//		CSN_369103//
+alias	CSISO139CSN369103//	CSN_369103//
+module	CSN_369103//		INTERNAL		CSN_369103	1
+module	INTERNAL		CSN_369103//		CSN_369103	1
+
+#	from			to			module		cost
+alias	CWI-2//			CWI//
+alias	CP-HU//			CWI//
+module	CWI//			INTERNAL		CWI		1
+module	INTERNAL		CWI//			CWI		1
+
+#	from			to			module		cost
+alias	DEC//			DEC-MCS//
+alias	CSDECMCS//		DEC-MCS//
+alias	DECMCS//		DEC-MCS//
+module	DEC-MCS//		INTERNAL		DEC-MCS		1
+module	INTERNAL		DEC-MCS//		DEC-MCS		1
+
+#	from			to			module		cost
+alias	ISO-IR-111//		ECMA-CYRILLIC//
+alias	CSISO111ECMACYRILLIC//	ECMA-CYRILLIC//
+alias	ECMACYRILLIC//		ECMA-CYRILLIC//
+module	ECMA-CYRILLIC//		INTERNAL		ECMA-CYRILLIC	1
+module	INTERNAL		ECMA-CYRILLIC//		ECMA-CYRILLIC	1
+
+#	from			to			module		cost
+alias	ST_SEV_358-88//		GOST_19768-74//
+alias	GOST_19768//		GOST_19768-74//
+alias	ISO-IR-153//		GOST_19768-74//
+alias	CSISO153GOST1976874//	GOST_19768-74//
+alias	GOST_1976874//		GOST_19768-74//
+module	GOST_19768-74//		INTERNAL		GOST_19768-74	1
+module	INTERNAL		GOST_19768-74//		GOST_19768-74	1
+
+#	from			to			module		cost
+alias	ISO-IR-150//		GREEK-CCITT//
+alias	CSISO150//		GREEK-CCITT//
+alias	CSISO150GREEKCCITT//	GREEK-CCITT//
+alias	GREEKCCITT//		GREEK-CCITT//
+module	GREEK-CCITT//		INTERNAL		GREEK-CCITT	1
+module	INTERNAL		GREEK-CCITT//		GREEK-CCITT	1
+
+#	from			to			module		cost
+alias	ISO-IR-88//		GREEK7//
+alias	CSISO88GREEK7//		GREEK7//
+module	GREEK7//		INTERNAL		GREEK7		1
+module	INTERNAL		GREEK7//		GREEK7		1
+
+#	from			to			module		cost
+alias	ISO-IR-18//		GREEK7-OLD//
+alias	CSISO18GREEK7OLD//	GREEK7-OLD//
+alias	GREEK7OLD//		GREEK7-OLD//
+module	GREEK7-OLD//		INTERNAL		GREEK7-OLD	1
+module	INTERNAL		GREEK7-OLD//		GREEK7-OLD	1
+
+#	from			to			module		cost
+alias	ISO-IR-49//		INIS//
+alias	CSISO49INIS//		INIS//
+module	INIS//			INTERNAL		INIS		1
+module	INTERNAL		INIS//			INIS		1
+
+#	from			to			module		cost
+alias	ISO-IR-50//		INIS-8//
+alias	CSISO50INIS8//		INIS-8//
+alias	INIS8//			INIS-8//
+module	INIS-8//		INTERNAL		INIS-8		1
+module	INTERNAL		INIS-8//		INIS-8		1
+
+#	from			to			module		cost
+alias	ISO-IR-51//		INIS-CYRILLIC//
+alias	CSISO51INISCYRILLIC//	INIS-CYRILLIC//
+alias	INISCYRILLIC//		INIS-CYRILLIC//
+module	INIS-CYRILLIC//		INTERNAL		INIS-CYRILLIC	1
+module	INTERNAL		INIS-CYRILLIC//		INIS-CYRILLIC	1
+
+#	from			to			module		cost
+alias	ISO-IR-98//		ISO_2033//
+alias	ISO_2033-1983//		ISO_2033//
+alias	E13B//			ISO_2033//
+alias	CSISO2033//		ISO_2033//
+module	ISO_2033//		INTERNAL		ISO_2033	1
+module	INTERNAL		ISO_2033//		ISO_2033	1
+
+#	from			to			module		cost
+alias	ISO-IR-37//		ISO_5427//
+alias	KOI-7//			ISO_5427//
+alias	CSISO5427CYRILLIC//	ISO_5427//
+module	ISO_5427//		INTERNAL		ISO_5427	1
+module	INTERNAL		ISO_5427//		ISO_5427	1
+
+#	from			to			module		cost
+alias	ISO-IR-54//		ISO_5427-EXT//
+alias	ISO_5427:1981//		ISO_5427-EXT//
+alias	CSISO5427CYRILLIC1981//	ISO_5427-EXT//
+alias	ISO_5427EXT//		ISO_5427-EXT//
+module	ISO_5427-EXT//		INTERNAL		ISO_5427-EXT	1
+module	INTERNAL		ISO_5427-EXT//		ISO_5427-EXT	1
+
+#	from			to			module		cost
+alias	ISO-IR-55//		ISO_5428//
+alias	ISO_5428:1980//		ISO_5428//
+alias	CSISO5428GREEK//	ISO_5428//
+module	ISO_5428//		INTERNAL		ISO_5428	1
+module	INTERNAL		ISO_5428//		ISO_5428	1
+
+#	from			to			module		cost
+alias	ISO-IR-155//		ISO_10367-BOX//
+alias	CSISO10367BOX//		ISO_10367-BOX//
+alias	ISO_10367BOX//		ISO_10367-BOX//
+module	ISO_10367-BOX//		INTERNAL		ISO_10367-BOX	1
+module	INTERNAL		ISO_10367-BOX//		ISO_10367-BOX	1
+
+#	from			to			module		cost
+alias	MACIS//			MAC-IS//
+module	MAC-IS//		INTERNAL		MAC-IS		1
+module	INTERNAL		MAC-IS//		MAC-IS		1
+
+#	from			to			module		cost
+alias	MACUK//			MAC-UK//
+alias	MACUKRAINIAN//		MAC-UK//
+alias	MAC-CYRILLIC//		MAC-UK//
+alias	MACCYRILLIC//		MAC-UK//
+module	MAC-UK//		INTERNAL		MAC-UK		1
+module	INTERNAL		MAC-UK//		MAC-UK		1
+
+#	from			to			module		cost
+alias	MS-MAC-CYRILLIC//	CP10007//
+alias	MSMACCYRILLIC//		CP10007//
+module	CP10007//		INTERNAL		CP10007		1
+module	INTERNAL		CP10007//		CP10007		1
+
+#	from			to			module		cost
+alias	ISO-IR-9-1//		NATS-DANO//
+alias	CSNATSDANO//		NATS-DANO//
+alias	NATSDANO//		NATS-DANO//
+module	NATS-DANO//		INTERNAL		NATS-DANO	1
+module	INTERNAL		NATS-DANO//		NATS-DANO	1
+
+#	from			to			module		cost
+alias	ISO-IR-8-1//		NATS-SEFI//
+alias	CSNATSSEFI//		NATS-SEFI//
+alias	NATSSEFI//		NATS-SEFI//
+module	NATS-SEFI//		INTERNAL		NATS-SEFI	1
+module	INTERNAL		NATS-SEFI//		NATS-SEFI	1
+
+#	from			to			module		cost
+alias	WS2//			WIN-SAMI-2//
+alias	WINSAMI2//		WIN-SAMI-2//
+module	WIN-SAMI-2//		INTERNAL		SAMI-WS2	1
+module	INTERNAL		WIN-SAMI-2//		SAMI-WS2	1
+
+#	from			to			module		cost
+module	ISO-IR-197//		INTERNAL		ISO-IR-197	1
+module	INTERNAL		ISO-IR-197//		ISO-IR-197	1
+
+#	from			to			module		cost
+alias	TIS620//		TIS-620//
+alias	TIS620-0//		TIS-620//
+alias	TIS620.2529-1//		TIS-620//
+alias	TIS620.2533-0//		TIS-620//
+alias	ISO-IR-166//		TIS-620//
+module	TIS-620//		INTERNAL		TIS-620		1
+module	INTERNAL		TIS-620//		TIS-620		1
+
+#	from			to			module		cost
+alias	KOI8U//			KOI8-U//
+module	KOI8-U//		INTERNAL		KOI8-U		1
+module	INTERNAL		KOI8-U//		KOI8-U		1
+
+#	from			to			module		cost
+alias	ISIRI3342//		ISIRI-3342//
+module	ISIRI-3342//		INTERNAL		ISIRI-3342	1
+module	INTERNAL		ISIRI-3342//		ISIRI-3342	1
+
+#	from			to			module		cost
+alias	UTF16//			UTF-16//
+module	UTF-16//		INTERNAL		UTF-16		1
+module	INTERNAL		UTF-16//		UTF-16		1
+
+#	from			to			module		cost
+alias	UTF16LE//		UTF-16LE//
+module	UTF-16LE//		INTERNAL		UTF-16		1
+module	INTERNAL		UTF-16LE//		UTF-16		1
+
+#	from			to			module		cost
+alias	UTF16BE//		UTF-16BE//
+module	UTF-16BE//		INTERNAL		UTF-16		1
+module	INTERNAL		UTF-16BE//		UTF-16		1
+
+#	from			to			module		cost
+alias	CSUNICODE//		UNICODE//
+module	UNICODE//		INTERNAL		UNICODE		1
+module	INTERNAL		UNICODE//		UNICODE		1
+
+#	from			to			module		cost
+alias	UTF32//			UTF-32//
+module	UTF-32//		INTERNAL		UTF-32		1
+module	INTERNAL		UTF-32//		UTF-32		1
+
+#	from			to			module		cost
+alias	UTF32LE//		UTF-32LE//
+module	UTF-32LE//		INTERNAL		UTF-32		1
+module	INTERNAL		UTF-32LE//		UTF-32		1
+
+#	from			to			module		cost
+alias	UTF32BE//		UTF-32BE//
+module	UTF-32BE//		INTERNAL		UTF-32		1
+module	INTERNAL		UTF-32BE//		UTF-32		1
+
+#	from			to			module		cost
+alias	UTF7//			UTF-7//
+module	UTF-7//			INTERNAL		UTF-7		1
+module	INTERNAL		UTF-7//			UTF-7		1
+
+#	from			to			module		cost
+module	GB18030//		INTERNAL		GB18030		1
+module	INTERNAL		GB18030//		GB18030		1
+
+#	from			to			module		cost
+module	VISCII//		INTERNAL		VISCII		1
+module	INTERNAL		VISCII//		VISCII		1
+
+#	from			to			module		cost
+module	KOI8-T//		INTERNAL		KOI8-T		1
+module	INTERNAL		KOI8-T//		KOI8-T		1
+
+#	from			to			module		cost
+module	GEORGIAN-PS//		INTERNAL		GEORGIAN-PS	1
+module	INTERNAL		GEORGIAN-PS//		GEORGIAN-PS	1
+
+#	from			to			module		cost
+module	GEORGIAN-ACADEMY//	INTERNAL		GEORGIAN-ACADEMY 1
+module	INTERNAL		GEORGIAN-ACADEMY//	GEORGIAN-ACADEMY 1
+
+#	from			to			module		cost
+module	ISO-IR-209//		INTERNAL		ISO-IR-209	1
+module	INTERNAL		ISO-IR-209//		ISO-IR-209	1
+
+#	from			to			module		cost
+module	MAC-SAMI//		INTERNAL		MAC-SAMI	1
+module	INTERNAL		MAC-SAMI//		MAC-SAMI	1
+
+#	from			to			module		cost
+alias	ARMSCII8//		ARMSCII-8//
+module	ARMSCII-8//		INTERNAL		ARMSCII-8	1
+module	INTERNAL		ARMSCII-8//		ARMSCII-8	1
+
+#	from			to			module		cost
+alias	TCVN//			TCVN5712-1//
+alias	TCVN-5712//		TCVN5712-1//
+alias	TCVN5712-1:1993//	TCVN5712-1//
+module	TCVN5712-1//		INTERNAL		TCVN5712-1	1
+module	INTERNAL		TCVN5712-1//		TCVN5712-1	1
+
+#	from			to			module		cost
+module	EUC-JISX0213//		INTERNAL		EUC-JISX0213	1
+module	INTERNAL		EUC-JISX0213//		EUC-JISX0213	1
+
+#	from			to			module		cost
+alias	ShiftJISX0213//		Shift_JISX0213//
+module	Shift_JISX0213//	INTERNAL		SHIFT_JISX0213	1
+module	INTERNAL		Shift_JISX0213//	SHIFT_JISX0213	1
+
+#	from			to			module		cost
+module	TSCII//			INTERNAL		TSCII		1
+module	INTERNAL		TSCII//			TSCII		1
+
+#	from			to			module		cost
+module	PT154//			INTERNAL		PT154		1
+module	INTERNAL		PT154//			PT154		1
+
+#	from			to			module		cost
+alias	STRK1048-2002//		RK1048//
+module	RK1048//		INTERNAL		RK1048		1
+module	INTERNAL		RK1048//		RK1048		1
+
+#	from			to			module		cost
+alias	IBM-1025//		IBM1025//
+alias	CP1025//		IBM1025//
+alias	CSIBM1025//		IBM1025//
+module	IBM1025//		INTERNAL		IBM1025		1
+module	INTERNAL		IBM1025//		IBM1025		1
+
+#	from			to			module		cost
+alias	IBM-1122//		IBM1122//
+alias	CP1122//		IBM1122//
+alias	CSIBM1122//		IBM1122//
+module	IBM1122//		INTERNAL		IBM1122		1
+module	INTERNAL		IBM1122//		IBM1122		1
+
+#	from			to			module		cost
+alias	IBM-1137//		IBM1137//
+alias	CP1137//		IBM1137//
+alias	CSIBM1137//		IBM1137//
+module	IBM1137//		INTERNAL		IBM1137		1
+module	INTERNAL		IBM1137//		IBM1137		1
+
+#	from			to			module		cost
+alias	IBM-1153//		IBM1153//
+alias	CP1153//		IBM1153//
+alias	CSIBM1153//		IBM1153//
+module	IBM1153//		INTERNAL		IBM1153		1
+module	INTERNAL		IBM1153//		IBM1153		1
+
+#	from			to			module		cost
+alias	IBM-1154//		IBM1154//
+alias	CP1154//		IBM1154//
+alias	CSIBM1154//		IBM1154//
+module	IBM1154//		INTERNAL		IBM1154		1
+module	INTERNAL		IBM1154//		IBM1154		1
+
+#	from			to			module		cost
+alias	IBM-1155//		IBM1155//
+alias	CP1155//		IBM1155//
+alias	CSIBM1155//		IBM1155//
+module	IBM1155//		INTERNAL		IBM1155		1
+module	INTERNAL		IBM1155//		IBM1155		1
+
+#	from			to			module		cost
+alias	IBM-1156//		IBM1156//
+alias	CP1156//		IBM1156//
+alias	CSIBM1156//		IBM1156//
+module	IBM1156//		INTERNAL		IBM1156		1
+module	INTERNAL		IBM1156//		IBM1156		1
+
+#	from			to			module		cost
+alias	IBM-1157//		IBM1157//
+alias	CP1157//		IBM1157//
+alias	CSIBM1157//		IBM1157//
+module	IBM1157//		INTERNAL		IBM1157		1
+module	INTERNAL		IBM1157//		IBM1157		1
+
+#	from			to			module		cost
+alias	IBM-1158//		IBM1158//
+alias	CP1158//		IBM1158//
+alias	CSIBM1158//		IBM1158//
+module	IBM1158//		INTERNAL		IBM1158		1
+module	INTERNAL		IBM1158//		IBM1158		1
+
+#	from			to			module		cost
+alias	IBM-803//		IBM803//
+alias	CP803//		IBM803//
+alias	CSIBM803//		IBM803//
+module	IBM803//		INTERNAL		IBM803		1
+module	INTERNAL		IBM803//		IBM803		1
+
+#	from			to			module		cost
+alias	IBM-901//		IBM901//
+alias	CP901//		IBM901//
+alias	CSIBM901//		IBM901//
+module	IBM901//		INTERNAL		IBM901		1
+module	INTERNAL		IBM901//		IBM901		1
+
+#	from			to			module		cost
+alias	IBM-902//		IBM902//
+alias	CP902//		IBM902//
+alias	CSIBM902//		IBM902//
+module	IBM902//		INTERNAL		IBM902		1
+module	INTERNAL		IBM902//		IBM902		1
+
+#	from			to			module		cost
+alias	IBM-921//		IBM921//
+alias	CP921//		IBM921//
+alias	CSIBM921//		IBM921//
+module	IBM921//		INTERNAL		IBM921		1
+module	INTERNAL		IBM921//		IBM921		1
+
+#	from			to			module		cost
+alias	IBM-1008//		IBM1008//
+alias	CP1008//		IBM1008//
+alias	CSIBM1008//		IBM1008//
+module	IBM1008//		INTERNAL		IBM1008		1
+module	INTERNAL		IBM1008//		IBM1008		1
+
+#	from			to			module		cost
+module	IBM1008//		IBM420//		IBM1008_420	1
+module	IBM420//		IBM1008//		IBM1008_420	1
+
+#	from			to			module		cost
+alias	IBM-1097//		IBM1097//
+alias	CP1097//		IBM1097//
+alias	CSIBM1097//		IBM1097//
+module	IBM1097//		INTERNAL		IBM1097		1
+module	INTERNAL		IBM1097//		IBM1097		1
+
+#	from			to			module		cost
+alias	IBM-1112//		IBM1112//
+alias	CP1112//		IBM1112//
+alias	CSIBM1112//		IBM1112//
+module	IBM1ÏÒ  ÌÒ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          112//		INTERNAL		IBM1112		1
+module	INTERNAL		IBM1112//		IBM1112		1
+
+#	from			to			module		cost
+alias	IBM-1123//		IBM1123//
+alias	CP1123//		IBM1123//
+alias	CSIBM1123//		IBM1123//
+module	IBM1123//		INTERNAL		IBM1123		1
+module	INTERNAL		IBM1123//		IBM1123		1
+
+#	from			to			module		cost
+alias	IBM-1130//		IBM1130//
+alias	CP1130//		IBM1130//
+alias	CSIBM1130//		IBM1130//
+module	IBM1130//		INTERNAL		IBM1130		1
+module	INTERNAL		IBM1130//		IBM1130		1
+
+#	from			to			module		cost
+alias	IBM-1140//		IBM1140//
+alias	CP1140//		IBM1140//
+alias	CSIBM1140//		IBM1140//
+module	IBM1140//		INTERNAL		IBM1140		1
+module	INTERNAL		IBM1140//		IBM1140		1
+
+#	from			to			module		cost
+alias	IBM-1141//		IBM1141//
+alias	CP1141//		IBM1141//
+alias	CSIBM1141//		IBM1141//
+module	IBM1141//		INTERNAL		IBM1141		1
+module	INTERNAL		IBM1141//		IBM1141		1
+
+#	from			to			module		cost
+alias	IBM-1142//		IBM1142//
+alias	CP1142//		IBM1142//
+alias	CSIBM1142//		IBM1142//
+module	IBM1142//		INTERNAL		IBM1142		1
+module	INTERNAL		IBM1142//		IBM1142		1
+
+#	from			to			module		cost
+alias	IBM-1143//		IBM1143//
+alias	CP1143//		IBM1143//
+alias	CSIBM1143//		IBM1143//
+module	IBM1143//		INTERNAL		IBM1143		1
+module	INTERNAL		IBM1143//		IBM1143		1
+
+#	from			to			module		cost
+alias	IBM-1144//		IBM1144//
+alias	CP1144//		IBM1144//
+alias	CSIBM1144//		IBM1144//
+module	IBM1144//		INTERNAL		IBM1144		1
+module	INTERNAL		IBM1144//		IBM1144		1
+
+#	from			to			module		cost
+alias	IBM-1145//		IBM1145//
+alias	CP1145//		IBM1145//
+alias	CSIBM1145//		IBM1145//
+module	IBM1145//		INTERNAL		IBM1145		1
+module	INTERNAL		IBM1145//		IBM1145		1
+
+#	from			to			module		cost
+alias	IBM-1146//		IBM1146//
+alias	CP1146//		IBM1146//
+alias	CSIBM1146//		IBM1146//
+module	IBM1146//		INTERNAL		IBM1146		1
+module	INTERNAL		IBM1146//		IBM1146		1
+
+#	from			to			module		cost
+alias	IBM-1147//		IBM1147//
+alias	CP1147//		IBM1147//
+alias	CSIBM1147//		IBM1147//
+module	IBM1147//		INTERNAL		IBM1147		1
+module	INTERNAL		IBM1147//		IBM1147		1
+
+#	from			to			module		cost
+alias	IBM-1148//		IBM1148//
+alias	CP1148//		IBM1148//
+alias	CSIBM1148//		IBM1148//
+module	IBM1148//		INTERNAL		IBM1148		1
+module	INTERNAL		IBM1148//		IBM1148		1
+
+#	from			to			module		cost
+alias	IBM-1149//		IBM1149//
+alias	CP1149//		IBM1149//
+alias	CSIBM1149//		IBM1149//
+module	IBM1149//		INTERNAL		IBM1149		1
+module	INTERNAL		IBM1149//		IBM1149		1
+
+#	from			to			module		cost
+alias	IBM-1166//		IBM1166//
+alias	CP1166//		IBM1166//
+alias	CSIBM1166//		IBM1166//
+module	IBM1166//		INTERNAL		IBM1166		1
+module	INTERNAL		IBM1166//		IBM1166		1
+
+#	from			to			module		cost
+alias	IBM-1167//		IBM1167//
+alias	CP1167//		IBM1167//
+alias	CSIBM1167//		IBM1167//
+module	IBM1167//		INTERNAL		IBM1167		1
+module	INTERNAL		IBM1167//		IBM1167		1
+
+#	from			to			module		cost
+alias	IBM-4517//		IBM4517//
+alias	CP4517//		IBM4517//
+alias	CSIBM4517//		IBM4517//
+module	IBM4517//		INTERNAL		IBM4517		1
+module	INTERNAL		IBM4517//		IBM4517		1
+
+#	from			to			module		cost
+alias	IBM-4899//		IBM4899//
+alias	CP4899//		IBM4899//
+alias	CSIBM4899//		IBM4899//
+module	IBM4899//		INTERNAL		IBM4899		1
+module	INTERNAL		IBM4899//		IBM4899		1
+
+#	from			to			module		cost
+alias	IBM-4909//		IBM4909//
+alias	CP4909//		IBM4909//
+alias	CSIBM4909//		IBM4909//
+module	IBM4909//		INTERNAL		IBM4909		1
+module	INTERNAL		IBM4909//		IBM4909		1
+
+#	from			to			module		cost
+alias	IBM-4971//		IBM4971//
+alias	CP4971//		IBM4971//
+alias	CSIBM4971//		IBM4971//
+module	IBM4971//		INTERNAL		IBM4971		1
+module	INTERNAL		IBM4971//		IBM4971		1
+
+#	from			to			module		cost
+alias	IBM-5347//		IBM5347//
+alias	CP5347//		IBM5347//
+alias	CSIBM5347//		IBM5347//
+module	IBM5347//		INTERNAL		IBM5347		1
+module	INTERNAL		IBM5347//		IBM5347		1
+
+#	from			to			module		cost
+alias	IBM-9030//		IBM9030//
+alias	CP9030//		IBM9030//
+alias	CSIBM9030//		IBM9030//
+module	IBM9030//		INTERNAL		IBM9030		1
+module	INTERNAL		IBM9030//		IBM9030		1
+
+#	from			to			module		cost
+alias	IBM-9066//		IBM9066//
+alias	CP9066//		IBM9066//
+alias	CSIBM9066//		IBM9066//
+module	IBM9066//		INTERNAL		IBM9066		1
+module	INTERNAL		IBM9066//		IBM9066		1
+
+#	from			to			module		cost
+alias	IBM-9448//		IBM9448//
+alias	CP9448//		IBM9448//
+alias	CSIBM9448//		IBM9448//
+module	IBM9448//		INTERNAL		IBM9448		1
+module	INTERNAL		IBM9448//		IBM9448		1
+
+#	from			to			module		cost
+alias	IBM-12712//		IBM12712//
+alias	CP12712//		IBM12712//
+alias	CSIBM12712//		IBM12712//
+module	IBM12712//		INTERNAL		IBM12712		1
+module	INTERNAL		IBM12712//		IBM12712		1
+
+#	from			to			module		cost
+alias	IBM-16804//		IBM16804//
+alias	CP16804//		IBM16804//
+alias	CSIBM16804//		IBM16804//
+module	IBM16804//		INTERNAL		IBM16804		1
+module	INTERNAL		IBM16804//		IBM16804		1
+
+#	from			to			module		cost
+alias	IBM-1364//		IBM1364//
+alias	CP1364//		IBM1364//
+alias	CSIBM1364//		IBM1364//
+module	IBM1364//		INTERNAL		IBM1364		1
+module	INTERNAL		IBM1364//		IBM1364		1
+
+#	from			to			module		cost
+alias	IBM-1371//		IBM1371//
+alias	CP1371//		IBM1371//
+alias	CSIBM1371//		IBM1371//
+module	IBM1371//		INTERNAL		IBM1371		1
+module	INTERNAL		IBM1371//		IBM1371		1
+
+#	from			to			module		cost
+alias	IBM-1388//		IBM1388//
+alias	CP1388//		IBM1388//
+alias	CSIBM1388//		IBM1388//
+module	IBM1388//		INTERNAL		IBM1388		1
+module	INTERNAL		IBM1388//		IBM1388		1
+
+#	from			to			module		cost
+alias	IBM-1390//		IBM1390//
+alias	CP1390//		IBM1390//
+alias	CSIBM1390//		IBM1390//
+module	IBM1390//		INTERNAL		IBM1390		1
+module	INTERNAL		IBM1390//		IBM1390		1
+
+#	from			to			module		cost
+alias	IBM-1399//		IBM1399//
+alias	CP1399//		IBM1399//
+alias	CSIBM1399//		IBM1399//
+module	IBM1399//		INTERNAL		IBM1399		1
+module	INTERNAL		IBM1399//		IBM1399		1
+
+#	from			to			module		cost
+alias	ISO/TR_11548-1/		ISO_11548-1//
+alias	ISO11548-1//		ISO_11548-1//
+module	ISO_11548-1//		INTERNAL		ISO_11548-1	1
+module	INTERNAL		ISO_11548-1//		ISO_11548-1	1
+
+#	from			to			module		cost
+module	MIK//			INTERNAL		MIK		1
+module	INTERNAL		MIK//			MIK		1
+
+#	from			to			module		cost
+module	BRF//			INTERNAL		BRF		1
+module	INTERNAL		BRF//			BRF		1
+
+#	from			to			module		cost
+alias	CP1282//		MAC-CENTRALEUROPE//
+module	MAC-CENTRALEUROPE//	INTERNAL		MAC-CENTRALEUROPE 1
+module	INTERNAL		MAC-CENTRALEUROPE//	MAC-CENTRALEUROPE 1
+
+#	from			to			module		cost
+module	KOI8-RU//		INTERNAL		KOI8-RU		1
+module	INTERNAL		KOI8-RU//		KOI8-RU		1
+
+#	from			to			module		cost
+alias	ISO_8859-9E//		ISO-8859-9E//
+alias	ISO8859-9E//		ISO-8859-9E//
+alias	ISO88599E//		ISO-8859-9E//
+module	ISO-8859-9E//		INTERNAL		ISO8859-9E	1
+module	INTERNAL		ISO-8859-9E//		ISO8859-9E	1
+
+#	from			to			module		cost
+alias	ROMAN9//		HP-ROMAN9//
+alias	R9//			HP-ROMAN9//
+alias	HPROMAN9//		HP-ROMAN9//
+module	HP-ROMAN9//		INTERNAL		HP-ROMAN9	1
+module	INTERNAL		HP-ROMAN9//		HP-ROMAN9	1
+
+#	from			to			module		cost
+alias	TURKISH8//		HP-TURKISH8//
+alias	HPTURKISH8//		HP-TURKISH8//
+alias	OSF10010006//		HP-TURKISH8//
+module	HP-TURKISH8//		INTERNAL		HP-TURKISH8	1
+module	INTERNAL		HP-TURKISH8//		HP-TURKISH8	1
+
+#	from			to			module		cost
+alias	THAI8//			HP-THAI8//
+alias	HPTHAI8//		HP-THAI8//
+module	HP-THAI8//		INTERNAL		HP-THAI8	1
+module	INTERNAL		HP-THAI8//		HP-THAI8	1
+
+#	from			to			module		cost
+alias	HPGREEK8//		HP-GREEK8//
+alias	OSF10010004//		HP-GREEK8//
+module	HP-GREEK8//		INTERNAL		HP-GREEK8	1
+module	INTERNAL		HP-GREEK8//		HP-GREEK8	1
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ELF          Û       4   ¥    4    (                             8 8 8 ‰   Ë            @ @ @ ¿   ¿            Ù   Ù   Ù                 QÂtd                          RÂtd8 8 8 »   »                  GNU                            U ˘Ç(       
+@˙H à            
+                                            !   Mcõ†é^ùiÄâ¢é^Ø?¢¯£é^ŸqXª„í|öV¬Ísﬂÿ~
+áCE’Ï2Æ°+O0,O0-('-O0.O0û|>(`!:.Y9'öé^ôCLúé^/O0ùé^üé^üé^°é^                                            7           "                  ’  lŒ ƒ;   	   ®∞  D    	 ä   o lÜ   	 Û   l∞  <    	 >   5 p   	 ◊   ‰≠  Ü   	                      º  tg ¯f   	 q  0 –c   	 ¯  (       
+          Ï  (˜  Z   	 ∫   ê≠  T    	 ù    ≠  ê    	 #  Ú ÚB  	 Ä   ƒ	  :£   	 c   L	  x    	 X  • ,f   	 £  lı r   	   Ñ˝  ÖÙ  	 ∑  ú≤  ¢    	 ”  @≥  ÊC   	 õ  t≤  &    	 F   ê  ∫    	    ≤  r    	 c  ®±  X    	 G  î±      	 +  Ï∞  ¶    	  _ITM_deregisterTMCloneTable _ITM_registerTMCloneTable __cxa_finalize __cns11643l1_from_ucs4_tab14 __cns11643l1_from_ucs4_tab13 __cns11643l1_from_ucs4_tab12 __cns11643l1_from_ucs4_tab11 __cns11643l1_from_ucs4_tab10 __cns11643l1_from_ucs4_tab9 __cns11643l1_from_ucs4_tab8 __cns11643l1_from_ucs4_tab7 __cns11643l1_from_ucs4_tab6 __cns11643l1_from_ucs4_tab5 __cns11643l1_from_ucs4_tab4 __cns11643l1_from_ucs4_tab3 __cns11643l1_from_ucs4_tab2 __cns11643l1_from_ucs4_tab1 __cns11643l1_to_ucs4_tab __cns11643_from_ucs4p2c_tab __cns11643_from_ucs4p2_tab __cns11643_from_ucs4p0_tab __cns11643l15_to_ucs4_tab __cns11643l7_to_ucs4_tab __cns11643l6_to_ucs4_tab __cns11643l5_to_ucs4_tab __cns11643l4_to_ucs4_tab __cns11643l3_to_ucs4_tab __cns11643l2_to_ucs4_tab libc.so.6 __global_pointer$ _edata __bss_start _end libCNS.so GLIBC_2.33                                          Ó         ≥ëñ   ,      8    å  <    T                                   % EÄó ìá«câß  #√c ÉÇÄ ~ó ìáá}âè◊'@ì’˜∫ïÖÖÅ… #C}c ÉÇÄA"ƒ D|ÉG ∆ôÔó Éß«zë« %ÂxÇóQ7ÖG# Ù ≤@"DAÇÄaø  !*  !l"c"h!m  !>!?!n"0!""1!%"_$!$"$#$$$%$&$'$($)$*!(!'"6"8"7!)"i$A$B$C$D$E$F$G$H$I$J$K$L$M$N$O$P$Q$R$S$T$U$V$W$X$Y$Z  "`    "%  $[$\$]$^$_$`$a$b$c$d$e$f$g$h$i$j$k$l$m$n$o$p$q$r$s$t!B"^!C  !+!6!8    !@!A!D!E!H!I!L!M!P!Q!T!U!X!Y!\!]        "'"("+",")"*  !.!/!0  !2!3!4!5  !^!_!`!a!b!c"-"."/"?"@"A"C"B  "b"l"m"nD!D#  D$        D7D5D8D6  Db    DaD`    EbEaE`  EcE_        G"G#            Kd        D9  Dc    Dd  Hk          D:De  Ed              D%  D<    D=    Df  EeEgEf    G$G%    Ke  S}D"      D&D?D>                  G&                  Kf                    Xq      c*      D'  Dh    KgD(  D@    DiDk  DlDj      G'  Kh    KiOg'(DADm  G(G*G)  Hl    KjKkOhOi        S~            D)          DoDn  DpDv  DqDr    DtDu  Ds            EjEkElEmEiEp        EqF#      EnEoEh                    G7  G4G8    G5        G6  G9  G+  G:              G,G.G;  G0  G3G1G2      G/      G-                                          I$Hu      Hr  I&  Hz  Hy  H}Hx          H{    H~HoI)        HmI%HnHvHw    H|Ht  Hp  I'I*HsI"I(Hq  I#    I!          Ky    Kq    KlKv    Ko  Kw        L!Kz    K|Kp      Ku    Kt  Kx    Ks  Kn  K}  K~        K{        Kr  Km                                OxOl          OkOsP!              Om    O{OrOz          Ov      O}OpOyOo          OwOt  O|    OqO~OuOnOj                        T:T$  T4  T9        T'  T0      T=  T1          T*    T?  T6T!T"  Y$  T/T.  T2  T)  T8T7T-        T,  T5  T#  T&T%  T3T(T<T>  T;                            T+            Xv      Xu  Xy    Xw  X|Y#          X}        Xx  Xt                Xz              Y&  Y%        Y!X~X{Y"    Xr    Xs    ^.        ^+              ^*      ^-        ^/  ^0^,^1              ^)                  c1c+  c4    c-c.  c,  c2      c3    c0            c/  c5            g|gy  gz      gxgu      gw                    gt  gr  g}      gvgs    g{      l#      l$  l"        l!  l%  k~l(    l&l'            p3  p0  p2p4    p1            sA  sB                s@              sCx+      zbzc    {X{W    D*DBDx  DwEsErG>G=G?G<  I,I+I-        L#  L"L$  P"  "y  "zY'"|"{    "}g~"~  D+  DyG@L%  D,D|DzD{    GA      I.L'L&L(      T@      p5                EtEu    GB      P$P#    Y(  D}                P%  TC  TATB        p6'/Ev      GC          I/I0          L)                TF        TGTETD                            l)p7    D-D;                            Y)^3  h!    D~  EyEwEx    L*    D.D/  DC    E!E"E#  Ez      GG    GEGF      GHGD          OO            I2I1    I5I3I4      L0  L/          L1L-L,  L.L+          L2  P'      P,    P(P+P*P)P&          TJ  TH        TKTITL                      ^7Y*        Y+    ^4  ^5^6  c7          c8  c6    h#h"      l*l+l,l.    l-      p8  p9              D0      E|E{    GI          I7I8I6I9                            L4    L3    P0  P/      P-  P.                Y,    Y/  [+Y.Y-  ^:  ^9^8c9    c<c=c;  c:                  l/    p:  sD    ya'4DDE$    E%E&          E}E~  GJ        P1  Y1Y0        D1E'F!  Y2      F"    GLGK  I:            TM        c>  h$              E(        Y5Y3Y4D2  DE$?E+  E*E)F%F$            L8L5L7L6    P2    ^;  D3  E,  F'F&        L9              F)F(GMGN  I;  I<  L:L;L<  P3      TN        E-                                          P4    TP  TO          ^<              h%        l0                F*              Y6        D4DFE/E.  E0            L>  L=L?      P5      TQ    v;DGF,F;F6  F1F0F7F5F.F<F/F+F:F9F8F-  F4    F3    F=F2        GT  GZGV  G\  GYGOGRGUGQGXG[GPGSGWG]                II  I=I?IWIR          IAIC  IJ  IVIXI>IO    IU  IF  IPIQ  INIL  IMIS  I@  IT  IHIE    ID  IG  IK      IB                                      LQ          LR                LM  L@  LALNLGLC    LFLKLT    LE      LH  LJ        LSLO  LU  LL  LI    LDLB      LP                      P<PJP8PIPAPFP6    PE  PG  P=        P;    PH  P@  PKP7PBP?  PC    P>PDP:        P9                                    T^      TWTb  TRT\Ta    T]T`      TX              TZ  TVTe      TT        TYTd  T_          TfTS      T[                                    Tc        YI  YGYD  Y@  YK      TUYF          ^N    YL  Y>Y;  Y8      Y?        YB          YCYAYM        YH  Y<Zv  Y=  YJYE  Y:      Y9                                ^=^@  ^T  ^>  ^D^JaC    ^H  ^U^A^I                ^G      ^C^W^P  ^E^B  ^M              ^?    ^F^V^R  ^L    ^S^O^K              ^Q                  cLcMcE  cO        cC    cF  cA            cJ  cD    c?  cK  cGcHcNcB#!c@            cI            h5h0          h*h&  h'          h,  h3h-      h.h/  h4      h+  h1h)      h(      h2                  l7        l1l=l>  l4  l6  l<    l3  l2      l5                            l9        l8      l:  p;                pG  p?pC    pBp>pAp<pF    pE  pD    l;  pH  p@p=            sF        sH  sI            sEsJsG        v<                              x,    x-          v=          yd  ycyb        ye      zezdzf          {Y{[{Z  |4        |]                F?F>  G`G_  G^      I[          IYI\        IZ                  LV        PL      TgTh      YNYP  YO  ^X        cPcQ    h7  h6            DH                GcGg    GeGd  GfGb    Ga              If    Ic  I_            Ia    I]    I`IbIeIdI^                              L[    L]  L\    LZLY                        LX        L^          PMLW              PN              PT                        PO  PQPP                    PS                                      TiTl              Tk    PR          Tj                    YQYU      YV                                    YZ  Y[YW              YX    YRYT    TmYS                                    ^`    ^a^_    ^\          ^Z        ^Y^]^^    ^[YY                                        c[c^cY        cSc]  cW    cUcT  cV      cR      c\                cX  cZ              h8      h=      h?h9  l?    h:  h>        h<                h;                lC  lAl@            lF  p.lE        lD        lB                    pJ    pI      pL  pK            sN    sM  sL  sK    v?v>        x.x/    x0  yf        |^  DIE1    Ig                  ^b^c    h@                                  Tn        zgDJF@    GhGi  L_  

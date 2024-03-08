@@ -1,0 +1,652 @@
+y_op2, __is_vector);
+            });
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// transform_reduce (version with unary and binary functions)
+//------------------------------------------------------------------------
+
+template <class _ForwardIterator, class _Tp, class _BinaryOperation, class _UnaryOperation>
+_Tp
+__brick_transform_reduce(_ForwardIterator __first, _ForwardIterator __last, _Tp __init, _BinaryOperation __binary_op,
+                         _UnaryOperation __unary_op, /*is_vector=*/std::false_type) noexcept
+{
+    for (; __first != __last; ++__first)
+    {
+        __init = __binary_op(__init, __unary_op(*__first));
+    }
+    return __init;
+}
+
+template <class _ForwardIterator, class _Tp, class _UnaryOperation, class _BinaryOperation>
+_Tp
+__brick_transform_reduce(_ForwardIterator __first, _ForwardIterator __last, _Tp __init, _BinaryOperation __binary_op,
+                         _UnaryOperation __unary_op, /*is_vector=*/std::true_type) noexcept
+{
+    typedef typename std::iterator_traits<_ForwardIterator>::difference_type _DifferenceType;
+    return __unseq_backend::__simd_transform_reduce(
+        __last - __first, __init, __binary_op,
+        [=, &__unary_op](_DifferenceType __i) { return __unary_op(__first[__i]); });
+}
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _Tp, class _BinaryOperation, class _UnaryOperation,
+          class _IsVector>
+_Tp
+__pattern_transform_reduce(_ExecutionPolicy&&, _ForwardIterator __first, _ForwardIterator __last, _Tp __init,
+                           _BinaryOperation __binary_op, _UnaryOperation __unary_op, _IsVector __is_vector,
+                           /*is_parallel=*/std::false_type) noexcept
+{
+    return __internal::__brick_transform_reduce(__first, __last, __init, __binary_op, __unary_op, __is_vector);
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <class _ExecutionPolicy, class _ForwardIterator, class _Tp, class _BinaryOperation, class _UnaryOperation,
+          class _IsVector>
+_Tp
+__pattern_transform_reduce(_ExecutionPolicy&& __exec, _ForwardIterator __first, _ForwardIterator __last, _Tp __init,
+                           _BinaryOperation __binary_op, _UnaryOperation __unary_op, _IsVector __is_vector,
+                           /*is_parallel=*/std::true_type)
+{
+    return __internal::__except_handler([&]() {
+        return __par_backend::__parallel_transform_reduce(
+            std::forward<_ExecutionPolicy>(__exec), __first, __last,
+            [__unary_op](_ForwardIterator __i) mutable { return __unary_op(*__i); }, __init, __binary_op,
+            [__unary_op, __binary_op, __is_vector](_ForwardIterator __i, _ForwardIterator __j, _Tp __init) {
+                return __internal::__brick_transform_reduce(__i, __j, __init, __binary_op, __unary_op, __is_vector);
+            });
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// transform_exclusive_scan
+//
+// walk3 evaluates f(x,y,z) for (x,y,z) drawn from [first1,last1), [first2,...), [first3,...)
+//------------------------------------------------------------------------
+
+// Exclusive form
+template <class _ForwardIterator, class _OutputIterator, class _UnaryOperation, class _Tp, class _BinaryOperation>
+std::pair<_OutputIterator, _Tp>
+__brick_transform_scan(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __result,
+                       _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op,
+                       /*Inclusive*/ std::false_type, /*is_vector=*/std::false_type) noexcept
+{
+    for (; __first != __last; ++__first, ++__result)
+    {
+        *__result = __init;
+        __PSTL_PRAGMA_FORCEINLINE
+        __init = __binary_op(__init, __unary_op(*__first));
+    }
+    return std::make_pair(__result, __init);
+}
+
+// Inclusive form
+template <class _ForwardIterator, class _OutputIterator, class _UnaryOperation, class _Tp, class _BinaryOperation>
+std::pair<_OutputIterator, _Tp>
+__brick_transform_scan(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __result,
+                       _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op,
+                       /*Inclusive*/ std::true_type, /*is_vector=*/std::false_type) noexcept
+{
+    for (; __first != __last; ++__first, ++__result)
+    {
+        __PSTL_PRAGMA_FORCEINLINE
+        __init = __binary_op(__init, __unary_op(*__first));
+        *__result = __init;
+    }
+    return std::make_pair(__result, __init);
+}
+
+// type is arithmetic and binary operation is a user defined operation.
+template <typename _Tp, typename _BinaryOperation>
+using is_arithmetic_udop = std::integral_constant<bool, std::is_arithmetic<_Tp>::value &&
+                                                            !std::is_same<_BinaryOperation, std::plus<_Tp>>::value>;
+
+// [restriction] - T shall be DefaultConstructible.
+// [violation] - default ctor of T shall set the identity value for binary_op.
+template <class _ForwardIterator, class _OutputIterator, class _UnaryOperation, class _Tp, class _BinaryOperation,
+          class _Inclusive>
+typename std::enable_if<!is_arithmetic_udop<_Tp, _BinaryOperation>::value, std::pair<_OutputIterator, _Tp>>::type
+__brick_transform_scan(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __result,
+                       _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op, _Inclusive,
+                       /*is_vector=*/std::true_type) noexcept
+{
+#if (__PSTL_UDS_PRESENT)
+    return __unseq_backend::__simd_scan(__first, __last - __first, __result, __unary_op, __init, __binary_op,
+                                        _Inclusive());
+#else
+    // We need to call serial brick here to call function for inclusive and exclusive scan that depends on _Inclusive() value
+    return __internal::__brick_transform_scan(__first, __last, __result, __unary_op, __init, __binary_op, _Inclusive(),
+                                  /*is_vector=*/std::false_type());
+#endif
+}
+
+template <class _ForwardIterator, class _OutputIterator, class _UnaryOperation, class _Tp, class _BinaryOperation,
+          class _Inclusive>
+typename std::enable_if<is_arithmetic_udop<_Tp, _BinaryOperation>::value, std::pair<_OutputIterator, _Tp>>::type
+__brick_transform_scan(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __result,
+                       _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op, _Inclusive,
+                       /*is_vector=*/std::true_type) noexcept
+{
+    return __internal::__brick_transform_scan(__first, __last, __result, __unary_op, __init, __binary_op, _Inclusive(),
+                                  /*is_vector=*/std::false_type());
+}
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _OutputIterator, class _UnaryOperation, class _Tp,
+          class _BinaryOperation, class _Inclusive, class _IsVector>
+_OutputIterator
+__pattern_transform_scan(_ExecutionPolicy&&, _ForwardIterator __first, _ForwardIterator __last,
+                         _OutputIterator __result, _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op,
+                         _Inclusive, _IsVector __is_vector, /*is_parallel=*/std::false_type) noexcept
+{
+    return __internal::__brick_transform_scan(__first, __last, __result, __unary_op, __init, __binary_op, _Inclusive(), __is_vector)
+        .first;
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <class _ExecutionPolicy, class _RandomAccessIterator, class _OutputIterator, class _UnaryOperation, class _Tp,
+          class _BinaryOperation, class _Inclusive, class _IsVector>
+typename std::enable_if<!std::is_floating_point<_Tp>::value, _OutputIterator>::type
+__pattern_transform_scan(_ExecutionPolicy&& __exec, _RandomAccessIterator __first, _RandomAccessIterator __last,
+                         _OutputIterator __result, _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op,
+                         _Inclusive, _IsVector __is_vector, /*is_parallel=*/std::true_type)
+{
+    typedef typename std::iterator_traits<_RandomAccessIterator>::difference_type _DifferenceType;
+
+    return __internal::__except_handler([&]() {
+        __par_backend::__parallel_transform_scan(
+            std::forward<_ExecutionPolicy>(__exec), __last - __first,
+            [__first, __unary_op](_DifferenceType __i) mutable { return __unary_op(__first[__i]); }, __init,
+            __binary_op,
+            [__first, __unary_op, __binary_op](_DifferenceType __i, _DifferenceType __j, _Tp __init) {
+                // Execute serial __brick_transform_reduce, due to the explicit SIMD vectorization (reduction) requires a commutative operation for the guarantee of correct scan.
+                return __internal::__brick_transform_reduce(__first + __i, __first + __j, __init, __binary_op, __unary_op,
+                                                /*__is_vector*/ std::false_type());
+            },
+            [__first, __unary_op, __binary_op, __result, __is_vector](_DifferenceType __i, _DifferenceType __j,
+                                                                      _Tp __init) {
+                return __internal::__brick_transform_scan(__first + __i, __first + __j, __result + __i, __unary_op, __init,
+                                              __binary_op, _Inclusive(), __is_vector)
+                    .second;
+            });
+        return __result + (__last - __first);
+    });
+}
+#endif
+
+#if __PSTL_USE_PAR_POLICIES
+template <class _ExecutionPolicy, class _RandomAccessIterator, class _OutputIterator, class _UnaryOperation, class _Tp,
+          class _BinaryOperation, class _Inclusive, class _IsVector>
+typename std::enable_if<std::is_floating_point<_Tp>::value, _OutputIterator>::type
+__pattern_transform_scan(_ExecutionPolicy&& __exec, _RandomAccessIterator __first, _RandomAccessIterator __last,
+                         _OutputIterator __result, _UnaryOperation __unary_op, _Tp __init, _BinaryOperation __binary_op,
+                         _Inclusive, _IsVector __is_vector, /*is_parallel=*/std::true_type)
+{
+    typedef typename std::iterator_traits<_RandomAccessIterator>::difference_type _DifferenceType;
+    _DifferenceType __n = __last - __first;
+
+    if (__n <= 0)
+    {
+        return __result;
+    }
+    return __internal::__except_handler([&]() {
+        __par_backend::__parallel_strict_scan(
+            std::forward<_ExecutionPolicy>(__exec), __n, __init,
+            [__first, __unary_op, __binary_op, __result, __is_vector](_DifferenceType __i, _DifferenceType __len) {
+                return __internal::__brick_transform_scan(__first + __i, __first + (__i + __len), __result + __i, __unary_op, _Tp{},
+                                              __binary_op, _Inclusive(), __is_vector)
+                    .second;
+            },
+            __binary_op,
+            [__result, &__binary_op](_DifferenceType __i, _DifferenceType __len, _Tp __initial) {
+                return *(std::transform(__result + __i, __result + __i + __len, __result + __i,
+                                        [&__initial, &__binary_op](const _Tp& __x) {
+                                            __PSTL_PRAGMA_FORCEINLINE
+                                            return __binary_op(__initial, __x);
+                                        }) -
+                         1);
+            },
+            [](_Tp __res) {});
+        return __result + (__last - __first);
+    });
+}
+#endif
+
+//------------------------------------------------------------------------
+// adjacent_difference
+//------------------------------------------------------------------------
+
+template <class _ForwardIterator, class _OutputIterator, class _BinaryOperation>
+_OutputIterator
+__brick_adjacent_difference(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __d_first,
+                            _BinaryOperation __op, /*is_vector*/ std::false_type) noexcept
+{
+    return std::adjacent_difference(__first, __last, __d_first, __op);
+}
+
+template <class _ForwardIterator1, class _ForwardIterator2, class BinaryOperation>
+_ForwardIterator2
+__brick_adjacent_difference(_ForwardIterator1 __first, _ForwardIterator1 __last, _ForwardIterator2 __d_first,
+                            BinaryOperation __op, /*is_vector=*/std::true_type) noexcept
+{
+    __PSTL_ASSERT(__first != __last);
+
+    typedef typename std::iterator_traits<_ForwardIterator1>::reference _ReferenceType1;
+    typedef typename std::iterator_traits<_ForwardIterator2>::reference _ReferenceType2;
+
+    auto __n = __last - __first;
+    *__d_first = *__first;
+    return __unseq_backend::__simd_walk_3(
+        __first + 1, __n - 1, __first, __d_first + 1,
+        [&__op](_ReferenceType1 __x, _ReferenceType1 __y, _ReferenceType2 __z) { __z = __op(__x, __y); });
+}
+
+template <class _ExecutionPolicy, class _ForwardIterator, class _OutputIterator, class _BinaryOperation,
+          class _IsVector>
+_OutputIterator
+__pattern_adjacent_difference(_ExecutionPolicy&&, _ForwardIterator __first, _ForwardIterator __last,
+                              _OutputIterator __d_first, _BinaryOperation __op, _IsVector __is_vector,
+                              /*is_parallel*/ std::false_type) noexcept
+{
+    return __internal::__brick_adjacent_difference(__first, __last, __d_first, __op, __is_vector);
+}
+
+#if __PSTL_USE_PAR_POLICIES
+template <class _ExecutionPolicy, class _ForwardIterator1, class _ForwardIterator2, class _BinaryOperation,
+          class _IsVector>
+_ForwardIterator2
+__pattern_adjacent_difference(_ExecutionPolicy&& __exec, _ForwardIterator1 __first, _ForwardIterator1 __last,
+                              _ForwardIterator2 __d_first, _BinaryOperation __op, _IsVector __is_vector,
+                              /*is_parallel=*/std::true_type)
+{
+    __PSTL_ASSERT(__first != __last);
+    typedef typename std::iterator_traits<_ForwardIterator1>::reference _ReferenceType1;
+    typedef typename std::iterator_traits<_ForwardIterator2>::reference _ReferenceType2;
+
+    *__d_first = *__first;
+    __par_backend::__parallel_for(
+        std::forward<_ExecutionPolicy>(__exec), __first, __last - 1,
+        [&__op, __is_vector, __d_first, __first](_ForwardIterator1 __b, _ForwardIterator1 __e) {
+            _ForwardIterator2 __d_b = __d_first + (__b - __first);
+            __internal::__brick_walk3(
+                __b, __e, __b + 1, __d_b + 1,
+                [&__op](_ReferenceType1 __x, _ReferenceType1 __y, _ReferenceType2 __z) { __z = __op(__y, __x); },
+                __is_vector);
+        });
+    return __d_first + (__last - __first);
+}
+#endif
+
+} // namespace __internal
+} // namespace __pstl
+
+#endif /* __PSTL_numeric_impl_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // -*- C++ -*-
+//===-- parallel_backend.h ------------------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef __PSTL_parallel_backend_H
+#define __PSTL_parallel_backend_H
+
+#if __PSTL_PAR_BACKEND_TBB
+#include "parallel_backend_tbb.h"
+#else
+__PSTL_PRAGMA_MESSAGE("Parallel backend was not specified");
+#endif
+
+#endif /* __PSTL_parallel_backend_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           // -*- C++ -*-
+//===-- parallel_backend_tbb.h --------------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef __PSTL_parallel_backend_tbb_H
+#define __PSTL_parallel_backend_tbb_H
+
+#include <algorithm>
+#include <type_traits>
+
+#include "parallel_backend_utils.h"
+
+// Bring in minimal required subset of Intel TBB
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
+#include <tbb/parallel_scan.h>
+#include <tbb/parallel_invoke.h>
+#include <tbb/task_arena.h>
+#include <tbb/tbb_allocator.h>
+
+#if TBB_INTERFACE_VERSION < 10000
+#error Intel(R) Threading Building Blocks 2018 is required; older versions are not supported.
+#endif
+
+namespace __pstl
+{
+namespace __par_backend
+{
+
+//! Raw memory buffer with automatic freeing and no exceptions.
+/** Some of our algorithms need to start with raw memory buffer,
+not an initialize array, because initialization/destruction
+would make the span be at least O(N). */
+// tbb::allocator can improve performance in some cases.
+template <typename _Tp>
+class __buffer
+{
+    tbb::tbb_allocator<_Tp> _M_allocator;
+    _Tp* _M_ptr;
+    const std::size_t _M_buf_size;
+    __buffer(const __buffer&) = delete;
+    void
+    operator=(const __buffer&) = delete;
+
+  public:
+    //! Try to obtain buffer of given size to store objects of _Tp type
+    __buffer(std::size_t n) : _M_allocator(), _M_ptr(_M_allocator.allocate(n)), _M_buf_size(n) {}
+    //! True if buffer was successfully obtained, zero otherwise.
+    operator bool() const { return _M_ptr != NULL; }
+    //! Return pointer to buffer, or  NULL if buffer could not be obtained.
+    _Tp*
+    get() const
+    {
+        return _M_ptr;
+    }
+    //! Destroy buffer
+    ~__buffer() { _M_allocator.deallocate(_M_ptr, _M_buf_size); }
+};
+
+// Wrapper for tbb::task
+inline void
+__cancel_execution()
+{
+    tbb::task::self().group()->cancel_group_execution();
+}
+
+//------------------------------------------------------------------------
+// parallel_for
+//------------------------------------------------------------------------
+
+template <class _Index, class _RealBody>
+class __parallel_for_body
+{
+  public:
+    __parallel_for_body(const _RealBody& __body) : _M_body(__body) {}
+    __parallel_for_body(const __parallel_for_body& __body) : _M_body(__body._M_body) {}
+    void
+    operator()(const tbb::blocked_range<_Index>& __range) const
+    {
+        _M_body(__range.begin(), __range.end());
+    }
+
+  private:
+    _RealBody _M_body;
+};
+
+//! Evaluation of brick f[i,j) for each subrange [i,j) of [first,last)
+// wrapper over tbb::parallel_for
+template <class _ExecutionPolicy, class _Index, class _Fp>
+void
+__parallel_for(_ExecutionPolicy&&, _Index __first, _Index __last, _Fp __f)
+{
+    tbb::this_task_arena::isolate([=]() {
+        tbb::parallel_for(tbb::blocked_range<_Index>(__first, __last), __parallel_for_body<_Index, _Fp>(__f));
+    });
+}
+
+//! Evaluation of brick f[i,j) for each subrange [i,j) of [first,last)
+// wrapper over tbb::parallel_reduce
+template <class _ExecutionPolicy, class _Value, class _Index, typename _RealBody, typename _Reduction>
+_Value
+__parallel_reduce(_ExecutionPolicy&&, _Index __first, _Index __last, const _Value& __identity,
+                  const _RealBody& __real_body, const _Reduction& __reduction)
+{
+    return tbb::this_task_arena::isolate([__first, __last, &__identity, &__real_body, &__reduction]() -> _Value {
+        return tbb::parallel_reduce(
+            tbb::blocked_range<_Index>(__first, __last), __identity,
+            [__real_body](const tbb::blocked_range<_Index>& __r, const _Value& __value) -> _Value {
+                return __real_body(__r.begin(), __r.end(), __value);
+            },
+            __reduction);
+    });
+}
+
+//------------------------------------------------------------------------
+// parallel_transform_reduce
+//
+// Notation:
+//      r(i,j,init) returns reduction of init with reduction over [i,j)
+//      u(i) returns f(i,i+1,identity) for a hypothetical left identity element of r
+//      c(x,y) combines values x and y that were the result of r or u
+//------------------------------------------------------------------------
+
+template <class _Index, class _Up, class _Tp, class _Cp, class _Rp>
+struct __par_trans_red_body
+{
+    alignas(_Tp) char _M_sum_storage[sizeof(_Tp)]; // Holds generalized non-commutative sum when has_sum==true
+    _Rp _M_brick_reduce;                           // Most likely to have non-empty layout
+    _Up _M_u;
+    _Cp _M_combine;
+    bool _M_has_sum; // Put last to minimize size of class
+    _Tp&
+    sum()
+    {
+        __PSTL_ASSERT_MSG(_M_has_sum, "sum expected");
+        return *(_Tp*)_M_sum_storage;
+    }
+    __par_trans_red_body(_Up __u, _Tp __init, _Cp __c, _Rp __r)
+        : _M_brick_reduce(__r), _M_u(__u), _M_combine(__c), _M_has_sum(true)
+    {
+        new (_M_sum_storage) _Tp(__init);
+    }
+
+    __par_trans_red_body(__par_trans_red_body& __left, tbb::split)
+        : _M_brick_reduce(__left._M_brick_reduce), _M_u(__left._M_u), _M_combine(__left._M_combine), _M_has_sum(false)
+    {
+    }
+
+    ~__par_trans_red_body()
+    {
+        // 17.6.5.12 tells us to not worry about catching exceptions from destructors.
+        if (_M_has_sum)
+            sum().~_Tp();
+    }
+
+    void
+    join(__par_trans_red_body& __rhs)
+    {
+        sum() = _M_combine(sum(), __rhs.sum());
+    }
+
+    void
+    operator()(const tbb::blocked_range<_Index>& __range)
+    {
+        _Index __i = __range.begin();
+        _Index __j = __range.end();
+        if (!_M_has_sum)
+        {
+            __PSTL_ASSERT_MSG(__range.size() > 1, "there should be at least 2 elements");
+            new (&_M_sum_storage)
+                _Tp(_M_combine(_M_u(__i), _M_u(__i + 1))); // The condition i+1 < j is provided by the grain size of 3
+            _M_has_sum = true;
+            std::advance(__i, 2);
+            if (__i == __j)
+                return;
+        }
+        sum() = _M_brick_reduce(__i, __j, sum());
+    }
+};
+
+template <class _ExecutionPolicy, class _Index, class _Up, class _Tp, class _Cp, class _Rp>
+_Tp
+__parallel_transform_reduce(_ExecutionPolicy&&, _Index __first, _Index __last, _Up __u, _Tp __init, _Cp __combine,
+                            _Rp __brick_reduce)
+{
+    __par_backend::__par_trans_red_body<_Index, _Up, _Tp, _Cp, _Rp> __body(__u, __init, __combine, __brick_reduce);
+    // The grain size of 3 is used in order to provide mininum 2 elements for each body
+    tbb::this_task_arena::isolate(
+        [__first, __last, &__body]() { tbb::parallel_reduce(tbb::blocked_range<_Index>(__first, __last, 3), __body); });
+    return __body.sum();
+}
+
+//------------------------------------------------------------------------
+// parallel_scan
+//------------------------------------------------------------------------
+
+template <class _Index, class _Up, class _Tp, class _Cp, class _Rp, class _Sp>
+class __trans_scan_body
+{
+    alignas(_Tp) char _M_sum_storage[sizeof(_Tp)]; // Holds generalized non-commutative sum when has_sum==true
+    _Rp _M_brick_reduce;                           // Most likely to have non-empty layout
+    _Up _M_u;
+    _Cp _M_combine;
+    _Sp _M_scan;
+    bool _M_has_sum; // Put last to minimize size of class
+  public:
+    __trans_scan_body(_Up __u, _Tp __init, _Cp __combine, _Rp __reduce, _Sp __scan)
+        : _M_brick_reduce(__reduce), _M_u(__u), _M_combine(__combine), _M_scan(__scan), _M_has_sum(true)
+    {
+        new (_M_sum_storage) _Tp(__init);
+    }
+
+    __trans_scan_body(__trans_scan_body& __b, tbb::split)
+        : _M_brick_reduce(__b._M_brick_reduce), _M_u(__b._M_u), _M_combine(__b._M_combine), _M_scan(__b._M_scan),
+          _M_has_sum(false)
+    {
+    }
+
+    ~__trans_scan_body()
+    {
+        // 17.6.5.12 tells us to not worry about catching exceptions from destructors.
+        if (_M_has_sum)
+            sum().~_Tp();
+    }
+
+    _Tp&
+    sum() const
+    {
+        __PSTL_ASSERT_MSG(_M_has_sum, "sum expected");
+        return *const_cast<_Tp*>(reinterpret_cast<_Tp const*>(_M_sum_storage));
+    }
+
+    void
+    operator()(const tbb::blocked_range<_Index>& __range, tbb::pre_scan_tag)
+    {
+        _Index __i = __range.begin();
+        _Index __j = __range.end();
+        if (!_M_has_sum)
+        {
+            new (&_M_sum_storage) _Tp(_M_u(__i));
+            _M_has_sum = true;
+            ++__i;
+            if (__i == __j)
+                return;
+        }
+        sum() = _M_brick_reduce(__i, __j, sum());
+    }
+
+    void
+    operator()(const tbb::blocked_range<_Index>& __range, tbb::final_scan_tag)
+    {
+        sum() = _M_scan(__range.begin(), __range.end(), sum());
+    }
+
+    void
+    reverse_join(__trans_scan_body& __a)
+    {
+        if (_M_has_sum)
+        {
+            sum() = _M_combine(__a.sum(), sum());
+        }
+        else
+        {
+            new (&_M_sum_storage) _Tp(__a.sum());
+            _M_has_sum = true;
+        }
+    }
+
+    void
+    assign(__trans_scan_body& __b)
+    {
+        sum() = __b.sum();
+    }
+};
+
+template <typename _Index>
+_Index
+__split(_Index __m)
+{
+    _Index __k = 1;
+    while (2 * __k < __m)
+        __k *= 2;
+    return __k;
+}
+
+//------------------------------------------------------------------------
+// __parallel_strict_scan
+//------------------------------------------------------------------------
+
+template <typename _Index, typename _Tp, typename _Rp, typename _Cp>
+void
+__upsweep(_Index __i, _Index __m, _Index __tilesize, _Tp* __r, _Index __lastsize, _Rp __reduce, _Cp __combine)
+{
+    if (__m == 1)
+        __r[0] = __reduce(__i * __tilesize, __lastsize);
+    else
+    {
+        _Index __k = __split(__m);
+        tbb::parallel_invoke(
+	    [=] { __par_backend::__upsweep(__i, __k, __tilesize, __r, __tilesize, __reduce, __combine); },
+            [=] { __par_backend::__upsweep(__i + __k, __m - __k, __tilesize, __r + __k, __lastsize, __reduce, __combine); });
+        if (__m == 2 * __k)
+            __r[__m - 1] = __combine(__r[__k - 1], __r[__m - 1]);
+    }
+}
+
+template <typename _Index, typename _Tp, typename _Cp, typename _Sp>
+void
+__downsweep(_Index __i, _Index __m, _Index __tilesize, _Tp* __r, _Index __lastsize, _Tp __initial, _Cp __combine,
+            _Sp __scan)
+{
+    if (__m == 1)
+        __scan(__i * __tilesize, __lastsize, __initial);
+    else
+    {
+        const _Index __k = __split(__m);
+        tbb::parallel_invoke([=] { __par_backend::__downsweep(__i, __k, __tilesize, __r, __tilesize, __initial, __combine, __scan); },
+                             // Assumes that __combine never throws.
+                             //TODO: Consider adding a requirement for user functors to be constant.
+                             [=, &__combine] {
+                                 __par_backend::__downsweep(__i + __k, __m - __k, __tilesize, __r + __k, __lastsize,
+                                             __combine(__initial, __r[__k - 1]), __combine, __scan);
+                             });
+    }
+}
+
+// Adapted from Intel(R) Cilk(TM) version from cilkpub.
+// Let i:len denote a counted interval of length n starting at i.  s denotes a generalized-sum value.
+// Expected actions of the functors are:
+//     reduce(i,len) -> s  -- return reduction value of i:len.
+//     combine(s1,s2) -> s -- return merged sum
+//     apex(s) -- do any processing necessary between reduce and scan.
+//     scan(i,len,initial) -- perform scan over i:len starting with initial.
+// The initial range 0:n is partitioned into consecutive subranges.
+// reduce and scan are each called exactly once per subrange.
+// Thus callers can rely upon side effects in reduce.
+// combine must not throw an exception.
+// apex is called exactly once, after all calls to reduce and before all calls to scan.
+// For example, it's useful for allocating a __buffer used by scan but whose size is the sum of all reduction values.
+// T must have a trivial constructor and destructor.
+template <class _ExecutionPolicy, typename _Index, typename _Tp, typename _Rp, typename _Cp, typename _Sp, typename _Ap>
+void
+__parallel_strict_scan(_ExecutionPolicy&&, _Index __n, _Tp __initial, _Rp __

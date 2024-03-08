@@ -1,0 +1,651 @@
+e program name) for
+   options given in OPTS.  */
+# include <bits/getopt_posix.h>
+#endif
+
+
+#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+/* Put the name of the current host in no more than LEN bytes of NAME.
+   The result is null-terminated if LEN is large enough for the full
+   name and the terminator.  */
+extern int gethostname (char *__name, size_t __len) __THROW __nonnull ((1))
+    __attr_access ((__write_only__, 1, 2));
+#endif
+
+
+#if defined __USE_MISC
+/* Set the name of the current host to NAME, which is LEN bytes long.
+   This call is restricted to the super-user.  */
+extern int sethostname (const char *__name, size_t __len)
+     __THROW __nonnull ((1)) __wur __attr_access ((__read_only__, 1, 2));
+
+/* Set the current machine's Internet number to ID.
+   This call is restricted to the super-user.  */
+extern int sethostid (long int __id) __THROW __wur;
+
+
+/* Get and set the NIS (aka YP) domain name, if any.
+   Called just like `gethostname' and `sethostname'.
+   The NIS domain name is usually the empty string when not using NIS.  */
+extern int getdomainname (char *__name, size_t __len)
+     __THROW __nonnull ((1)) __wur __attr_access ((__write_only__, 1, 2));
+extern int setdomainname (const char *__name, size_t __len)
+     __THROW __nonnull ((1)) __wur __attr_access ((__read_only__, 1, 2));
+
+/* Revoke access permissions to all processes currently communicating
+   with the control terminal, and then send a SIGHUP signal to the process
+   group of the control terminal.  */
+extern int vhangup (void) __THROW;
+
+/* Revoke the access of all descriptors currently open on FILE.  */
+extern int revoke (const char *__file) __THROW __nonnull ((1)) __wur;
+
+
+/* Enable statistical profiling, writing samples of the PC into at most
+   SIZE bytes of SAMPLE_BUFFER; every processor clock tick while profiling
+   is enabled, the system examines the user PC and increments
+   SAMPLE_BUFFER[((PC - OFFSET) / 2) * SCALE / 65536].  If SCALE is zero,
+   disable profiling.  Returns zero on success, -1 on error.  */
+extern int profil (unsigned short int *__sample_buffer, size_t __size,
+		   size_t __offset, unsigned int __scale)
+     __THROW __nonnull ((1));
+
+
+/* Turn accounting on if NAME is an existing file.  The system will then write
+   a record for each process as it terminates, to this file.  If NAME is NULL,
+   turn accounting off.  This call is restricted to the super-user.  */
+extern int acct (const char *__name) __THROW;
+
+
+/* Successive calls return the shells listed in `/etc/shells'.  */
+extern char *getusershell (void) __THROW;
+extern void endusershell (void) __THROW; /* Discard cached info.  */
+extern void setusershell (void) __THROW; /* Rewind and re-read the file.  */
+
+
+/* Put the program in the background, and dissociate from the controlling
+   terminal.  If NOCHDIR is zero, do `chdir ("/")'.  If NOCLOSE is zero,
+   redirects stdin, stdout, and stderr to /dev/null.  */
+extern int daemon (int __nochdir, int __noclose) __THROW __wur;
+#endif /* Use misc.  */
+
+
+#if defined __USE_MISC || (defined __USE_XOPEN && !defined __USE_XOPEN2K)
+/* Make PATH be the root directory (the starting point for absolute paths).
+   This call is restricted to the super-user.  */
+extern int chroot (const char *__path) __THROW __nonnull ((1)) __wur;
+
+/* Prompt with PROMPT and read a string from the terminal without echoing.
+   Uses /dev/tty if possible; otherwise stderr and stdin.  */
+extern char *getpass (const char *__prompt) __nonnull ((1));
+#endif /* Use misc || X/Open.  */
+
+
+/* Make all changes done to FD actually appear on disk.
+
+   This function is a cancellation point and therefore not marked with
+   __THROW.  */
+extern int fsync (int __fd);
+
+
+#ifdef __USE_GNU
+/* Make all changes done to all files on the file system associated
+   with FD actually appear on disk.  */
+extern int syncfs (int __fd) __THROW;
+#endif
+
+
+#if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+
+/* Return identifier for the current host.  */
+extern long int gethostid (void);
+
+/* Make all changes done to all files actually appear on disk.  */
+extern void sync (void) __THROW;
+
+
+# if defined __USE_MISC || !defined __USE_XOPEN2K
+/* Return the number of bytes in a page.  This is the system's page size,
+   which is not necessarily the same as the hardware page size.  */
+extern int getpagesize (void)  __THROW __attribute__ ((__const__));
+
+
+/* Return the maximum number of file descriptors
+   the current process could possibly have.  */
+extern int getdtablesize (void) __THROW;
+# endif
+
+#endif /* Use misc || X/Open Unix.  */
+
+
+#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+
+/* Truncate FILE to LENGTH bytes.  */
+# ifndef __USE_FILE_OFFSET64
+extern int truncate (const char *__file, __off_t __length)
+     __THROW __nonnull ((1)) __wur;
+# else
+#  ifdef __REDIRECT_NTH
+extern int __REDIRECT_NTH (truncate,
+			   (const char *__file, __off64_t __length),
+			   truncate64) __nonnull ((1)) __wur;
+#  else
+#   define truncate truncate64
+#  endif
+# endif
+# ifdef __USE_LARGEFILE64
+extern int truncate64 (const char *__file, __off64_t __length)
+     __THROW __nonnull ((1)) __wur;
+# endif
+
+#endif /* Use X/Open Unix || POSIX 2008.  */
+
+#if defined __USE_POSIX199309 \
+    || defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+
+/* Truncate the file FD is open on to LENGTH bytes.  */
+# ifndef __USE_FILE_OFFSET64
+extern int ftruncate (int __fd, __off_t __length) __THROW __wur;
+# else
+#  ifdef __REDIRECT_NTH
+extern int __REDIRECT_NTH (ftruncate, (int __fd, __off64_t __length),
+			   ftruncate64) __wur;
+#  else
+#   define ftruncate ftruncate64
+#  endif
+# endif
+# ifdef __USE_LARGEFILE64
+extern int ftruncate64 (int __fd, __off64_t __length) __THROW __wur;
+# endif
+
+#endif /* Use POSIX.1b || X/Open Unix || XPG6.  */
+
+
+#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K) \
+    || defined __USE_MISC
+
+/* Set the end of accessible data space (aka "the break") to ADDR.
+   Returns zero on success and -1 for errors (with errno set).  */
+extern int brk (void *__addr) __THROW __wur;
+
+/* Increase or decrease the end of accessible data space by DELTA bytes.
+   If successful, returns the address the previous end of data space
+   (i.e. the beginning of the new space, if DELTA > 0);
+   returns (void *) -1 for errors (with errno set).  */
+extern void *sbrk (intptr_t __delta) __THROW;
+#endif
+
+
+#ifdef __USE_MISC
+/* Invoke `system call' number SYSNO, passing it the remaining arguments.
+   This is completely system-dependent, and not often useful.
+
+   In Unix, `syscall' sets `errno' for all errors and most calls return -1
+   for errors; in many systems you cannot pass arguments or get return
+   values for all system calls (`pipe', `fork', and `getppid' typically
+   among them).
+
+   In Mach, all system calls take normal arguments and always return an
+   error code (zero for success).  */
+extern long int syscall (long int __sysno, ...) __THROW;
+
+#endif	/* Use misc.  */
+
+
+#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED) && !defined F_LOCK
+/* NOTE: These declarations also appear in <fcntl.h>; be sure to keep both
+   files consistent.  Some systems have them there and some here, and some
+   software depends on the macros being defined without including both.  */
+
+/* `lockf' is a simpler interface to the locking facilities of `fcntl'.
+   LEN is always relative to the current file position.
+   The CMD argument is one of the following.
+
+   This function is a cancellation point and therefore not marked with
+   __THROW.  */
+
+# define F_ULOCK 0	/* Unlock a previously locked region.  */
+# define F_LOCK  1	/* Lock a region for exclusive use.  */
+# define F_TLOCK 2	/* Test and lock a region for exclusive use.  */
+# define F_TEST  3	/* Test a region for other processes locks.  */
+
+# ifndef __USE_FILE_OFFSET64
+extern int lockf (int __fd, int __cmd, __off_t __len) __wur;
+# else
+#  ifdef __REDIRECT
+extern int __REDIRECT (lockf, (int __fd, int __cmd, __off64_t __len),
+		       lockf64) __wur;
+#  else
+#   define lockf lockf64
+#  endif
+# endif
+# ifdef __USE_LARGEFILE64
+extern int lockf64 (int __fd, int __cmd, __off64_t __len) __wur;
+# endif
+#endif /* Use misc and F_LOCK not already defined.  */
+
+
+#ifdef __USE_GNU
+
+/* Evaluate EXPRESSION, and repeat as long as it returns -1 with `errno'
+   set to EINTR.  */
+
+# define TEMP_FAILURE_RETRY(expression) \
+  (__extension__							      \
+    ({ long int __result;						      \
+       do __result = (long int) (expression);				      \
+       while (__result == -1L && errno == EINTR);			      \
+       __result; }))
+
+/* Copy LENGTH bytes from INFD to OUTFD.  */
+ssize_t copy_file_range (int __infd, __off64_t *__pinoff,
+			 int __outfd, __off64_t *__poutoff,
+			 size_t __length, unsigned int __flags);
+#endif /* __USE_GNU */
+
+#if defined __USE_POSIX199309 || defined __USE_UNIX98
+/* Synchronize at least the data part of a file with the underlying
+   media.  */
+extern int fdatasync (int __fildes);
+#endif /* Use POSIX199309 */
+
+#ifdef __USE_MISC
+/* One-way hash PHRASE, returning a string suitable for storage in the
+   user database.  SALT selects the one-way function to use, and
+   ensures that no two users' hashes are the same, even if they use
+   the same passphrase.  The return value points to static storage
+   which will be overwritten by the next call to crypt.  */
+extern char *crypt (const char *__key, const char *__salt)
+     __THROW __nonnull ((1, 2));
+#endif
+
+#ifdef	__USE_XOPEN
+/* Swab pairs bytes in the first N bytes of the area pointed to by
+   FROM and copy the result to TO.  The value of TO must not be in the
+   range [FROM - N + 1, FROM - 1].  If N is odd the first byte in FROM
+   is without partner.  */
+extern void swab (const void *__restrict __from, void *__restrict __to,
+		  ssize_t __n) __THROW __nonnull ((1, 2))
+    __attr_access ((__read_only__, 1, 3))
+    __attr_access ((__write_only__, 2, 3));
+#endif
+
+
+/* Prior to Issue 6, the Single Unix Specification required these
+   prototypes to appear in this header.  They are also found in
+   <stdio.h>.  */
+#if defined __USE_XOPEN && !defined __USE_XOPEN2K
+/* Return the name of the controlling terminal.  */
+extern char *ctermid (char *__s) __THROW;
+
+/* Return the name of the current user.  */
+extern char *cuserid (char *__s);
+#endif
+
+
+/* Unix98 requires this function to be declared here.  In other
+   standards it is in <pthread.h>.  */
+#if defined __USE_UNIX98 && !defined __USE_XOPEN2K
+extern int pthread_atfork (void (*__prepare) (void),
+			   void (*__parent) (void),
+			   void (*__child) (void)) __THROW;
+#endif
+
+#ifdef __USE_MISC
+/* Write LENGTH bytes of randomness starting at BUFFER.  Return 0 on
+   success or -1 on error.  */
+int getentropy (void *__buffer, size_t __length) __wur
+    __attr_access ((__write_only__, 1, 2));
+#endif
+
+/* Define some macros helping to catch buffer overflows.  */
+#if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
+# include <bits/unistd.h>
+#endif
+
+/* System-specific extensions.  */
+#include <bits/unistd_ext.h>
+
+__END_DECLS
+
+#endif /* unistd.h  */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 /* Copyright (C) 1991-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+/*
+ *	POSIX Standard: 5.6.6 Set File Access and Modification Times  <utime.h>
+ */
+
+#ifndef	_UTIME_H
+#define	_UTIME_H	1
+
+#include <features.h>
+
+__BEGIN_DECLS
+
+#include <bits/types.h>
+
+#if defined __USE_XOPEN || defined __USE_XOPEN2K
+# include <bits/types/time_t.h>
+#endif
+
+/* Structure describing file times.  */
+struct utimbuf
+  {
+    __time_t actime;		/* Access time.  */
+    __time_t modtime;		/* Modification time.  */
+  };
+
+/* Set the access and modification times of FILE to those given in
+   *FILE_TIMES.  If FILE_TIMES is NULL, set them to the current time.  */
+extern int utime (const char *__file,
+		  const struct utimbuf *__file_times)
+     __THROW __nonnull ((1));
+
+__END_DECLS
+
+#endif /* utime.h */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  /* Copyright (C) 1993-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef	_UTMP_H
+#define	_UTMP_H	1
+
+#include <features.h>
+
+#include <sys/types.h>
+
+
+__BEGIN_DECLS
+
+/* Get system dependent values and data structures.  */
+#include <bits/utmp.h>
+
+/* Compatibility names for the strings of the canonical file names.  */
+#define UTMP_FILE	_PATH_UTMP
+#define UTMP_FILENAME	_PATH_UTMP
+#define WTMP_FILE	_PATH_WTMP
+#define WTMP_FILENAME	_PATH_WTMP
+
+
+
+/* Make FD be the controlling terminal, stdin, stdout, and stderr;
+   then close FD.  Returns 0 on success, nonzero on error.  */
+extern int login_tty (int __fd) __THROW;
+
+
+/* Write the given entry into utmp and wtmp.  */
+extern void login (const struct utmp *__entry) __THROW;
+
+/* Write the utmp entry to say the user on UT_LINE has logged out.  */
+extern int logout (const char *__ut_line) __THROW;
+
+/* Append to wtmp an entry for the current time and the given info.  */
+extern void logwtmp (const char *__ut_line, const char *__ut_name,
+		     const char *__ut_host) __THROW;
+
+/* Append entry UTMP to the wtmp-like file WTMP_FILE.  */
+extern void updwtmp (const char *__wtmp_file, const struct utmp *__utmp)
+     __THROW;
+
+/* Change name of the utmp file to be examined.  */
+extern int utmpname (const char *__file) __THROW;
+
+/* Read next entry from a utmp-like file.  */
+extern struct utmp *getutent (void) __THROW;
+
+/* Reset the input stream to the beginning of the file.  */
+extern void setutent (void) __THROW;
+
+/* Close the current open file.  */
+extern void endutent (void) __THROW;
+
+/* Search forward from the current point in the utmp file until the
+   next entry with a ut_type matching ID->ut_type.  */
+extern struct utmp *getutid (const struct utmp *__id) __THROW;
+
+/* Search forward from the current point in the utmp file until the
+   next entry with a ut_line matching LINE->ut_line.  */
+extern struct utmp *getutline (const struct utmp *__line) __THROW;
+
+/* Write out entry pointed to by UTMP_PTR into the utmp file.  */
+extern struct utmp *pututline (const struct utmp *__utmp_ptr) __THROW;
+
+
+#ifdef	__USE_MISC
+/* Reentrant versions of the file for handling utmp files.  */
+extern int getutent_r (struct utmp *__buffer, struct utmp **__result) __THROW;
+
+extern int getutid_r (const struct utmp *__id, struct utmp *__buffer,
+		      struct utmp **__result) __THROW;
+
+extern int getutline_r (const struct utmp *__line,
+			struct utmp *__buffer, struct utmp **__result) __THROW;
+
+#endif	/* Use misc.  */
+
+__END_DECLS
+
+#endif /* utmp.h  */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         /* Copyright (C) 1997-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef	_UTMPX_H
+#define	_UTMPX_H	1
+
+#include <features.h>
+#include <sys/time.h>
+
+/* Required according to Unix98.  */
+#ifndef __pid_t_defined
+typedef __pid_t pid_t;
+# define __pid_t_defined
+#endif
+
+/* Get system dependent values and data structures.  */
+#include <bits/utmpx.h>
+
+#ifdef __USE_GNU
+/* Compatibility names for the strings of the canonical file names.  */
+# define UTMPX_FILE	_PATH_UTMPX
+# define UTMPX_FILENAME	_PATH_UTMPX
+# define WTMPX_FILE	_PATH_WTMPX
+# define WTMPX_FILENAME	_PATH_WTMPX
+#endif
+
+/* For the getutmp{,x} functions we need the `struct utmp'.  */
+#ifdef __USE_GNU
+struct utmp;
+#endif
+
+
+__BEGIN_DECLS
+
+/* Open user accounting database.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern void setutxent (void);
+
+/* Close user accounting database.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern void endutxent (void);
+
+/* Get the next entry from the user accounting database.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern struct utmpx *getutxent (void);
+
+/* Get the user accounting database entry corresponding to ID.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern struct utmpx *getutxid (const struct utmpx *__id);
+
+/* Get the user accounting database entry corresponding to LINE.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern struct utmpx *getutxline (const struct utmpx *__line);
+
+/* Write the entry UTMPX into the user accounting database.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern struct utmpx *pututxline (const struct utmpx *__utmpx);
+
+
+#ifdef __USE_GNU
+/* Change name of the utmpx file to be examined.
+
+   This function is not part of POSIX and therefore no official
+   cancellation point.  But due to similarity with an POSIX interface
+   or due to the implementation it is a cancellation point and
+   therefore not marked with __THROW.  */
+extern int utmpxname (const char *__file);
+
+/* Append entry UTMP to the wtmpx-like file WTMPX_FILE.
+
+   This function is not part of POSIX and therefore no official
+   cancellation point.  But due to similarity with an POSIX interface
+   or due to the implementation it is a cancellation point and
+   therefore not marked with __THROW.  */
+extern void updwtmpx (const char *__wtmpx_file,
+		      const struct utmpx *__utmpx);
+
+
+/* Copy the information in UTMPX to UTMP.
+
+   This function is not part of POSIX and therefore no official
+   cancellation point.  But due to similarity with an POSIX interface
+   or due to the implementation it is a cancellation point and
+   therefore not marked with __THROW.  */
+extern void getutmp (const struct utmpx *__utmpx,
+		     struct utmp *__utmp);
+
+/* Copy the information in UTMP to UTMPX.
+
+   This function is not part of POSIX and therefore no official
+   cancellation point.  But due to similarity with an POSIX interface
+   or due to the implementation it is a cancellation point and
+   therefore not marked with __THROW.  */
+extern void getutmpx (const struct utmp *__utmp, struct utmpx *__utmpx);
+#endif
+
+__END_DECLS
+
+#endif /* utmpx.h  */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            /* Old compatibility names for <limits.h> and <float.h> constants.
+   Copyright (C) 1995-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+/* This interface is obsolete.  New programs should use
+   <limits.h> and/or <float.h> instead of <values.h>.  */
+
+#ifndef	_VALUES_H
+#define	_VALUES_H	1
+
+#include <features.h>
+
+#include <limits.h>
+
+#define _TYPEBITS(type)	(sizeof (type) * CHAR_BIT)
+
+#define CHARBITS	_TYPEBITS (char)
+#define SHORTBITS	_TYPEBITS (short int)
+#define INTBITS		_TYPEBITS (int)
+#define LONGBITS	_TYPEBITS (long int)
+#define PTRBITS		_TYPEBITS (char *)
+#define DOUBLEBITS	_TYPEBITS (double)
+#define FLOATBITS	_TYPEBITS (float)
+
+#define MINSHORT	SHRT_MIN
+#define	MININT		INT_MIN
+#define	MINLONG		LONG_MIN
+
+#define	MAXSHORT	SHRT_MAX
+#define	MAXINT		INT_MAX
+#define	MAXLONG		LONG_MAX
+
+#define HIBITS		MINSHORT
+#define HIBITL		MINLONG
+
+
+#include <float.h>
+
+#define	MAXDOUBLE	DBL_MAX
+#define	MAXFLOAT	FLT_MAX
+#define	MINDOUBLE	DBL_MIN
+#define	MINFLOAT	FLT_MIN
+#define	DMINEXP		DBL_MIN_EXP
+#define	FMINEXP		FLT_MIN_EXP
+#define	DMAXEXP		DBL_MAX_EXP
+#define	FMAXEXP		FLT_MAX_EXP
+
+
+#ifdef __USE_MISC
+/* Some systems define this name instead of CHAR_BIT or CHARBITS.  */
+# define BITSPERBYTE	CHAR_BIT
+#endif
+
+#endif	/* values.h */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            

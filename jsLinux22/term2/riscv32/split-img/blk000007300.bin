@@ -1,0 +1,951 @@
+unsigned int flags;
+	unsigned int clear_color;
+	unsigned int clear_depth;
+	unsigned int color_mask;
+	unsigned int depth_mask;	/* misnamed field:  should be stencil */
+	drm_radeon_clear_rect_t *depth_boxes;
+} drm_radeon_clear_t;
+
+typedef struct drm_radeon_vertex {
+	int prim;
+	int idx;		/* Index of vertex buffer */
+	int count;		/* Number of vertices in buffer */
+	int discard;		/* Client finished with buffer? */
+} drm_radeon_vertex_t;
+
+typedef struct drm_radeon_indices {
+	int prim;
+	int idx;
+	int start;
+	int end;
+	int discard;		/* Client finished with buffer? */
+} drm_radeon_indices_t;
+
+/* v1.2 - obsoletes drm_radeon_vertex and drm_radeon_indices
+ *      - allows multiple primitives and state changes in a single ioctl
+ *      - supports driver change to emit native primitives
+ */
+typedef struct drm_radeon_vertex2 {
+	int idx;		/* Index of vertex buffer */
+	int discard;		/* Client finished with buffer? */
+	int nr_states;
+	drm_radeon_state_t *state;
+	int nr_prims;
+	drm_radeon_prim_t *prim;
+} drm_radeon_vertex2_t;
+
+/* v1.3 - obsoletes drm_radeon_vertex2
+ *      - allows arbitrarily large cliprect list
+ *      - allows updating of tcl packet, vector and scalar state
+ *      - allows memory-efficient description of state updates
+ *      - allows state to be emitted without a primitive
+ *           (for clears, ctx switches)
+ *      - allows more than one dma buffer to be referenced per ioctl
+ *      - supports tcl driver
+ *      - may be extended in future versions with new cmd types, packets
+ */
+typedef struct drm_radeon_cmd_buffer {
+	int bufsz;
+	char *buf;
+	int nbox;
+	struct drm_clip_rect *boxes;
+} drm_radeon_cmd_buffer_t;
+
+typedef struct drm_radeon_tex_image {
+	unsigned int x, y;	/* Blit coordinates */
+	unsigned int width, height;
+	const void *data;
+} drm_radeon_tex_image_t;
+
+typedef struct drm_radeon_texture {
+	unsigned int offset;
+	int pitch;
+	int format;
+	int width;		/* Texture image coordinates */
+	int height;
+	drm_radeon_tex_image_t *image;
+} drm_radeon_texture_t;
+
+typedef struct drm_radeon_stipple {
+	unsigned int *mask;
+} drm_radeon_stipple_t;
+
+typedef struct drm_radeon_indirect {
+	int idx;
+	int start;
+	int end;
+	int discard;
+} drm_radeon_indirect_t;
+
+/* enum for card type parameters */
+#define RADEON_CARD_PCI 0
+#define RADEON_CARD_AGP 1
+#define RADEON_CARD_PCIE 2
+
+/* 1.3: An ioctl to get parameters that aren't available to the 3d
+ * client any other way.
+ */
+#define RADEON_PARAM_GART_BUFFER_OFFSET    1	/* card offset of 1st GART buffer */
+#define RADEON_PARAM_LAST_FRAME            2
+#define RADEON_PARAM_LAST_DISPATCH         3
+#define RADEON_PARAM_LAST_CLEAR            4
+/* Added with DRM version 1.6. */
+#define RADEON_PARAM_IRQ_NR                5
+#define RADEON_PARAM_GART_BASE             6	/* card offset of GART base */
+/* Added with DRM version 1.8. */
+#define RADEON_PARAM_REGISTER_HANDLE       7	/* for drmMap() */
+#define RADEON_PARAM_STATUS_HANDLE         8
+#define RADEON_PARAM_SAREA_HANDLE          9
+#define RADEON_PARAM_GART_TEX_HANDLE       10
+#define RADEON_PARAM_SCRATCH_OFFSET        11
+#define RADEON_PARAM_CARD_TYPE             12
+#define RADEON_PARAM_VBLANK_CRTC           13   /* VBLANK CRTC */
+#define RADEON_PARAM_FB_LOCATION           14   /* FB location */
+#define RADEON_PARAM_NUM_GB_PIPES          15   /* num GB pipes */
+#define RADEON_PARAM_DEVICE_ID             16
+#define RADEON_PARAM_NUM_Z_PIPES           17   /* num Z pipes */
+
+typedef struct drm_radeon_getparam {
+	int param;
+	void *value;
+} drm_radeon_getparam_t;
+
+/* 1.6: Set up a memory manager for regions of shared memory:
+ */
+#define RADEON_MEM_REGION_GART 1
+#define RADEON_MEM_REGION_FB   2
+
+typedef struct drm_radeon_mem_alloc {
+	int region;
+	int alignment;
+	int size;
+	int *region_offset;	/* offset from start of fb or GART */
+} drm_radeon_mem_alloc_t;
+
+typedef struct drm_radeon_mem_free {
+	int region;
+	int region_offset;
+} drm_radeon_mem_free_t;
+
+typedef struct drm_radeon_mem_init_heap {
+	int region;
+	int size;
+	int start;
+} drm_radeon_mem_init_heap_t;
+
+/* 1.6: Userspace can request & wait on irq's:
+ */
+typedef struct drm_radeon_irq_emit {
+	int *irq_seq;
+} drm_radeon_irq_emit_t;
+
+typedef struct drm_radeon_irq_wait {
+	int irq_seq;
+} drm_radeon_irq_wait_t;
+
+/* 1.10: Clients tell the DRM where they think the framebuffer is located in
+ * the card's address space, via a new generic ioctl to set parameters
+ */
+
+typedef struct drm_radeon_setparam {
+	unsigned int param;
+	__s64 value;
+} drm_radeon_setparam_t;
+
+#define RADEON_SETPARAM_FB_LOCATION    1	/* determined framebuffer location */
+#define RADEON_SETPARAM_SWITCH_TILING  2	/* enable/disable color tiling */
+#define RADEON_SETPARAM_PCIGART_LOCATION 3	/* PCI Gart Location */
+#define RADEON_SETPARAM_NEW_MEMMAP 4		/* Use new memory map */
+#define RADEON_SETPARAM_PCIGART_TABLE_SIZE 5    /* PCI GART Table Size */
+#define RADEON_SETPARAM_VBLANK_CRTC 6           /* VBLANK CRTC */
+/* 1.14: Clients can allocate/free a surface
+ */
+typedef struct drm_radeon_surface_alloc {
+	unsigned int address;
+	unsigned int size;
+	unsigned int flags;
+} drm_radeon_surface_alloc_t;
+
+typedef struct drm_radeon_surface_free {
+	unsigned int address;
+} drm_radeon_surface_free_t;
+
+#define	DRM_RADEON_VBLANK_CRTC1		1
+#define	DRM_RADEON_VBLANK_CRTC2		2
+
+/*
+ * Kernel modesetting world below.
+ */
+#define RADEON_GEM_DOMAIN_CPU		0x1
+#define RADEON_GEM_DOMAIN_GTT		0x2
+#define RADEON_GEM_DOMAIN_VRAM		0x4
+
+struct drm_radeon_gem_info {
+	__u64	gart_size;
+	__u64	vram_size;
+	__u64	vram_visible;
+};
+
+#define RADEON_GEM_NO_BACKING_STORE	(1 << 0)
+#define RADEON_GEM_GTT_UC		(1 << 1)
+#define RADEON_GEM_GTT_WC		(1 << 2)
+/* BO is expected to be accessed by the CPU */
+#define RADEON_GEM_CPU_ACCESS		(1 << 3)
+/* CPU access is not expected to work for this BO */
+#define RADEON_GEM_NO_CPU_ACCESS	(1 << 4)
+
+struct drm_radeon_gem_create {
+	__u64	size;
+	__u64	alignment;
+	__u32	handle;
+	__u32	initial_domain;
+	__u32	flags;
+};
+
+/*
+ * This is not a reliable API and you should expect it to fail for any
+ * number of reasons and have fallback path that do not use userptr to
+ * perform any operation.
+ */
+#define RADEON_GEM_USERPTR_READONLY	(1 << 0)
+#define RADEON_GEM_USERPTR_ANONONLY	(1 << 1)
+#define RADEON_GEM_USERPTR_VALIDATE	(1 << 2)
+#define RADEON_GEM_USERPTR_REGISTER	(1 << 3)
+
+struct drm_radeon_gem_userptr {
+	__u64		addr;
+	__u64		size;
+	__u32		flags;
+	__u32		handle;
+};
+
+#define RADEON_TILING_MACRO				0x1
+#define RADEON_TILING_MICRO				0x2
+#define RADEON_TILING_SWAP_16BIT			0x4
+#define RADEON_TILING_SWAP_32BIT			0x8
+/* this object requires a surface when mapped - i.e. front buffer */
+#define RADEON_TILING_SURFACE				0x10
+#define RADEON_TILING_MICRO_SQUARE			0x20
+#define RADEON_TILING_EG_BANKW_SHIFT			8
+#define RADEON_TILING_EG_BANKW_MASK			0xf
+#define RADEON_TILING_EG_BANKH_SHIFT			12
+#define RADEON_TILING_EG_BANKH_MASK			0xf
+#define RADEON_TILING_EG_MACRO_TILE_ASPECT_SHIFT	16
+#define RADEON_TILING_EG_MACRO_TILE_ASPECT_MASK		0xf
+#define RADEON_TILING_EG_TILE_SPLIT_SHIFT		24
+#define RADEON_TILING_EG_TILE_SPLIT_MASK		0xf
+#define RADEON_TILING_EG_STENCIL_TILE_SPLIT_SHIFT	28
+#define RADEON_TILING_EG_STENCIL_TILE_SPLIT_MASK	0xf
+
+struct drm_radeon_gem_set_tiling {
+	__u32	handle;
+	__u32	tiling_flags;
+	__u32	pitch;
+};
+
+struct drm_radeon_gem_get_tiling {
+	__u32	handle;
+	__u32	tiling_flags;
+	__u32	pitch;
+};
+
+struct drm_radeon_gem_mmap {
+	__u32	handle;
+	__u32	pad;
+	__u64	offset;
+	__u64	size;
+	__u64	addr_ptr;
+};
+
+struct drm_radeon_gem_set_domain {
+	__u32	handle;
+	__u32	read_domains;
+	__u32	write_domain;
+};
+
+struct drm_radeon_gem_wait_idle {
+	__u32	handle;
+	__u32	pad;
+};
+
+struct drm_radeon_gem_busy {
+	__u32	handle;
+	__u32        domain;
+};
+
+struct drm_radeon_gem_pread {
+	/** Handle for the object being read. */
+	__u32 handle;
+	__u32 pad;
+	/** Offset into the object to read from */
+	__u64 offset;
+	/** Length of data to read */
+	__u64 size;
+	/** Pointer to write the data into. */
+	/* void *, but pointers are not 32/64 compatible */
+	__u64 data_ptr;
+};
+
+struct drm_radeon_gem_pwrite {
+	/** Handle for the object being written to. */
+	__u32 handle;
+	__u32 pad;
+	/** Offset into the object to write to */
+	__u64 offset;
+	/** Length of data to write */
+	__u64 size;
+	/** Pointer to read the data from. */
+	/* void *, but pointers are not 32/64 compatible */
+	__u64 data_ptr;
+};
+
+/* Sets or returns a value associated with a buffer. */
+struct drm_radeon_gem_op {
+	__u32	handle; /* buffer */
+	__u32	op;     /* RADEON_GEM_OP_* */
+	__u64	value;  /* input or return value */
+};
+
+#define RADEON_GEM_OP_GET_INITIAL_DOMAIN	0
+#define RADEON_GEM_OP_SET_INITIAL_DOMAIN	1
+
+#define RADEON_VA_MAP			1
+#define RADEON_VA_UNMAP			2
+
+#define RADEON_VA_RESULT_OK		0
+#define RADEON_VA_RESULT_ERROR		1
+#define RADEON_VA_RESULT_VA_EXIST	2
+
+#define RADEON_VM_PAGE_VALID		(1 << 0)
+#define RADEON_VM_PAGE_READABLE		(1 << 1)
+#define RADEON_VM_PAGE_WRITEABLE	(1 << 2)
+#define RADEON_VM_PAGE_SYSTEM		(1 << 3)
+#define RADEON_VM_PAGE_SNOOPED		(1 << 4)
+
+struct drm_radeon_gem_va {
+	__u32		handle;
+	__u32		operation;
+	__u32		vm_id;
+	__u32		flags;
+	__u64		offset;
+};
+
+#define RADEON_CHUNK_ID_RELOCS	0x01
+#define RADEON_CHUNK_ID_IB	0x02
+#define RADEON_CHUNK_ID_FLAGS	0x03
+#define RADEON_CHUNK_ID_CONST_IB	0x04
+
+/* The first dword of RADEON_CHUNK_ID_FLAGS is a uint32 of these flags: */
+#define RADEON_CS_KEEP_TILING_FLAGS 0x01
+#define RADEON_CS_USE_VM            0x02
+#define RADEON_CS_END_OF_FRAME      0x04 /* a hint from userspace which CS is the last one */
+/* The second dword of RADEON_CHUNK_ID_FLAGS is a uint32 that sets the ring type */
+#define RADEON_CS_RING_GFX          0
+#define RADEON_CS_RING_COMPUTE      1
+#define RADEON_CS_RING_DMA          2
+#define RADEON_CS_RING_UVD          3
+#define RADEON_CS_RING_VCE          4
+/* The third dword of RADEON_CHUNK_ID_FLAGS is a sint32 that sets the priority */
+/* 0 = normal, + = higher priority, - = lower priority */
+
+struct drm_radeon_cs_chunk {
+	__u32		chunk_id;
+	__u32		length_dw;
+	__u64		chunk_data;
+};
+
+/* drm_radeon_cs_reloc.flags */
+#define RADEON_RELOC_PRIO_MASK		(0xf << 0)
+
+struct drm_radeon_cs_reloc {
+	__u32		handle;
+	__u32		read_domains;
+	__u32		write_domain;
+	__u32		flags;
+};
+
+struct drm_radeon_cs {
+	__u32		num_chunks;
+	__u32		cs_id;
+	/* this points to __u64 * which point to cs chunks */
+	__u64		chunks;
+	/* updates to the limits after this CS ioctl */
+	__u64		gart_limit;
+	__u64		vram_limit;
+};
+
+#define RADEON_INFO_DEVICE_ID		0x00
+#define RADEON_INFO_NUM_GB_PIPES	0x01
+#define RADEON_INFO_NUM_Z_PIPES 	0x02
+#define RADEON_INFO_ACCEL_WORKING	0x03
+#define RADEON_INFO_CRTC_FROM_ID	0x04
+#define RADEON_INFO_ACCEL_WORKING2	0x05
+#define RADEON_INFO_TILING_CONFIG	0x06
+#define RADEON_INFO_WANT_HYPERZ		0x07
+#define RADEON_INFO_WANT_CMASK		0x08 /* get access to CMASK on r300 */
+#define RADEON_INFO_CLOCK_CRYSTAL_FREQ	0x09 /* clock crystal frequency */
+#define RADEON_INFO_NUM_BACKENDS	0x0a /* DB/backends for r600+ - need for OQ */
+#define RADEON_INFO_NUM_TILE_PIPES	0x0b /* tile pipes for r600+ */
+#define RADEON_INFO_FUSION_GART_WORKING	0x0c /* fusion writes to GTT were broken before this */
+#define RADEON_INFO_BACKEND_MAP		0x0d /* pipe to backend map, needed by mesa */
+/* virtual address start, va < start are reserved by the kernel */
+#define RADEON_INFO_VA_START		0x0e
+/* maximum size of ib using the virtual memory cs */
+#define RADEON_INFO_IB_VM_MAX_SIZE	0x0f
+/* max pipes - needed for compute shaders */
+#define RADEON_INFO_MAX_PIPES		0x10
+/* timestamp for GL_ARB_timer_query (OpenGL), returns the current GPU clock */
+#define RADEON_INFO_TIMESTAMP		0x11
+/* max shader engines (SE) - needed for geometry shaders, etc. */
+#define RADEON_INFO_MAX_SE		0x12
+/* max SH per SE */
+#define RADEON_INFO_MAX_SH_PER_SE	0x13
+/* fast fb access is enabled */
+#define RADEON_INFO_FASTFB_WORKING	0x14
+/* query if a RADEON_CS_RING_* submission is supported */
+#define RADEON_INFO_RING_WORKING	0x15
+/* SI tile mode array */
+#define RADEON_INFO_SI_TILE_MODE_ARRAY	0x16
+/* query if CP DMA is supported on the compute ring */
+#define RADEON_INFO_SI_CP_DMA_COMPUTE	0x17
+/* CIK macrotile mode array */
+#define RADEON_INFO_CIK_MACROTILE_MODE_ARRAY	0x18
+/* query the number of render backends */
+#define RADEON_INFO_SI_BACKEND_ENABLED_MASK	0x19
+/* max engine clock - needed for OpenCL */
+#define RADEON_INFO_MAX_SCLK		0x1a
+/* version of VCE firmware */
+#define RADEON_INFO_VCE_FW_VERSION	0x1b
+/* version of VCE feedback */
+#define RADEON_INFO_VCE_FB_VERSION	0x1c
+#define RADEON_INFO_NUM_BYTES_MOVED	0x1d
+#define RADEON_INFO_VRAM_USAGE		0x1e
+#define RADEON_INFO_GTT_USAGE		0x1f
+#define RADEON_INFO_ACTIVE_CU_COUNT	0x20
+#define RADEON_INFO_CURRENT_GPU_TEMP	0x21
+#define RADEON_INFO_CURRENT_GPU_SCLK	0x22
+#define RADEON_INFO_CURRENT_GPU_MCLK	0x23
+#define RADEON_INFO_READ_REG		0x24
+#define RADEON_INFO_VA_UNMAP_WORKING	0x25
+#define RADEON_INFO_GPU_RESET_COUNTER	0x26
+
+struct drm_radeon_info {
+	__u32		request;
+	__u32		pad;
+	__u64		value;
+};
+
+/* Those correspond to the tile index to use, this is to explicitly state
+ * the API that is implicitly defined by the tile mode array.
+ */
+#define SI_TILE_MODE_COLOR_LINEAR_ALIGNED	8
+#define SI_TILE_MODE_COLOR_1D			13
+#define SI_TILE_MODE_COLOR_1D_SCANOUT		9
+#define SI_TILE_MODE_COLOR_2D_8BPP		14
+#define SI_TILE_MODE_COLOR_2D_16BPP		15
+#define SI_TILE_MODE_COLOR_2D_32BPP		16
+#define SI_TILE_MODE_COLOR_2D_64BPP		17
+#define SI_TILE_MODE_COLOR_2D_SCANOUT_16BPP	11
+#define SI_TILE_MODE_COLOR_2D_SCANOUT_32BPP	12
+#define SI_TILE_MODE_DEPTH_STENCIL_1D		4
+#define SI_TILE_MODE_DEPTH_STENCIL_2D		0
+#define SI_TILE_MODE_DEPTH_STENCIL_2D_2AA	3
+#define SI_TILE_MODE_DEPTH_STENCIL_2D_4AA	3
+#define SI_TILE_MODE_DEPTH_STENCIL_2D_8AA	2
+
+#define CIK_TILE_MODE_DEPTH_STENCIL_1D		5
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    /* savage_drm.h -- Public header for the savage driver
+ *
+ * Copyright 2004  Felix Kuehling
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sub license,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice (including the
+ * next paragraph) shall be included in all copies or substantial portions
+ * of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NON-INFRINGEMENT. IN NO EVENT SHALL FELIX KUEHLING BE LIABLE FOR
+ * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#ifndef __SAVAGE_DRM_H__
+#define __SAVAGE_DRM_H__
+
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#ifndef __SAVAGE_SAREA_DEFINES__
+#define __SAVAGE_SAREA_DEFINES__
+
+/* 2 heaps (1 for card, 1 for agp), each divided into up to 128
+ * regions, subject to a minimum region size of (1<<16) == 64k.
+ *
+ * Clients may subdivide regions internally, but when sharing between
+ * clients, the region size is the minimum granularity.
+ */
+
+#define SAVAGE_CARD_HEAP		0
+#define SAVAGE_AGP_HEAP			1
+#define SAVAGE_NR_TEX_HEAPS		2
+#define SAVAGE_NR_TEX_REGIONS		16
+#define SAVAGE_LOG_MIN_TEX_REGION_SIZE	16
+
+#endif				/* __SAVAGE_SAREA_DEFINES__ */
+
+typedef struct _drm_savage_sarea {
+	/* LRU lists for texture memory in agp space and on the card.
+	 */
+	struct drm_tex_region texList[SAVAGE_NR_TEX_HEAPS][SAVAGE_NR_TEX_REGIONS +
+						      1];
+	unsigned int texAge[SAVAGE_NR_TEX_HEAPS];
+
+	/* Mechanism to validate card state.
+	 */
+	int ctxOwner;
+} drm_savage_sarea_t, *drm_savage_sarea_ptr;
+
+/* Savage-specific ioctls
+ */
+#define DRM_SAVAGE_BCI_INIT		0x00
+#define DRM_SAVAGE_BCI_CMDBUF           0x01
+#define DRM_SAVAGE_BCI_EVENT_EMIT	0x02
+#define DRM_SAVAGE_BCI_EVENT_WAIT	0x03
+
+#define DRM_IOCTL_SAVAGE_BCI_INIT		DRM_IOW( DRM_COMMAND_BASE + DRM_SAVAGE_BCI_INIT, drm_savage_init_t)
+#define DRM_IOCTL_SAVAGE_BCI_CMDBUF		DRM_IOW( DRM_COMMAND_BASE + DRM_SAVAGE_BCI_CMDBUF, drm_savage_cmdbuf_t)
+#define DRM_IOCTL_SAVAGE_BCI_EVENT_EMIT	DRM_IOWR(DRM_COMMAND_BASE + DRM_SAVAGE_BCI_EVENT_EMIT, drm_savage_event_emit_t)
+#define DRM_IOCTL_SAVAGE_BCI_EVENT_WAIT	DRM_IOW( DRM_COMMAND_BASE + DRM_SAVAGE_BCI_EVENT_WAIT, drm_savage_event_wait_t)
+
+#define SAVAGE_DMA_PCI	1
+#define SAVAGE_DMA_AGP	3
+typedef struct drm_savage_init {
+	enum {
+		SAVAGE_INIT_BCI = 1,
+		SAVAGE_CLEANUP_BCI = 2
+	} func;
+	unsigned int sarea_priv_offset;
+
+	/* some parameters */
+	unsigned int cob_size;
+	unsigned int bci_threshold_lo, bci_threshold_hi;
+	unsigned int dma_type;
+
+	/* frame buffer layout */
+	unsigned int fb_bpp;
+	unsigned int front_offset, front_pitch;
+	unsigned int back_offset, back_pitch;
+	unsigned int depth_bpp;
+	unsigned int depth_offset, depth_pitch;
+
+	/* local textures */
+	unsigned int texture_offset;
+	unsigned int texture_size;
+
+	/* physical locations of non-permanent maps */
+	unsigned long status_offset;
+	unsigned long buffers_offset;
+	unsigned long agp_textures_offset;
+	unsigned long cmd_dma_offset;
+} drm_savage_init_t;
+
+typedef union drm_savage_cmd_header drm_savage_cmd_header_t;
+typedef struct drm_savage_cmdbuf {
+	/* command buffer in client's address space */
+	drm_savage_cmd_header_t *cmd_addr;
+	unsigned int size;	/* size of the command buffer in 64bit units */
+
+	unsigned int dma_idx;	/* DMA buffer index to use */
+	int discard;		/* discard DMA buffer when done */
+	/* vertex buffer in client's address space */
+	unsigned int *vb_addr;
+	unsigned int vb_size;	/* size of client vertex buffer in bytes */
+	unsigned int vb_stride;	/* stride of vertices in 32bit words */
+	/* boxes in client's address space */
+	struct drm_clip_rect *box_addr;
+	unsigned int nbox;	/* number of clipping boxes */
+} drm_savage_cmdbuf_t;
+
+#define SAVAGE_WAIT_2D  0x1	/* wait for 2D idle before updating event tag */
+#define SAVAGE_WAIT_3D  0x2	/* wait for 3D idle before updating event tag */
+#define SAVAGE_WAIT_IRQ 0x4	/* emit or wait for IRQ, not implemented yet */
+typedef struct drm_savage_event {
+	unsigned int count;
+	unsigned int flags;
+} drm_savage_event_emit_t, drm_savage_event_wait_t;
+
+/* Commands for the cmdbuf ioctl
+ */
+#define SAVAGE_CMD_STATE	0	/* a range of state registers */
+#define SAVAGE_CMD_DMA_PRIM	1	/* vertices from DMA buffer */
+#define SAVAGE_CMD_VB_PRIM	2	/* vertices from client vertex buffer */
+#define SAVAGE_CMD_DMA_IDX	3	/* indexed vertices from DMA buffer */
+#define SAVAGE_CMD_VB_IDX	4	/* indexed vertices client vertex buffer */
+#define SAVAGE_CMD_CLEAR	5	/* clear buffers */
+#define SAVAGE_CMD_SWAP		6	/* swap buffers */
+
+/* Primitive types
+*/
+#define SAVAGE_PRIM_TRILIST	0	/* triangle list */
+#define SAVAGE_PRIM_TRISTRIP	1	/* triangle strip */
+#define SAVAGE_PRIM_TRIFAN	2	/* triangle fan */
+#define SAVAGE_PRIM_TRILIST_201	3	/* reorder verts for correct flat
+					 * shading on s3d */
+
+/* Skip flags (vertex format)
+ */
+#define SAVAGE_SKIP_Z		0x01
+#define SAVAGE_SKIP_W		0x02
+#define SAVAGE_SKIP_C0		0x04
+#define SAVAGE_SKIP_C1		0x08
+#define SAVAGE_SKIP_S0		0x10
+#define SAVAGE_SKIP_T0		0x20
+#define SAVAGE_SKIP_ST0		0x30
+#define SAVAGE_SKIP_S1		0x40
+#define SAVAGE_SKIP_T1		0x80
+#define SAVAGE_SKIP_ST1		0xc0
+#define SAVAGE_SKIP_ALL_S3D	0x3f
+#define SAVAGE_SKIP_ALL_S4	0xff
+
+/* Buffer names for clear command
+ */
+#define SAVAGE_FRONT		0x1
+#define SAVAGE_BACK		0x2
+#define SAVAGE_DEPTH		0x4
+
+/* 64-bit command header
+ */
+union drm_savage_cmd_header {
+	struct {
+		unsigned char cmd;	/* command */
+		unsigned char pad0;
+		unsigned short pad1;
+		unsigned short pad2;
+		unsigned short pad3;
+	} cmd;			/* generic */
+	struct {
+		unsigned char cmd;
+		unsigned char global;	/* need idle engine? */
+		unsigned short count;	/* number of consecutive registers */
+		unsigned short start;	/* first register */
+		unsigned short pad3;
+	} state;		/* SAVAGE_CMD_STATE */
+	struct {
+		unsigned char cmd;
+		unsigned char prim;	/* primitive type */
+		unsigned short skip;	/* vertex format (skip flags) */
+		unsigned short count;	/* number of vertices */
+		unsigned short start;	/* first vertex in DMA/vertex buffer */
+	} prim;			/* SAVAGE_CMD_DMA_PRIM, SAVAGE_CMD_VB_PRIM */
+	struct {
+		unsigned char cmd;
+		unsigned char prim;
+		unsigned short skip;
+		unsigned short count;	/* number of indices that follow */
+		unsigned short pad3;
+	} idx;			/* SAVAGE_CMD_DMA_IDX, SAVAGE_CMD_VB_IDX */
+	struct {
+		unsigned char cmd;
+		unsigned char pad0;
+		unsigned short pad1;
+		unsigned int flags;
+	} clear0;		/* SAVAGE_CMD_CLEAR */
+	struct {
+		unsigned int mask;
+		unsigned int value;
+	} clear1;		/* SAVAGE_CMD_CLEAR data */
+};
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              /* sis_drv.h -- Private header for sis driver -*- linux-c -*- */
+/*
+ * Copyright 2005 Eric Anholt
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+#ifndef __SIS_DRM_H__
+#define __SIS_DRM_H__
+
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/* SiS specific ioctls */
+#define NOT_USED_0_3
+#define DRM_SIS_FB_ALLOC	0x04
+#define DRM_SIS_FB_FREE	        0x05
+#define NOT_USED_6_12
+#define DRM_SIS_AGP_INIT	0x13
+#define DRM_SIS_AGP_ALLOC	0x14
+#define DRM_SIS_AGP_FREE	0x15
+#define DRM_SIS_FB_INIT	        0x16
+
+#define DRM_IOCTL_SIS_FB_ALLOC		DRM_IOWR(DRM_COMMAND_BASE + DRM_SIS_FB_ALLOC, drm_sis_mem_t)
+#define DRM_IOCTL_SIS_FB_FREE		DRM_IOW( DRM_COMMAND_BASE + DRM_SIS_FB_FREE, drm_sis_mem_t)
+#define DRM_IOCTL_SIS_AGP_INIT		DRM_IOWR(DRM_COMMAND_BASE + DRM_SIS_AGP_INIT, drm_sis_agp_t)
+#define DRM_IOCTL_SIS_AGP_ALLOC		DRM_IOWR(DRM_COMMAND_BASE + DRM_SIS_AGP_ALLOC, drm_sis_mem_t)
+#define DRM_IOCTL_SIS_AGP_FREE		DRM_IOW( DRM_COMMAND_BASE + DRM_SIS_AGP_FREE, drm_sis_mem_t)
+#define DRM_IOCTL_SIS_FB_INIT		DRM_IOW( DRM_COMMAND_BASE + DRM_SIS_FB_INIT, drm_sis_fb_t)
+/*
+#define DRM_IOCTL_SIS_FLIP		DRM_IOW( 0x48, drm_sis_flip_t)
+#define DRM_IOCTL_SIS_FLIP_INIT		DRM_IO(  0x49)
+#define DRM_IOCTL_SIS_FLIP_FINAL	DRM_IO(  0x50)
+*/
+
+typedef struct {
+	int context;
+	unsigned long offset;
+	unsigned long size;
+	unsigned long free;
+} drm_sis_mem_t;
+
+typedef struct {
+	unsigned long offset, size;
+} drm_sis_agp_t;
+
+typedef struct {
+	unsigned long offset, size;
+} drm_sis_fb_t;
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif				/* __SIS_DRM_H__ */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   /*
+ * Copyright (c) 2012-2013, NVIDIA CORPORATION.  All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#ifndef _TEGRA_DRM_H_
+#define _TEGRA_DRM_H_
+
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#define DRM_TEGRA_GEM_CREATE_TILED     (1 << 0)
+#define DRM_TEGRA_GEM_CREATE_BOTTOM_UP (1 << 1)
+
+/**
+ * struct drm_tegra_gem_create - parameters for the GEM object creation IOCTL
+ */
+struct drm_tegra_gem_create {
+	/**
+	 * @size:
+	 *
+	 * The size, in bytes, of the buffer object to be created.
+	 */
+	__u64 size;
+
+	/**
+	 * @flags:
+	 *
+	 * A bitmask of flags that influence the creation of GEM objects:
+	 *
+	 * DRM_TEGRA_GEM_CREATE_TILED
+	 *   Use the 16x16 tiling format for this buffer.
+	 *
+	 * DRM_TEGRA_GEM_CREATE_BOTTOM_UP
+	 *   The buffer has a bottom-up layout.
+	 */
+	__u32 flags;
+
+	/**
+	 * @handle:
+	 *
+	 * The handle of the created GEM object. Set by the kernel upon
+	 * successful completion of the IOCTL.
+	 */
+	__u32 handle;
+};
+
+/**
+ * struct drm_tegra_gem_mmap - parameters for the GEM mmap IOCTL
+ */
+struct drm_tegra_gem_mmap {
+	/**
+	 * @handle:
+	 *
+	 * Handle of the GEM object to obtain an mmap offset for.
+	 */
+	__u32 handle;
+
+	/**
+	 * @pad:
+	 *
+	 * Structure padding that may be used in the future. Must be 0.
+	 */
+	__u32 pad;
+
+	/**
+	 * @offset:
+	 *
+	 * The mmap offset for the given GEM object. Set by the kernel upon
+	 * successful completion of the IOCTL.
+	 */
+	__u64 offset;
+};
+
+/**
+ * struct drm_tegra_syncpt_read - parameters for the read syncpoint IOCTL
+ */
+struct drm_tegra_syncpt_read {
+	/**
+	 * @id:
+	 *
+	 * ID of the syncpoint to read the current value from.
+	 */
+	__u32 id;
+
+	/**
+	 * @value:
+	 *
+	 * The current syncpoint value. Set by the kernel upon successful
+	 * completion of the IOCTL.
+	 */
+	__u32 value;
+};
+
+/**
+ * struct drm_tegra_syncpt_incr - parameters for the increment syncpoint IOCTL
+ */
+struct drm_tegra_syncpt_incr {
+	/**
+	 * @id:
+	 *
+	 * ID of the syncpoint to increment.
+	 */
+	__u32 id;
+
+	/**
+	 * @pad:
+	 *
+	 * Structure padding that may be used in the future. Must be 0.
+	 */
+	__u32 pad;
+};
+
+/**
+ * struct drm_tegra_syncpt_wait - parameters for the wait syncpoint IOCTL
+ */
+struct drm_tegra_syncpt_wait {
+	/**
+	 * @id:
+	 *
+	 * ID of the syncpoint to wait on.
+	 */
+	__u32 id;
+
+	/**
+	 * @thresh:
+	 *
+	 * Threshold value for which to wait.
+	 */
+	__u32 thresh;
+
+	/**
+	 * @timeout:
+	 *
+	 * Timeout, in milliseconds, to wait.
+	 */
+	__u32 timeout;
+
+	/**
+	 * @value:
+	 *
+	 * The new syncpoint value after the wait. Set by the kernel upon
+	 * successful completion of the IOCTL.
+	 */
+	__u32 value;
+};
+
+#define DRM_TEGRA_NO_TIMEOUT	(0xffffffff)
+
+/**
+ * struct drm_tegra_open_channel - parameters for the open channel IOCTL
+ */
+struct drm_tegra_open_channel {
+	/**
+	 * @client:
+	 *
+	 * The client ID for this channel.
+	 */
+	__u32 client;
+
+	/**
+	 * @pad:
+	 *
+	 * Structure padding that may be used in the future. Must be 0.
+	 */
+	__u32 pad;
+
+	/**
+	 * @context:
+	 *
+	 * The application context of this channel. Set by the kernel upon
+	 * successful completion of the IOCTL. This context needs to b

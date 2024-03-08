@@ -1,0 +1,546 @@
+unction to
+   deal with parsing one, documentation string, a possible vector of child
+   argp's, and perhaps a function to filter help output.  When actually
+   parsing options, getopt is called with the union of all the argp
+   structures chained together through their CHILD pointers, with conflicts
+   being resolved in favor of the first occurrence in the chain.  */
+struct argp
+{
+  /* An array of argp_option structures, terminated by an entry with both
+     NAME and KEY having a value of 0.  */
+  const struct argp_option *options;
+
+  /* What to do with an option from this structure.  KEY is the key
+     associated with the option, and ARG is any associated argument (NULL if
+     none was supplied).  If KEY isn't understood, ARGP_ERR_UNKNOWN should be
+     returned.  If a non-zero, non-ARGP_ERR_UNKNOWN value is returned, then
+     parsing is stopped immediately, and that value is returned from
+     argp_parse().  For special (non-user-supplied) values of KEY, see the
+     ARGP_KEY_ definitions below.  */
+  argp_parser_t parser;
+
+  /* A string describing what other arguments are wanted by this program.  It
+     is only used by argp_usage to print the `Usage:' message.  If it
+     contains newlines, the strings separated by them are considered
+     alternative usage patterns, and printed on separate lines (lines after
+     the first are prefix by `  or: ' instead of `Usage:').  */
+  const char *args_doc;
+
+  /* If non-NULL, a string containing extra text to be printed before and
+     after the options in a long help message (separated by a vertical tab
+     `\v' character).  */
+  const char *doc;
+
+  /* A vector of argp_children structures, terminated by a member with a 0
+     argp field, pointing to child argps should be parsed with this one.  Any
+     conflicts are resolved in favor of this argp, or early argps in the
+     CHILDREN list.  This field is useful if you use libraries that supply
+     their own argp structure, which you want to use in conjunction with your
+     own.  */
+  const struct argp_child *children;
+
+  /* If non-zero, this should be a function to filter the output of help
+     messages.  KEY is either a key from an option, in which case TEXT is
+     that option's help text, or a special key from the ARGP_KEY_HELP_
+     defines, below, describing which other help text TEXT is.  The function
+     should return either TEXT, if it should be used as-is, a replacement
+     string, which should be malloced, and will be freed by argp, or NULL,
+     meaning `print nothing'.  The value for TEXT is *after* any translation
+     has been done, so if any of the replacement text also needs translation,
+     that should be done by the filter function.  INPUT is either the input
+     supplied to argp_parse, or NULL, if argp_help was called directly.  */
+  char *(*help_filter) (int __key, const char *__text, void *__input);
+
+  /* If non-zero the strings used in the argp library are translated using
+     the domain described by this string.  Otherwise the currently installed
+     default domain is used.  */
+  const char *argp_domain;
+};
+
+/* Possible KEY arguments to a help filter function.  */
+#define ARGP_KEY_HELP_PRE_DOC	0x2000001 /* Help text preceding options. */
+#define ARGP_KEY_HELP_POST_DOC	0x2000002 /* Help text following options. */
+#define ARGP_KEY_HELP_HEADER	0x2000003 /* Option header string. */
+#define ARGP_KEY_HELP_EXTRA	0x2000004 /* After all other documentation;
+					     TEXT is NULL for this key.  */
+/* Explanatory note emitted when duplicate option arguments have been
+   suppressed.  */
+#define ARGP_KEY_HELP_DUP_ARGS_NOTE 0x2000005
+#define ARGP_KEY_HELP_ARGS_DOC	0x2000006 /* Argument doc string.  */
+
+/* When an argp has a non-zero CHILDREN field, it should point to a vector of
+   argp_child structures, each of which describes a subsidiary argp.  */
+struct argp_child
+{
+  /* The child parser.  */
+  const struct argp *argp;
+
+  /* Flags for this child.  */
+  int flags;
+
+  /* If non-zero, an optional header to be printed in help output before the
+     child options.  As a side-effect, a non-zero value forces the child
+     options to be grouped together; to achieve this effect without actually
+     printing a header string, use a value of "".  */
+  const char *header;
+
+  /* Where to group the child options relative to the other (`consolidated')
+     options in the parent argp; the values are the same as the GROUP field
+     in argp_option structs, but all child-groupings follow parent options at
+     a particular group level.  If both this field and HEADER are zero, then
+     they aren't grouped at all, but rather merged with the parent options
+     (merging the child's grouping levels with the parents).  */
+  int group;
+};
+
+/* Parsing state.  This is provided to parsing functions called by argp,
+   which may examine and, as noted, modify fields.  */
+struct argp_state
+{
+  /* The top level ARGP being parsed.  */
+  const struct argp *root_argp;
+
+  /* The argument vector being parsed.  May be modified.  */
+  int argc;
+  char **argv;
+
+  /* The index in ARGV of the next arg that to be parsed.  May be modified. */
+  int next;
+
+  /* The flags supplied to argp_parse.  May be modified.  */
+  unsigned flags;
+
+  /* While calling a parsing function with a key of ARGP_KEY_ARG, this is the
+     number of the current arg, starting at zero, and incremented after each
+     such call returns.  At all other times, this is the number of such
+     arguments that have been processed.  */
+  unsigned arg_num;
+
+  /* If non-zero, the index in ARGV of the first argument following a special
+     `--' argument (which prevents anything following being interpreted as an
+     option).  Only set once argument parsing has proceeded past this point. */
+  int quoted;
+
+  /* An arbitrary pointer passed in from the user.  */
+  void *input;
+  /* Values to pass to child parsers.  This vector will be the same length as
+     the number of children for the current parser.  */
+  void **child_inputs;
+
+  /* For the parser's use.  Initialized to 0.  */
+  void *hook;
+
+  /* The name used when printing messages.  This is initialized to ARGV[0],
+     or PROGRAM_INVOCATION_NAME if that is unavailable.  */
+  char *name;
+
+  /* Streams used when argp prints something.  */
+  FILE *err_stream;		/* For errors; initialized to stderr. */
+  FILE *out_stream;		/* For information; initialized to stdout. */
+
+  void *pstate;			/* Private, for use by argp.  */
+};
+
+/* Flags for argp_parse (note that the defaults are those that are
+   convenient for program command line parsing): */
+
+/* Don't ignore the first element of ARGV.  Normally (and always unless
+   ARGP_NO_ERRS is set) the first element of the argument vector is
+   skipped for option parsing purposes, as it corresponds to the program name
+   in a command line.  */
+#define ARGP_PARSE_ARGV0  0x01
+
+/* Don't print error messages for unknown options to stderr; unless this flag
+   is set, ARGP_PARSE_ARGV0 is ignored, as ARGV[0] is used as the program
+   name in the error messages.  This flag implies ARGP_NO_EXIT (on the
+   assumption that silent exiting upon errors is bad behaviour).  */
+#define ARGP_NO_ERRS	0x02
+
+/* Don't parse any non-option args.  Normally non-option args are parsed by
+   calling the parse functions with a key of ARGP_KEY_ARG, and the actual arg
+   as the value.  Since it's impossible to know which parse function wants to
+   handle it, each one is called in turn, until one returns 0 or an error
+   other than ARGP_ERR_UNKNOWN; if an argument is handled by no one, the
+   argp_parse returns prematurely (but with a return value of 0).  If all
+   args have been parsed without error, all parsing functions are called one
+   last time with a key of ARGP_KEY_END.  This flag needn't normally be set,
+   as the normal behavior is to stop parsing as soon as some argument can't
+   be handled.  */
+#define ARGP_NO_ARGS	0x04
+
+/* Parse options and arguments in the same order they occur on the command
+   line -- normally they're rearranged so that all options come first. */
+#define ARGP_IN_ORDER	0x08
+
+/* Don't provide the standard long option --help, which causes usage and
+      option help information to be output to stdout, and exit (0) called. */
+#define ARGP_NO_HELP	0x10
+
+/* Don't exit on errors (they may still result in error messages).  */
+#define ARGP_NO_EXIT	0x20
+
+/* Use the gnu getopt `long-only' rules for parsing arguments.  */
+#define ARGP_LONG_ONLY	0x40
+
+/* Turns off any message-printing/exiting options.  */
+#define ARGP_SILENT    (ARGP_NO_EXIT | ARGP_NO_ERRS | ARGP_NO_HELP)
+
+/* Parse the options strings in ARGC & ARGV according to the options in ARGP.
+   FLAGS is one of the ARGP_ flags above.  If ARG_INDEX is non-NULL, the
+   index in ARGV of the first unparsed option is returned in it.  If an
+   unknown option is present, ARGP_ERR_UNKNOWN is returned; if some parser
+   routine returned a non-zero value, it is returned; otherwise 0 is
+   returned.  This function may also call exit unless the ARGP_NO_HELP flag
+   is set.  INPUT is a pointer to a value to be passed in to the parser.  */
+extern error_t argp_parse (const struct argp *__restrict __argp,
+			   int __argc, char **__restrict __argv,
+			   unsigned __flags, int *__restrict __arg_index,
+			   void *__restrict __input);
+extern error_t __argp_parse (const struct argp *__restrict __argp,
+			     int __argc, char **__restrict __argv,
+			     unsigned __flags, int *__restrict __arg_index,
+			     void *__restrict __input);
+
+/* Global variables.  */
+
+/* If defined or set by the user program to a non-zero value, then a default
+   option --version is added (unless the ARGP_NO_HELP flag is used), which
+   will print this string followed by a newline and exit (unless the
+   ARGP_NO_EXIT flag is used).  Overridden by ARGP_PROGRAM_VERSION_HOOK.  */
+extern const char *argp_program_version;
+
+/* If defined or set by the user program to a non-zero value, then a default
+   option --version is added (unless the ARGP_NO_HELP flag is used), which
+   calls this function with a stream to print the version to and a pointer to
+   the current parsing state, and then exits (unless the ARGP_NO_EXIT flag is
+   used).  This variable takes precedent over ARGP_PROGRAM_VERSION.  */
+extern void (*argp_program_version_hook) (FILE *__restrict __stream,
+					  struct argp_state *__restrict
+					  __state);
+
+/* If defined or set by the user program, it should point to string that is
+   the bug-reporting address for the program.  It will be printed by
+   argp_help if the ARGP_HELP_BUG_ADDR flag is set (as it is by various
+   standard help messages), embedded in a sentence that says something like
+   `Report bugs to ADDR.'.  */
+extern const char *argp_program_bug_address;
+
+/* The exit status that argp will use when exiting due to a parsing error.
+   If not defined or set by the user program, this defaults to EX_USAGE from
+   <sysexits.h>.  */
+extern error_t argp_err_exit_status;
+
+/* Flags for argp_help.  */
+#define ARGP_HELP_USAGE		0x01 /* a Usage: message. */
+#define ARGP_HELP_SHORT_USAGE	0x02 /*  " but don't actually print options. */
+#define ARGP_HELP_SEE		0x04 /* a `Try ... for more help' message. */
+#define ARGP_HELP_LONG		0x08 /* a long help message. */
+#define ARGP_HELP_PRE_DOC	0x10 /* doc string preceding long help.  */
+#define ARGP_HELP_POST_DOC	0x20 /* doc string following long help.  */
+#define ARGP_HELP_DOC		(ARGP_HELP_PRE_DOC | ARGP_HELP_POST_DOC)
+#define ARGP_HELP_BUG_ADDR	0x40 /* bug report address */
+#define ARGP_HELP_LONG_ONLY	0x80 /* modify output appropriately to
+					reflect ARGP_LONG_ONLY mode.  */
+
+/* These ARGP_HELP flags are only understood by argp_state_help.  */
+#define ARGP_HELP_EXIT_ERR	0x100 /* Call exit(1) instead of returning.  */
+#define ARGP_HELP_EXIT_OK	0x200 /* Call exit(0) instead of returning.  */
+
+/* The standard thing to do after a program command line parsing error, if an
+   error message has already been printed.  */
+#define ARGP_HELP_STD_ERR \
+  (ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR)
+/* The standard thing to do after a program command line parsing error, if no
+   more specific error message has been printed.  */
+#define ARGP_HELP_STD_USAGE \
+  (ARGP_HELP_SHORT_USAGE | ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR)
+/* The standard thing to do in response to a --help option.  */
+#define ARGP_HELP_STD_HELP \
+  (ARGP_HELP_SHORT_USAGE | ARGP_HELP_LONG | ARGP_HELP_EXIT_OK \
+   | ARGP_HELP_DOC | ARGP_HELP_BUG_ADDR)
+
+/* Output a usage message for ARGP to STREAM.  FLAGS are from the set
+   ARGP_HELP_*.  */
+extern void argp_help (const struct argp *__restrict __argp,
+		       FILE *__restrict __stream,
+		       unsigned __flags, char *__restrict __name);
+extern void __argp_help (const struct argp *__restrict __argp,
+			 FILE *__restrict __stream, unsigned __flags,
+			 char *__name);
+
+/* The following routines are intended to be called from within an argp
+   parsing routine (thus taking an argp_state structure as the first
+   argument).  They may or may not print an error message and exit, depending
+   on the flags in STATE -- in any case, the caller should be prepared for
+   them *not* to exit, and should return an appropriate error after calling
+   them.  [argp_usage & argp_error should probably be called argp_state_...,
+   but they're used often enough that they should be short]  */
+
+/* Output, if appropriate, a usage message for STATE to STREAM.  FLAGS are
+   from the set ARGP_HELP_*.  */
+extern void argp_state_help (const struct argp_state *__restrict __state,
+			     FILE *__restrict __stream,
+			     unsigned int __flags);
+extern void __argp_state_help (const struct argp_state *__restrict __state,
+			       FILE *__restrict __stream,
+			       unsigned int __flags);
+
+/* Possibly output the standard usage message for ARGP to stderr and exit.  */
+extern void argp_usage (const struct argp_state *__state);
+extern void __argp_usage (const struct argp_state *__state);
+
+/* If appropriate, print the printf string FMT and following args, preceded
+   by the program name and `:', to stderr, and followed by a `Try ... --help'
+   message, then exit (1).  */
+extern void argp_error (const struct argp_state *__restrict __state,
+			const char *__restrict __fmt, ...)
+     __attribute__ ((__format__ (__printf__, 2, 3)));
+extern void __argp_error (const struct argp_state *__restrict __state,
+			  const char *__restrict __fmt, ...)
+     __attribute__ ((__format__ (__printf__, 2, 3)));
+
+/* Similar to the standard gnu error-reporting function error(), but will
+   respect the ARGP_NO_EXIT and ARGP_NO_ERRS flags in STATE, and will print
+   to STATE->err_stream.  This is useful for argument parsing code that is
+   shared between program startup (when exiting is desired) and runtime
+   option parsing (when typically an error code is returned instead).  The
+   difference between this function and argp_error is that the latter is for
+   *parsing errors*, and the former is for other problems that occur during
+   parsing but don't reflect a (syntactic) problem with the input.  */
+extern void argp_failure (const struct argp_state *__restrict __state,
+			  int __status, int __errnum,
+			  const char *__restrict __fmt, ...)
+     __attribute__ ((__format__ (__printf__, 4, 5)));
+extern void __argp_failure (const struct argp_state *__restrict __state,
+			    int __status, int __errnum,
+			    const char *__restrict __fmt, ...)
+     __attribute__ ((__format__ (__printf__, 4, 5)));
+
+/* Returns true if the option OPT is a valid short option.  */
+extern int _option_is_short (const struct argp_option *__opt) __THROW;
+extern int __option_is_short (const struct argp_option *__opt) __THROW;
+
+/* Returns true if the option OPT is in fact the last (unused) entry in an
+   options array.  */
+extern int _option_is_end (const struct argp_option *__opt) __THROW;
+extern int __option_is_end (const struct argp_option *__opt) __THROW;
+
+/* Return the input field for ARGP in the parser corresponding to STATE; used
+   by the help routines.  */
+extern void *_argp_input (const struct argp *__restrict __argp,
+			  const struct argp_state *__restrict __state)
+     __THROW;
+extern void *__argp_input (const struct argp *__restrict __argp,
+			   const struct argp_state *__restrict __state)
+     __THROW;
+
+#ifdef __USE_EXTERN_INLINES
+
+# if !(defined _LIBC && _LIBC)
+#  define __argp_usage argp_usage
+#  define __argp_state_help argp_state_help
+#  define __option_is_short _option_is_short
+#  define __option_is_end _option_is_end
+# endif
+
+# ifndef ARGP_EI
+#  define ARGP_EI __extern_inline
+# endif
+
+ARGP_EI void
+__argp_usage (const struct argp_state *__state)
+{
+  __argp_state_help (__state, stderr, ARGP_HELP_STD_USAGE);
+}
+
+ARGP_EI int
+__NTH (__option_is_short (const struct argp_option *__opt))
+{
+  if (__opt->flags & OPTION_DOC)
+    return 0;
+  else
+    {
+      int __key = __opt->key;
+      return __key > 0 && __key <= UCHAR_MAX && isprint (__key);
+    }
+}
+
+ARGP_EI int
+__NTH (__option_is_end (const struct argp_option *__opt))
+{
+  return !__opt->key && !__opt->name && !__opt->doc && !__opt->group;
+}
+
+# if !(defined _LIBC && _LIBC)
+#  undef __argp_usage
+#  undef __argp_state_help
+#  undef __option_is_short
+#  undef __option_is_end
+# endif
+#endif /* Use extern inlines.  */
+
+#include <bits/floatn.h>
+#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
+# include <bits/argp-ldbl.h>
+#endif
+
+__END_DECLS
+
+#endif /* argp.h */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    /* Routines for dealing with '\0' separated arg vectors.
+   Copyright (C) 1995-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef _ARGZ_H
+#define _ARGZ_H	1
+
+#include <features.h>
+#include <errno.h>
+#include <string.h>		/* Need size_t, and strchr is called below.  */
+
+__BEGIN_DECLS
+
+/* error_t may or may not be available from errno.h, depending on the
+   operating system.  */
+#ifndef __error_t_defined
+# define __error_t_defined 1
+typedef int error_t;
+#endif
+
+/* Make a '\0' separated arg vector from a unix argv vector, returning it in
+   ARGZ, and the total length in LEN.  If a memory allocation error occurs,
+   ENOMEM is returned, otherwise 0.  The result can be destroyed using free. */
+extern error_t __argz_create (char *const __argv[], char **__restrict __argz,
+			      size_t *__restrict __len) __THROW;
+extern error_t argz_create (char *const __argv[], char **__restrict __argz,
+			    size_t *__restrict __len) __THROW;
+
+/* Make a '\0' separated arg vector from a SEP separated list in
+   STRING, returning it in ARGZ, and the total length in LEN.  If a
+   memory allocation error occurs, ENOMEM is returned, otherwise 0.
+   The result can be destroyed using free.  */
+extern error_t argz_create_sep (const char *__restrict __string,
+				int __sep, char **__restrict __argz,
+				size_t *__restrict __len) __THROW;
+
+/* Returns the number of strings in ARGZ.  */
+extern size_t __argz_count (const char *__argz, size_t __len)
+     __THROW __attribute_pure__;
+extern size_t argz_count (const char *__argz, size_t __len)
+     __THROW __attribute_pure__;
+
+/* Puts pointers to each string in ARGZ into ARGV, which must be large enough
+   to hold them all.  */
+extern void __argz_extract (const char *__restrict __argz, size_t __len,
+			    char **__restrict __argv) __THROW;
+extern void argz_extract (const char *__restrict __argz, size_t __len,
+			  char **__restrict __argv) __THROW;
+
+/* Make '\0' separated arg vector ARGZ printable by converting all the '\0's
+   except the last into the character SEP.  */
+extern void __argz_stringify (char *__argz, size_t __len, int __sep) __THROW;
+extern void argz_stringify (char *__argz, size_t __len, int __sep) __THROW;
+
+/* Append BUF, of length BUF_LEN to the argz vector in ARGZ & ARGZ_LEN.  */
+extern error_t argz_append (char **__restrict __argz,
+			    size_t *__restrict __argz_len,
+			    const char *__restrict __buf, size_t __buf_len)
+     __THROW;
+
+/* Append STR to the argz vector in ARGZ & ARGZ_LEN.  */
+extern error_t argz_add (char **__restrict __argz,
+			 size_t *__restrict __argz_len,
+			 const char *__restrict __str) __THROW;
+
+/* Append SEP separated list in STRING to the argz vector in ARGZ &
+   ARGZ_LEN.  */
+extern error_t argz_add_sep (char **__restrict __argz,
+			     size_t *__restrict __argz_len,
+			     const char *__restrict __string, int __delim)
+     __THROW;
+
+/* Delete ENTRY from ARGZ & ARGZ_LEN, if it appears there.  */
+extern void argz_delete (char **__restrict __argz,
+			 size_t *__restrict __argz_len,
+			 char *__restrict __entry) __THROW;
+
+/* Insert ENTRY into ARGZ & ARGZ_LEN before BEFORE, which should be an
+   existing entry in ARGZ; if BEFORE is NULL, ENTRY is appended to the end.
+   Since ARGZ's first entry is the same as ARGZ, argz_insert (ARGZ, ARGZ_LEN,
+   ARGZ, ENTRY) will insert ENTRY at the beginning of ARGZ.  If BEFORE is not
+   in ARGZ, EINVAL is returned, else if memory can't be allocated for the new
+   ARGZ, ENOMEM is returned, else 0.  */
+extern error_t argz_insert (char **__restrict __argz,
+			    size_t *__restrict __argz_len,
+			    char *__restrict __before,
+			    const char *__restrict __entry) __THROW;
+
+/* Replace any occurrences of the string STR in ARGZ with WITH, reallocating
+   ARGZ as necessary.  If REPLACE_COUNT is non-zero, *REPLACE_COUNT will be
+   incremented by number of replacements performed.  */
+extern error_t argz_replace (char **__restrict __argz,
+			     size_t *__restrict __argz_len,
+			     const char *__restrict __str,
+			     const char *__restrict __with,
+			     unsigned int *__restrict __replace_count);
+
+/* Returns the next entry in ARGZ & ARGZ_LEN after ENTRY, or NULL if there
+   are no more.  If entry is NULL, then the first entry is returned.  This
+   behavior allows two convenient iteration styles:
+
+    char *entry = 0;
+    while ((entry = argz_next (argz, argz_len, entry)))
+      ...;
+
+   or
+
+    char *entry;
+    for (entry = argz; entry; entry = argz_next (argz, argz_len, entry))
+      ...;
+*/
+extern char *__argz_next (const char *__restrict __argz, size_t __argz_len,
+			  const char *__restrict __entry) __THROW;
+extern char *argz_next (const char *__restrict __argz, size_t __argz_len,
+			const char *__restrict __entry) __THROW;
+
+#ifdef __USE_EXTERN_INLINES
+__extern_inline char *
+__NTH (__argz_next (const char *__argz, size_t __argz_len,
+		    const char *__entry))
+{
+  if (__entry)
+    {
+      if (__entry < __argz + __argz_len)
+	__entry = strchr (__entry, '\0') + 1;
+
+      return __entry >= __argz + __argz_len ? (char *) NULL : (char *) __entry;
+    }
+  else
+    return __argz_len > 0 ? (char *) __argz : 0;
+}
+__extern_inline char *
+__NTH (argz_next (const char *__argz, size_t __argz_len,
+		  const char *__entry))
+{
+  return __argz_next (__argz, __argz_len, __entry);
+}
+#endif /* Use extern inlines.  */
+
+__END_DECLS
+
+#endif /* argz.h */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ¡   .   ™   ..  ¢   ftp.h   £   inet.h  ¤   	nameser.h   ¥   nameser_compat.h¦   telnet.h§  Œtftp.h                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              

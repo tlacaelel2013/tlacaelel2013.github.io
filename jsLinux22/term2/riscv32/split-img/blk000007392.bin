@@ -1,0 +1,608 @@
++ 0x4003)
+#define MEDIA_ENT_F_PROC_VIDEO_LUT		(MEDIA_ENT_F_BASE + 0x4004)
+#define MEDIA_ENT_F_PROC_VIDEO_SCALER		(MEDIA_ENT_F_BASE + 0x4005)
+#define MEDIA_ENT_F_PROC_VIDEO_STATISTICS	(MEDIA_ENT_F_BASE + 0x4006)
+#define MEDIA_ENT_F_PROC_VIDEO_ENCODER		(MEDIA_ENT_F_BASE + 0x4007)
+#define MEDIA_ENT_F_PROC_VIDEO_DECODER		(MEDIA_ENT_F_BASE + 0x4008)
+
+/*
+ * Switch and bridge entity functions
+ */
+#define MEDIA_ENT_F_VID_MUX			(MEDIA_ENT_F_BASE + 0x5001)
+#define MEDIA_ENT_F_VID_IF_BRIDGE		(MEDIA_ENT_F_BASE + 0x5002)
+
+/*
+ * Video decoder/encoder functions
+ */
+#define MEDIA_ENT_F_ATV_DECODER			(MEDIA_ENT_F_OLD_SUBDEV_BASE + 4)
+#define MEDIA_ENT_F_DV_DECODER			(MEDIA_ENT_F_BASE + 0x6001)
+#define MEDIA_ENT_F_DV_ENCODER			(MEDIA_ENT_F_BASE + 0x6002)
+
+/* Entity flags */
+#define MEDIA_ENT_FL_DEFAULT			(1 << 0)
+#define MEDIA_ENT_FL_CONNECTOR			(1 << 1)
+
+/* OR with the entity id value to find the next entity */
+#define MEDIA_ENT_ID_FLAG_NEXT			(1U << 31)
+
+struct media_entity_desc {
+	__u32 id;
+	char name[32];
+	__u32 type;
+	__u32 revision;
+	__u32 flags;
+	__u32 group_id;
+	__u16 pads;
+	__u16 links;
+
+	__u32 reserved[4];
+
+	union {
+		/* Node specifications */
+		struct {
+			__u32 major;
+			__u32 minor;
+		} dev;
+
+		/*
+		 * TODO: this shouldn't have been added without
+		 * actual drivers that use this. When the first real driver
+		 * appears that sets this information, special attention
+		 * should be given whether this information is 1) enough, and
+		 * 2) can deal with udev rules that rename devices. The struct
+		 * dev would not be sufficient for this since that does not
+		 * contain the subdevice information. In addition, struct dev
+		 * can only refer to a single device, and not to multiple (e.g.
+		 * pcm and mixer devices).
+		 */
+		struct {
+			__u32 card;
+			__u32 device;
+			__u32 subdevice;
+		} alsa;
+
+		/*
+		 * DEPRECATED: previous node specifications. Kept just to
+		 * avoid breaking compilation. Use media_entity_desc.dev
+		 * instead.
+		 */
+		struct {
+			__u32 major;
+			__u32 minor;
+		} v4l;
+		struct {
+			__u32 major;
+			__u32 minor;
+		} fb;
+		int dvb;
+
+		/* Sub-device specifications */
+		/* Nothing needed yet */
+		__u8 raw[184];
+	};
+};
+
+#define MEDIA_PAD_FL_SINK			(1 << 0)
+#define MEDIA_PAD_FL_SOURCE			(1 << 1)
+#define MEDIA_PAD_FL_MUST_CONNECT		(1 << 2)
+
+struct media_pad_desc {
+	__u32 entity;		/* entity ID */
+	__u16 index;		/* pad index */
+	__u32 flags;		/* pad flags */
+	__u32 reserved[2];
+};
+
+#define MEDIA_LNK_FL_ENABLED			(1 << 0)
+#define MEDIA_LNK_FL_IMMUTABLE			(1 << 1)
+#define MEDIA_LNK_FL_DYNAMIC			(1 << 2)
+
+#define MEDIA_LNK_FL_LINK_TYPE			(0xf << 28)
+#  define MEDIA_LNK_FL_DATA_LINK		(0 << 28)
+#  define MEDIA_LNK_FL_INTERFACE_LINK		(1 << 28)
+
+struct media_link_desc {
+	struct media_pad_desc source;
+	struct media_pad_desc sink;
+	__u32 flags;
+	__u32 reserved[2];
+};
+
+struct media_links_enum {
+	__u32 entity;
+	/* Should have enough room for pads elements */
+	struct media_pad_desc *pads;
+	/* Should have enough room for links elements */
+	struct media_link_desc *links;
+	__u32 reserved[4];
+};
+
+/* Interface type ranges */
+
+#define MEDIA_INTF_T_DVB_BASE			0x00000100
+#define MEDIA_INTF_T_V4L_BASE			0x00000200
+
+/* Interface types */
+
+#define MEDIA_INTF_T_DVB_FE			(MEDIA_INTF_T_DVB_BASE)
+#define MEDIA_INTF_T_DVB_DEMUX			(MEDIA_INTF_T_DVB_BASE + 1)
+#define MEDIA_INTF_T_DVB_DVR			(MEDIA_INTF_T_DVB_BASE + 2)
+#define MEDIA_INTF_T_DVB_CA			(MEDIA_INTF_T_DVB_BASE + 3)
+#define MEDIA_INTF_T_DVB_NET			(MEDIA_INTF_T_DVB_BASE + 4)
+
+#define MEDIA_INTF_T_V4L_VIDEO			(MEDIA_INTF_T_V4L_BASE)
+#define MEDIA_INTF_T_V4L_VBI			(MEDIA_INTF_T_V4L_BASE + 1)
+#define MEDIA_INTF_T_V4L_RADIO			(MEDIA_INTF_T_V4L_BASE + 2)
+#define MEDIA_INTF_T_V4L_SUBDEV			(MEDIA_INTF_T_V4L_BASE + 3)
+#define MEDIA_INTF_T_V4L_SWRADIO		(MEDIA_INTF_T_V4L_BASE + 4)
+#define MEDIA_INTF_T_V4L_TOUCH			(MEDIA_INTF_T_V4L_BASE + 5)
+
+#define MEDIA_INTF_T_ALSA_BASE			0x00000300
+#define MEDIA_INTF_T_ALSA_PCM_CAPTURE		(MEDIA_INTF_T_ALSA_BASE)
+#define MEDIA_INTF_T_ALSA_PCM_PLAYBACK		(MEDIA_INTF_T_ALSA_BASE + 1)
+#define MEDIA_INTF_T_ALSA_CONTROL		(MEDIA_INTF_T_ALSA_BASE + 2)
+
+
+/*
+ * MC next gen API definitions
+ */
+
+/*
+ * Appeared in 4.19.0.
+ *
+ * The media_version argument comes from the media_version field in
+ * struct media_device_info.
+ */
+#define MEDIA_V2_ENTITY_HAS_FLAGS(media_version) \
+	((media_version) >= ((4 << 16) | (19 << 8) | 0))
+
+struct media_v2_entity {
+	__u32 id;
+	char name[64];
+	__u32 function;		/* Main function of the entity */
+	__u32 flags;
+	__u32 reserved[5];
+} __attribute__ ((packed));
+
+/* Should match the specific fields at media_intf_devnode */
+struct media_v2_intf_devnode {
+	__u32 major;
+	__u32 minor;
+} __attribute__ ((packed));
+
+struct media_v2_interface {
+	__u32 id;
+	__u32 intf_type;
+	__u32 flags;
+	__u32 reserved[9];
+
+	union {
+		struct media_v2_intf_devnode devnode;
+		__u32 raw[16];
+	};
+} __attribute__ ((packed));
+
+/*
+ * Appeared in 4.19.0.
+ *
+ * The media_version argument comes from the media_version field in
+ * struct media_device_info.
+ */
+#define MEDIA_V2_PAD_HAS_INDEX(media_version) \
+	((media_version) >= ((4 << 16) | (19 << 8) | 0))
+
+struct media_v2_pad {
+	__u32 id;
+	__u32 entity_id;
+	__u32 flags;
+	__u32 index;
+	__u32 reserved[4];
+} __attribute__ ((packed));
+
+struct media_v2_link {
+	__u32 id;
+	__u32 source_id;
+	__u32 sink_id;
+	__u32 flags;
+	__u32 reserved[6];
+} __attribute__ ((packed));
+
+struct media_v2_topology {
+	__u64 topology_version;
+
+	__u32 num_entities;
+	__u32 reserved1;
+	__u64 ptr_entities;
+
+	__u32 num_interfaces;
+	__u32 reserved2;
+	__u64 ptr_interfaces;
+
+	__u32 num_pads;
+	__u32 reserved3;
+	__u64 ptr_pads;
+
+	__u32 num_links;
+	__u32 reserved4;
+	__u64 ptr_links;
+} __attribute__ ((packed));
+
+/* ioctls */
+
+#define MEDIA_IOC_DEVICE_INFO	_IOWR('|', 0x00, struct media_device_info)
+#define MEDIA_IOC_ENUM_ENTITIES	_IOWR('|', 0x01, struct media_entity_desc)
+#define MEDIA_IOC_ENUM_LINKS	_IOWR('|', 0x02, struct media_links_enum)
+#define MEDIA_IOC_SETUP_LINK	_IOWR('|', 0x03, struct media_link_desc)
+#define MEDIA_IOC_G_TOPOLOGY	_IOWR('|', 0x04, struct media_v2_topology)
+#define MEDIA_IOC_REQUEST_ALLOC	_IOR ('|', 0x05, int)
+
+/*
+ * These ioctls are called on the request file descriptor as returned
+ * by MEDIA_IOC_REQUEST_ALLOC.
+ */
+#define MEDIA_REQUEST_IOC_QUEUE		_IO('|',  0x80)
+#define MEDIA_REQUEST_IOC_REINIT	_IO('|',  0x81)
+
+
+/*
+ * Legacy symbols used to avoid userspace compilation breakages.
+ * Do not use any of this in new applications!
+ *
+ * Those symbols map the entity function into types and should be
+ * used only on legacy programs for legacy hardware. Don't rely
+ * on those for MEDIA_IOC_G_TOPOLOGY.
+ */
+#define MEDIA_ENT_TYPE_SHIFT			16
+#define MEDIA_ENT_TYPE_MASK			0x00ff0000
+#define MEDIA_ENT_SUBTYPE_MASK			0x0000ffff
+
+#define MEDIA_ENT_T_DEVNODE_UNKNOWN		(MEDIA_ENT_F_OLD_BASE | \
+						 MEDIA_ENT_SUBTYPE_MASK)
+
+#define MEDIA_ENT_T_DEVNODE			MEDIA_ENT_F_OLD_BASE
+#define MEDIA_ENT_T_DEVNODE_V4L			MEDIA_ENT_F_IO_V4L
+#define MEDIA_ENT_T_DEVNODE_FB			(MEDIA_ENT_F_OLD_BASE + 2)
+#define MEDIA_ENT_T_DEVNODE_ALSA		(MEDIA_ENT_F_OLD_BASE + 3)
+#define MEDIA_ENT_T_DEVNODE_DVB			(MEDIA_ENT_F_OLD_BASE + 4)
+
+#define MEDIA_ENT_T_UNKNOWN			MEDIA_ENT_F_UNKNOWN
+#define MEDIA_ENT_T_V4L2_VIDEO			MEDIA_ENT_F_IO_V4L
+#define MEDIA_ENT_T_V4L2_SUBDEV			MEDIA_ENT_F_V4L2_SUBDEV_UNKNOWN
+#define MEDIA_ENT_T_V4L2_SUBDEV_SENSOR		MEDIA_ENT_F_CAM_SENSOR
+#define MEDIA_ENT_T_V4L2_SUBDEV_FLASH		MEDIA_ENT_F_FLASH
+#define MEDIA_ENT_T_V4L2_SUBDEV_LENS		MEDIA_ENT_F_LENS
+#define MEDIA_ENT_T_V4L2_SUBDEV_DECODER		MEDIA_ENT_F_ATV_DECODER
+#define MEDIA_ENT_T_V4L2_SUBDEV_TUNER		MEDIA_ENT_F_TUNER
+
+#define MEDIA_ENT_F_DTV_DECODER			MEDIA_ENT_F_DV_DECODER
+
+/*
+ * There is still no full ALSA support in the media controller. These
+ * defines should not have been added and we leave them here only
+ * in case some application tries to use these defines.
+ *
+ * The ALSA defines that are in use have been moved into __KERNEL__
+ * scope. As support gets added to these interface types, they should
+ * be moved into __KERNEL__ scope with the code that uses them.
+ */
+#define MEDIA_INTF_T_ALSA_COMPRESS             (MEDIA_INTF_T_ALSA_BASE + 3)
+#define MEDIA_INTF_T_ALSA_RAWMIDI              (MEDIA_INTF_T_ALSA_BASE + 4)
+#define MEDIA_INTF_T_ALSA_HWDEP                (MEDIA_INTF_T_ALSA_BASE + 5)
+#define MEDIA_INTF_T_ALSA_SEQUENCER            (MEDIA_INTF_T_ALSA_BASE + 6)
+#define MEDIA_INTF_T_ALSA_TIMER                (MEDIA_INTF_T_ALSA_BASE + 7)
+
+/* Obsolete symbol for media_version, no longer used in the kernel */
+#define MEDIA_API_VERSION			((0 << 16) | (1 << 8) | 0)
+
+
+#endif /* __LINUX_MEDIA_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               /* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
+/*
+ * Copyright(c) 2003-2015 Intel Corporation. All rights reserved.
+ * Intel Management Engine Interface (Intel MEI) Linux driver
+ * Intel MEI Interface Header
+ */
+#ifndef _LINUX_MEI_H
+#define _LINUX_MEI_H
+
+#include <linux/uuid.h>
+
+/*
+ * This IOCTL is used to associate the current file descriptor with a
+ * FW Client (given by UUID). This opens a communication channel
+ * between a host client and a FW client. From this point every read and write
+ * will communicate with the associated FW client.
+ * Only in close() (file_operation release()) the communication between
+ * the clients is disconnected
+ *
+ * The IOCTL argument is a struct with a union that contains
+ * the input parameter and the output parameter for this IOCTL.
+ *
+ * The input parameter is UUID of the FW Client.
+ * The output parameter is the properties of the FW client
+ * (FW protocol version and max message size).
+ *
+ */
+#define IOCTL_MEI_CONNECT_CLIENT \
+	_IOWR('H' , 0x01, struct mei_connect_client_data)
+
+/*
+ * Intel MEI client information struct
+ */
+struct mei_client {
+	__u32 max_msg_length;
+	__u8 protocol_version;
+	__u8 reserved[3];
+};
+
+/*
+ * IOCTL Connect Client Data structure
+ */
+struct mei_connect_client_data {
+	union {
+		uuid_le in_client_uuid;
+		struct mei_client out_client_properties;
+	};
+};
+
+/**
+ * DOC: set and unset event notification for a connected client
+ *
+ * The IOCTL argument is 1 for enabling event notification and 0 for
+ * disabling the service
+ * Return:  -EOPNOTSUPP if the devices doesn't support the feature
+ */
+#define IOCTL_MEI_NOTIFY_SET _IOW('H', 0x02, __u32)
+
+/**
+ * DOC: retrieve notification
+ *
+ * The IOCTL output argument is 1 if an event was is pending and 0 otherwise
+ * the ioctl has to be called in order to acknowledge pending event
+ *
+ * Return:  -EOPNOTSUPP if the devices doesn't support the feature
+ */
+#define IOCTL_MEI_NOTIFY_GET _IOR('H', 0x03, __u32)
+
+#endif /* _LINUX_MEI_H  */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       #ifndef _LINUX_MEMBARRIER_H
+#define _LINUX_MEMBARRIER_H
+
+/*
+ * linux/membarrier.h
+ *
+ * membarrier system call API
+ *
+ * Copyright (c) 2010, 2015 Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/**
+ * enum membarrier_cmd - membarrier system call command
+ * @MEMBARRIER_CMD_QUERY:   Query the set of supported commands. It returns
+ *                          a bitmask of valid commands.
+ * @MEMBARRIER_CMD_GLOBAL:  Execute a memory barrier on all running threads.
+ *                          Upon return from system call, the caller thread
+ *                          is ensured that all running threads have passed
+ *                          through a state where all memory accesses to
+ *                          user-space addresses match program order between
+ *                          entry to and return from the system call
+ *                          (non-running threads are de facto in such a
+ *                          state). This covers threads from all processes
+ *                          running on the system. This command returns 0.
+ * @MEMBARRIER_CMD_GLOBAL_EXPEDITED:
+ *                          Execute a memory barrier on all running threads
+ *                          of all processes which previously registered
+ *                          with MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED.
+ *                          Upon return from system call, the caller thread
+ *                          is ensured that all running threads have passed
+ *                          through a state where all memory accesses to
+ *                          user-space addresses match program order between
+ *                          entry to and return from the system call
+ *                          (non-running threads are de facto in such a
+ *                          state). This only covers threads from processes
+ *                          which registered with
+ *                          MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED.
+ *                          This command returns 0. Given that
+ *                          registration is about the intent to receive
+ *                          the barriers, it is valid to invoke
+ *                          MEMBARRIER_CMD_GLOBAL_EXPEDITED from a
+ *                          non-registered process.
+ * @MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED:
+ *                          Register the process intent to receive
+ *                          MEMBARRIER_CMD_GLOBAL_EXPEDITED memory
+ *                          barriers. Always returns 0.
+ * @MEMBARRIER_CMD_PRIVATE_EXPEDITED:
+ *                          Execute a memory barrier on each running
+ *                          thread belonging to the same process as the current
+ *                          thread. Upon return from system call, the
+ *                          caller thread is ensured that all its running
+ *                          threads siblings have passed through a state
+ *                          where all memory accesses to user-space
+ *                          addresses match program order between entry
+ *                          to and return from the system call
+ *                          (non-running threads are de facto in such a
+ *                          state). This only covers threads from the
+ *                          same process as the caller thread. This
+ *                          command returns 0 on success. The
+ *                          "expedited" commands complete faster than
+ *                          the non-expedited ones, they never block,
+ *                          but have the downside of causing extra
+ *                          overhead. A process needs to register its
+ *                          intent to use the private expedited command
+ *                          prior to using it, otherwise this command
+ *                          returns -EPERM.
+ * @MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED:
+ *                          Register the process intent to use
+ *                          MEMBARRIER_CMD_PRIVATE_EXPEDITED. Always
+ *                          returns 0.
+ * @MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE:
+ *                          In addition to provide memory ordering
+ *                          guarantees described in
+ *                          MEMBARRIER_CMD_PRIVATE_EXPEDITED, ensure
+ *                          the caller thread, upon return from system
+ *                          call, that all its running threads siblings
+ *                          have executed a core serializing
+ *                          instruction. (architectures are required to
+ *                          guarantee that non-running threads issue
+ *                          core serializing instructions before they
+ *                          resume user-space execution). This only
+ *                          covers threads from the same process as the
+ *                          caller thread. This command returns 0 on
+ *                          success. The "expedited" commands complete
+ *                          faster than the non-expedited ones, they
+ *                          never block, but have the downside of
+ *                          causing extra overhead. If this command is
+ *                          not implemented by an architecture, -EINVAL
+ *                          is returned. A process needs to register its
+ *                          intent to use the private expedited sync
+ *                          core command prior to using it, otherwise
+ *                          this command returns -EPERM.
+ * @MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_SYNC_CORE:
+ *                          Register the process intent to use
+ *                          MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE.
+ *                          If this command is not implemented by an
+ *                          architecture, -EINVAL is returned.
+ *                          Returns 0 on success.
+ * @MEMBARRIER_CMD_SHARED:
+ *                          Alias to MEMBARRIER_CMD_GLOBAL. Provided for
+ *                          header backward compatibility.
+ *
+ * Command to be passed to the membarrier system call. The commands need to
+ * be a single bit each, except for MEMBARRIER_CMD_QUERY which is assigned to
+ * the value 0.
+ */
+enum membarrier_cmd {
+	MEMBARRIER_CMD_QUERY					= 0,
+	MEMBARRIER_CMD_GLOBAL					= (1 << 0),
+	MEMBARRIER_CMD_GLOBAL_EXPEDITED				= (1 << 1),
+	MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED		= (1 << 2),
+	MEMBARRIER_CMD_PRIVATE_EXPEDITED			= (1 << 3),
+	MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED		= (1 << 4),
+	MEMBARRIER_CMD_PRIVATE_EXPEDITED_SYNC_CORE		= (1 << 5),
+	MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_SYNC_CORE	= (1 << 6),
+
+	/* Alias for header backward compatibility. */
+	MEMBARRIER_CMD_SHARED			= MEMBARRIER_CMD_GLOBAL,
+};
+
+#endif /* _LINUX_MEMBARRIER_H */
+                                                                                                                                                                                                                                                                                                     /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+#ifndef _LINUX_MEMFD_H
+#define _LINUX_MEMFD_H
+
+#include <asm-generic/hugetlb_encode.h>
+
+/* flags for memfd_create(2) (unsigned int) */
+#define MFD_CLOEXEC		0x0001U
+#define MFD_ALLOW_SEALING	0x0002U
+#define MFD_HUGETLB		0x0004U
+
+/*
+ * Huge page size encoding when MFD_HUGETLB is specified, and a huge page
+ * size other than the default is desired.  See hugetlb_encode.h.
+ * All known huge page size encodings are provided here.  It is the
+ * responsibility of the application to know which sizes are supported on
+ * the running system.  See mmap(2) man page for details.
+ */
+#define MFD_HUGE_SHIFT	HUGETLB_FLAG_ENCODE_SHIFT
+#define MFD_HUGE_MASK	HUGETLB_FLAG_ENCODE_MASK
+
+#define MFD_HUGE_64KB	HUGETLB_FLAG_ENCODE_64KB
+#define MFD_HUGE_512KB	HUGETLB_FLAG_ENCODE_512KB
+#define MFD_HUGE_1MB	HUGETLB_FLAG_ENCODE_1MB
+#define MFD_HUGE_2MB	HUGETLB_FLAG_ENCODE_2MB
+#define MFD_HUGE_8MB	HUGETLB_FLAG_ENCODE_8MB
+#define MFD_HUGE_16MB	HUGETLB_FLAG_ENCODE_16MB
+#define MFD_HUGE_32MB	HUGETLB_FLAG_ENCODE_32MB
+#define MFD_HUGE_256MB	HUGETLB_FLAG_ENCODE_256MB
+#define MFD_HUGE_512MB	HUGETLB_FLAG_ENCODE_512MB
+#define MFD_HUGE_1GB	HUGETLB_FLAG_ENCODE_1GB
+#define MFD_HUGE_2GB	HUGETLB_FLAG_ENCODE_2GB
+#define MFD_HUGE_16GB	HUGETLB_FLAG_ENCODE_16GB
+
+#endif /* _LINUX_MEMFD_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+/*
+ * NUMA memory policies for Linux.
+ * Copyright 2003,2004 Andi Kleen SuSE Labs
+ */
+#ifndef _LINUX_MEMPOLICY_H
+#define _LINUX_MEMPOLICY_H
+
+#include <linux/errno.h>
+
+
+/*
+ * Both the MPOL_* mempolicy mode and the MPOL_F_* optional mode flags are
+ * passed by the user to either set_mempolicy() or mbind() in an 'int' actual.
+ * The MPOL_MODE_FLAGS macro determines the legal set of optional mode flags.
+ */
+
+/* Policies */
+enum {
+	MPOL_DEFAULT,
+	MPOL_PREFERRED,
+	MPOL_BIND,
+	MPOL_INTERLEAVE,
+	MPOL_LOCAL,
+	MPOL_MAX,	/* always last member of enum */
+};
+
+/* Flags for set_mempolicy */
+#define MPOL_F_STATIC_NODES	(1 << 15)
+#define MPOL_F_RELATIVE_NODES	(1 << 14)
+
+/*
+ * MPOL_MODE_FLAGS is the union of all possible optional mode flags passed to
+ * either set_mempolicy() or mbind().
+ */
+#define MPOL_MODE_FLAGS	(MPOL_F_STATIC_NODES | MPOL_F_RELATIVE_NODES)
+
+/* Flags for get_mempolicy */
+#define MPOL_F_NODE	(1<<0)	/* return next IL mode instead of node mask */
+#define MPOL_F_ADDR	(1<<1)	/* look up vma using address */
+#define MPOL_F_MEMS_ALLOWED (1<<2) /* return allowed memories */
+
+/* Flags for mbind */
+#define MPOL_MF_STRICT	(1<<0)	/* Verify existing pages in the mapping */
+#define MPOL_MF_MOVE	 (1<<1)	/* Move pages owned by this process to conform
+				   to policy */
+#define MPOL_MF_MOVE_ALL (1<<2)	/* Move every page to conform to policy */
+#define MPOL_MF_LAZY	 (1<<3)	/* Modifies '_MOVE:  lazy migrate on fault */
+#define MPOL_MF_INTERNAL (1<<4)	/* Internal flags start here */
+
+#define MPOL_MF_VALID	(MPOL_MF_STRICT   | 	\
+			 MPOL_MF_MOVE     | 	\
+			 MPOL_MF_MOVE_ALL)
+
+/*
+ * Internal flags that share the struct mempolicy flags word with
+ * "mode flags".  These flags are allocated from bit 0 up, as they
+ * are never OR'ed into the mode in mempolicy API arguments.
+ */
+#define MPOL_F_SHARED  (1 << 0)	/* identify shared policies */
+#define MPOL_F_LOCAL   (1 << 1)	/* preferred local allocation */
+#define MPOL_F_MOF	(1 << 3) /* this policy wants migrate on fault */
+#define MPOL_F_MORON	(1 << 4) /* Migrate On protnone Reference On Node */
+
+
+#endif /* _LINUX_MEMPOLICY_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      

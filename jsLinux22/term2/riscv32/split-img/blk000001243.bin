@@ -1,0 +1,430 @@
+ling)
+     __THROW __nonnull ((1, 2));
+
+/* Set the priority ceiling of MUTEX to PRIOCEILING, return old
+   priority ceiling value in *OLD_CEILING.  */
+extern int pthread_mutex_setprioceiling (pthread_mutex_t *__restrict __mutex,
+					 int __prioceiling,
+					 int *__restrict __old_ceiling)
+     __THROW __nonnull ((1, 3));
+
+
+#ifdef __USE_XOPEN2K8
+/* Declare the state protected by MUTEX as consistent.  */
+extern int pthread_mutex_consistent (pthread_mutex_t *__mutex)
+     __THROW __nonnull ((1));
+# ifdef __USE_GNU
+extern int pthread_mutex_consistent_np (pthread_mutex_t *__mutex)
+     __THROW __nonnull ((1));
+# endif
+#endif
+
+
+/* Functions for handling mutex attributes.  */
+
+/* Initialize mutex attribute object ATTR with default attributes
+   (kind is PTHREAD_MUTEX_TIMED_NP).  */
+extern int pthread_mutexattr_init (pthread_mutexattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Destroy mutex attribute object ATTR.  */
+extern int pthread_mutexattr_destroy (pthread_mutexattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Get the process-shared flag of the mutex attribute ATTR.  */
+extern int pthread_mutexattr_getpshared (const pthread_mutexattr_t *
+					 __restrict __attr,
+					 int *__restrict __pshared)
+     __THROW __nonnull ((1, 2));
+
+/* Set the process-shared flag of the mutex attribute ATTR.  */
+extern int pthread_mutexattr_setpshared (pthread_mutexattr_t *__attr,
+					 int __pshared)
+     __THROW __nonnull ((1));
+
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K8
+/* Return in *KIND the mutex kind attribute in *ATTR.  */
+extern int pthread_mutexattr_gettype (const pthread_mutexattr_t *__restrict
+				      __attr, int *__restrict __kind)
+     __THROW __nonnull ((1, 2));
+
+/* Set the mutex kind attribute in *ATTR to KIND (either PTHREAD_MUTEX_NORMAL,
+   PTHREAD_MUTEX_RECURSIVE, PTHREAD_MUTEX_ERRORCHECK, or
+   PTHREAD_MUTEX_DEFAULT).  */
+extern int pthread_mutexattr_settype (pthread_mutexattr_t *__attr, int __kind)
+     __THROW __nonnull ((1));
+#endif
+
+/* Return in *PROTOCOL the mutex protocol attribute in *ATTR.  */
+extern int pthread_mutexattr_getprotocol (const pthread_mutexattr_t *
+					  __restrict __attr,
+					  int *__restrict __protocol)
+     __THROW __nonnull ((1, 2));
+
+/* Set the mutex protocol attribute in *ATTR to PROTOCOL (either
+   PTHREAD_PRIO_NONE, PTHREAD_PRIO_INHERIT, or PTHREAD_PRIO_PROTECT).  */
+extern int pthread_mutexattr_setprotocol (pthread_mutexattr_t *__attr,
+					  int __protocol)
+     __THROW __nonnull ((1));
+
+/* Return in *PRIOCEILING the mutex prioceiling attribute in *ATTR.  */
+extern int pthread_mutexattr_getprioceiling (const pthread_mutexattr_t *
+					     __restrict __attr,
+					     int *__restrict __prioceiling)
+     __THROW __nonnull ((1, 2));
+
+/* Set the mutex prioceiling attribute in *ATTR to PRIOCEILING.  */
+extern int pthread_mutexattr_setprioceiling (pthread_mutexattr_t *__attr,
+					     int __prioceiling)
+     __THROW __nonnull ((1));
+
+#ifdef __USE_XOPEN2K
+/* Get the robustness flag of the mutex attribute ATTR.  */
+extern int pthread_mutexattr_getrobust (const pthread_mutexattr_t *__attr,
+					int *__robustness)
+     __THROW __nonnull ((1, 2));
+# ifdef __USE_GNU
+extern int pthread_mutexattr_getrobust_np (const pthread_mutexattr_t *__attr,
+					   int *__robustness)
+     __THROW __nonnull ((1, 2));
+# endif
+
+/* Set the robustness flag of the mutex attribute ATTR.  */
+extern int pthread_mutexattr_setrobust (pthread_mutexattr_t *__attr,
+					int __robustness)
+     __THROW __nonnull ((1));
+# ifdef __USE_GNU
+extern int pthread_mutexattr_setrobust_np (pthread_mutexattr_t *__attr,
+					   int __robustness)
+     __THROW __nonnull ((1));
+# endif
+#endif
+
+
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K
+/* Functions for handling read-write locks.  */
+
+/* Initialize read-write lock RWLOCK using attributes ATTR, or use
+   the default values if later is NULL.  */
+extern int pthread_rwlock_init (pthread_rwlock_t *__restrict __rwlock,
+				const pthread_rwlockattr_t *__restrict
+				__attr) __THROW __nonnull ((1));
+
+/* Destroy read-write lock RWLOCK.  */
+extern int pthread_rwlock_destroy (pthread_rwlock_t *__rwlock)
+     __THROW __nonnull ((1));
+
+/* Acquire read lock for RWLOCK.  */
+extern int pthread_rwlock_rdlock (pthread_rwlock_t *__rwlock)
+     __THROWNL __nonnull ((1));
+
+/* Try to acquire read lock for RWLOCK.  */
+extern int pthread_rwlock_tryrdlock (pthread_rwlock_t *__rwlock)
+  __THROWNL __nonnull ((1));
+
+# ifdef __USE_XOPEN2K
+/* Try to acquire read lock for RWLOCK or return after specfied time.  */
+extern int pthread_rwlock_timedrdlock (pthread_rwlock_t *__restrict __rwlock,
+				       const struct timespec *__restrict
+				       __abstime) __THROWNL __nonnull ((1, 2));
+# endif
+
+# ifdef __USE_GNU
+extern int pthread_rwlock_clockrdlock (pthread_rwlock_t *__restrict __rwlock,
+				       clockid_t __clockid,
+				       const struct timespec *__restrict
+				       __abstime) __THROWNL __nonnull ((1, 3));
+# endif
+
+/* Acquire write lock for RWLOCK.  */
+extern int pthread_rwlock_wrlock (pthread_rwlock_t *__rwlock)
+     __THROWNL __nonnull ((1));
+
+/* Try to acquire write lock for RWLOCK.  */
+extern int pthread_rwlock_trywrlock (pthread_rwlock_t *__rwlock)
+     __THROWNL __nonnull ((1));
+
+# ifdef __USE_XOPEN2K
+/* Try to acquire write lock for RWLOCK or return after specfied time.  */
+extern int pthread_rwlock_timedwrlock (pthread_rwlock_t *__restrict __rwlock,
+				       const struct timespec *__restrict
+				       __abstime) __THROWNL __nonnull ((1, 2));
+# endif
+
+# ifdef __USE_GNU
+extern int pthread_rwlock_clockwrlock (pthread_rwlock_t *__restrict __rwlock,
+				       clockid_t __clockid,
+				       const struct timespec *__restrict
+				       __abstime) __THROWNL __nonnull ((1, 3));
+# endif
+
+/* Unlock RWLOCK.  */
+extern int pthread_rwlock_unlock (pthread_rwlock_t *__rwlock)
+     __THROWNL __nonnull ((1));
+
+
+/* Functions for handling read-write lock attributes.  */
+
+/* Initialize attribute object ATTR with default values.  */
+extern int pthread_rwlockattr_init (pthread_rwlockattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Destroy attribute object ATTR.  */
+extern int pthread_rwlockattr_destroy (pthread_rwlockattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Return current setting of process-shared attribute of ATTR in PSHARED.  */
+extern int pthread_rwlockattr_getpshared (const pthread_rwlockattr_t *
+					  __restrict __attr,
+					  int *__restrict __pshared)
+     __THROW __nonnull ((1, 2));
+
+/* Set process-shared attribute of ATTR to PSHARED.  */
+extern int pthread_rwlockattr_setpshared (pthread_rwlockattr_t *__attr,
+					  int __pshared)
+     __THROW __nonnull ((1));
+
+/* Return current setting of reader/writer preference.  */
+extern int pthread_rwlockattr_getkind_np (const pthread_rwlockattr_t *
+					  __restrict __attr,
+					  int *__restrict __pref)
+     __THROW __nonnull ((1, 2));
+
+/* Set reader/write preference.  */
+extern int pthread_rwlockattr_setkind_np (pthread_rwlockattr_t *__attr,
+					  int __pref) __THROW __nonnull ((1));
+#endif
+
+
+/* Functions for handling conditional variables.  */
+
+/* Initialize condition variable COND using attributes ATTR, or use
+   the default values if later is NULL.  */
+extern int pthread_cond_init (pthread_cond_t *__restrict __cond,
+			      const pthread_condattr_t *__restrict __cond_attr)
+     __THROW __nonnull ((1));
+
+/* Destroy condition variable COND.  */
+extern int pthread_cond_destroy (pthread_cond_t *__cond)
+     __THROW __nonnull ((1));
+
+/* Wake up one thread waiting for condition variable COND.  */
+extern int pthread_cond_signal (pthread_cond_t *__cond)
+     __THROWNL __nonnull ((1));
+
+/* Wake up all threads waiting for condition variables COND.  */
+extern int pthread_cond_broadcast (pthread_cond_t *__cond)
+     __THROWNL __nonnull ((1));
+
+/* Wait for condition variable COND to be signaled or broadcast.
+   MUTEX is assumed to be locked before.
+
+   This function is a cancellation point and therefore not marked with
+   __THROW.  */
+extern int pthread_cond_wait (pthread_cond_t *__restrict __cond,
+			      pthread_mutex_t *__restrict __mutex)
+     __nonnull ((1, 2));
+
+/* Wait for condition variable COND to be signaled or broadcast until
+   ABSTIME.  MUTEX is assumed to be locked before.  ABSTIME is an
+   absolute time specification; zero is the beginning of the epoch
+   (00:00:00 GMT, January 1, 1970).
+
+   This function is a cancellation point and therefore not marked with
+   __THROW.  */
+extern int pthread_cond_timedwait (pthread_cond_t *__restrict __cond,
+				   pthread_mutex_t *__restrict __mutex,
+				   const struct timespec *__restrict __abstime)
+     __nonnull ((1, 2, 3));
+
+# ifdef __USE_GNU
+/* Wait for condition variable COND to be signaled or broadcast until
+   ABSTIME measured by the specified clock. MUTEX is assumed to be
+   locked before. CLOCK is the clock to use. ABSTIME is an absolute
+   time specification against CLOCK's epoch.
+
+   This function is a cancellation point and therefore not marked with
+   __THROW. */
+extern int pthread_cond_clockwait (pthread_cond_t *__restrict __cond,
+				   pthread_mutex_t *__restrict __mutex,
+				   __clockid_t __clock_id,
+				   const struct timespec *__restrict __abstime)
+     __nonnull ((1, 2, 4));
+# endif
+
+/* Functions for handling condition variable attributes.  */
+
+/* Initialize condition variable attribute ATTR.  */
+extern int pthread_condattr_init (pthread_condattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Destroy condition variable attribute ATTR.  */
+extern int pthread_condattr_destroy (pthread_condattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Get the process-shared flag of the condition variable attribute ATTR.  */
+extern int pthread_condattr_getpshared (const pthread_condattr_t *
+					__restrict __attr,
+					int *__restrict __pshared)
+     __THROW __nonnull ((1, 2));
+
+/* Set the process-shared flag of the condition variable attribute ATTR.  */
+extern int pthread_condattr_setpshared (pthread_condattr_t *__attr,
+					int __pshared) __THROW __nonnull ((1));
+
+#ifdef __USE_XOPEN2K
+/* Get the clock selected for the condition variable attribute ATTR.  */
+extern int pthread_condattr_getclock (const pthread_condattr_t *
+				      __restrict __attr,
+				      __clockid_t *__restrict __clock_id)
+     __THROW __nonnull ((1, 2));
+
+/* Set the clock selected for the condition variable attribute ATTR.  */
+extern int pthread_condattr_setclock (pthread_condattr_t *__attr,
+				      __clockid_t __clock_id)
+     __THROW __nonnull ((1));
+#endif
+
+
+#ifdef __USE_XOPEN2K
+/* Functions to handle spinlocks.  */
+
+/* Initialize the spinlock LOCK.  If PSHARED is nonzero the spinlock can
+   be shared between different processes.  */
+extern int pthread_spin_init (pthread_spinlock_t *__lock, int __pshared)
+     __THROW __nonnull ((1));
+
+/* Destroy the spinlock LOCK.  */
+extern int pthread_spin_destroy (pthread_spinlock_t *__lock)
+     __THROW __nonnull ((1));
+
+/* Wait until spinlock LOCK is retrieved.  */
+extern int pthread_spin_lock (pthread_spinlock_t *__lock)
+     __THROWNL __nonnull ((1));
+
+/* Try to lock spinlock LOCK.  */
+extern int pthread_spin_trylock (pthread_spinlock_t *__lock)
+     __THROWNL __nonnull ((1));
+
+/* Release spinlock LOCK.  */
+extern int pthread_spin_unlock (pthread_spinlock_t *__lock)
+     __THROWNL __nonnull ((1));
+
+
+/* Functions to handle barriers.  */
+
+/* Initialize BARRIER with the attributes in ATTR.  The barrier is
+   opened when COUNT waiters arrived.  */
+extern int pthread_barrier_init (pthread_barrier_t *__restrict __barrier,
+				 const pthread_barrierattr_t *__restrict
+				 __attr, unsigned int __count)
+     __THROW __nonnull ((1));
+
+/* Destroy a previously dynamically initialized barrier BARRIER.  */
+extern int pthread_barrier_destroy (pthread_barrier_t *__barrier)
+     __THROW __nonnull ((1));
+
+/* Wait on barrier BARRIER.  */
+extern int pthread_barrier_wait (pthread_barrier_t *__barrier)
+     __THROWNL __nonnull ((1));
+
+
+/* Initialize barrier attribute ATTR.  */
+extern int pthread_barrierattr_init (pthread_barrierattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Destroy previously dynamically initialized barrier attribute ATTR.  */
+extern int pthread_barrierattr_destroy (pthread_barrierattr_t *__attr)
+     __THROW __nonnull ((1));
+
+/* Get the process-shared flag of the barrier attribute ATTR.  */
+extern int pthread_barrierattr_getpshared (const pthread_barrierattr_t *
+					   __restrict __attr,
+					   int *__restrict __pshared)
+     __THROW __nonnull ((1, 2));
+
+/* Set the process-shared flag of the barrier attribute ATTR.  */
+extern int pthread_barrierattr_setpshared (pthread_barrierattr_t *__attr,
+					   int __pshared)
+     __THROW __nonnull ((1));
+#endif
+
+
+/* Functions for handling thread-specific data.  */
+
+/* Create a key value identifying a location in the thread-specific
+   data area.  Each thread maintains a distinct thread-specific data
+   area.  DESTR_FUNCTION, if non-NULL, is called with the value
+   associated to that key when the key is destroyed.
+   DESTR_FUNCTION is not called if the value associated is NULL when
+   the key is destroyed.  */
+extern int pthread_key_create (pthread_key_t *__key,
+			       void (*__destr_function) (void *))
+     __THROW __nonnull ((1));
+
+/* Destroy KEY.  */
+extern int pthread_key_delete (pthread_key_t __key) __THROW;
+
+/* Return current value of the thread-specific data slot identified by KEY.  */
+extern void *pthread_getspecific (pthread_key_t __key) __THROW;
+
+/* Store POINTER in the thread-specific data slot identified by KEY. */
+extern int pthread_setspecific (pthread_key_t __key,
+				const void *__pointer) __THROW ;
+
+
+#ifdef __USE_XOPEN2K
+/* Get ID of CPU-time clock for thread THREAD_ID.  */
+extern int pthread_getcpuclockid (pthread_t __thread_id,
+				  __clockid_t *__clock_id)
+     __THROW __nonnull ((2));
+#endif
+
+
+/* Install handlers to be called when a new process is created with FORK.
+   The PREPARE handler is called in the parent process just before performing
+   FORK. The PARENT handler is called in the parent process just after FORK.
+   The CHILD handler is called in the child process.  Each of the three
+   handlers can be NULL, meaning that no handler needs to be called at that
+   point.
+   PTHREAD_ATFORK can be called several times, in which case the PREPARE
+   handlers are called in LIFO order (last added with PTHREAD_ATFORK,
+   first called before FORK), and the PARENT and CHILD handlers are called
+   in FIFO (first added, first called).  */
+
+extern int pthread_atfork (void (*__prepare) (void),
+			   void (*__parent) (void),
+			   void (*__child) (void)) __THROW;
+
+
+#ifdef __USE_EXTERN_INLINES
+/* Optimizations.  */
+__extern_inline int
+__NTH (pthread_equal (pthread_t __thread1, pthread_t __thread2))
+{
+  return __thread1 == __thread2;
+}
+#endif
+
+__END_DECLS
+
+#endif	/* pthread.h */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             /* syslimits.h stands for the system's own limits.h file.
+   If we can use it ok unmodified, then we install this text.
+   If fixincludes fixes it, then the fixed version is installed
+   instead of this text.  */
+
+#define _GCC_NEXT_LIMITS_H		/* tell gcc's limits.h to recurse */
+#include_next <limits.h>
+#undef _GCC_NEXT_LIMITS_H
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ¤   .   v   ..  ¥   fixinc_list ¦   gsyslimits.h§   include ª   
+macro_list  «  œmkheaders.conf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              /* syslimits.h stands for the system's own limits.h file.
+   If we can use it ok unmodified, then we install this text.
+   If fixincludes fixes it, then the fixed version is installed
+   instead of this text.  */
+
+#define _GCC_NEXT_LIMITS_H		/* tell gcc's limits.h to recurse */
+#include_next <limits.h>
+#undef _GCC_NEXT_LIMITS_H
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      

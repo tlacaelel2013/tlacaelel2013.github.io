@@ -1,0 +1,719 @@
+_O_NOFOLLOW	/* Do not follow links.  */
+# define O_CLOEXEC	__O_CLOEXEC	/* Set close_on_exec.  */
+#endif
+
+#ifdef __USE_GNU
+# define O_DIRECT	__O_DIRECT	/* Direct disk access.  */
+# define O_NOATIME	__O_NOATIME	/* Do not set atime.  */
+# define O_PATH		__O_PATH	/* Resolve pathname but do not open file.  */
+# define O_TMPFILE	__O_TMPFILE	/* Atomically create nameless file.  */
+#endif
+
+/* For now, Linux has no separate synchronicity options for read
+   operations.  We define O_RSYNC therefore as the same as O_SYNC
+   since this is a superset.  */
+#if defined __USE_POSIX199309 || defined __USE_UNIX98
+# define O_DSYNC	__O_DSYNC	/* Synchronize data.  */
+# if defined __O_RSYNC
+#  define O_RSYNC	__O_RSYNC	/* Synchronize read operations.  */
+# else
+#  define O_RSYNC	O_SYNC		/* Synchronize read operations.  */
+# endif
+#endif
+
+/* Values for the second argument to `fcntl'.  */
+#define F_DUPFD		0	/* Duplicate file descriptor.  */
+#define F_GETFD		1	/* Get file descriptor flags.  */
+#define F_SETFD		2	/* Set file descriptor flags.  */
+#define F_GETFL		3	/* Get file status flags.  */
+#define F_SETFL		4	/* Set file status flags.  */
+
+#ifndef __F_SETOWN
+# define __F_SETOWN	8
+# define __F_GETOWN	9
+#endif
+
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K8
+# define F_SETOWN	__F_SETOWN /* Get owner (process receiving SIGIO).  */
+# define F_GETOWN	__F_GETOWN /* Set owner (process receiving SIGIO).  */
+#endif
+
+#ifndef __F_SETSIG
+# define __F_SETSIG	10	/* Set number of signal to be sent.  */
+# define __F_GETSIG	11	/* Get number of signal to be sent.  */
+#endif
+#ifndef __F_SETOWN_EX
+# define __F_SETOWN_EX	15	/* Get owner (thread receiving SIGIO).  */
+# define __F_GETOWN_EX	16	/* Set owner (thread receiving SIGIO).  */
+#endif
+
+#ifdef __USE_GNU
+# define F_SETSIG	__F_SETSIG	/* Set number of signal to be sent.  */
+# define F_GETSIG	__F_GETSIG	/* Get number of signal to be sent.  */
+# define F_SETOWN_EX	__F_SETOWN_EX	/* Get owner (thread receiving SIGIO).  */
+# define F_GETOWN_EX	__F_GETOWN_EX	/* Set owner (thread receiving SIGIO).  */
+#endif
+
+#ifdef __USE_GNU
+# define F_SETLEASE	1024	/* Set a lease.  */
+# define F_GETLEASE	1025	/* Enquire what lease is active.  */
+# define F_NOTIFY	1026	/* Request notifications on a directory.  */
+# define F_SETPIPE_SZ	1031	/* Set pipe page size array.  */
+# define F_GETPIPE_SZ	1032	/* Set pipe page size array.  */
+# define F_ADD_SEALS	1033	/* Add seals to file.  */
+# define F_GET_SEALS	1034	/* Get seals for file.  */
+/* Set / get write life time hints.  */
+# define F_GET_RW_HINT	1035
+# define F_SET_RW_HINT	1036
+# define F_GET_FILE_RW_HINT	1037
+# define F_SET_FILE_RW_HINT	1038
+#endif
+#ifdef __USE_XOPEN2K8
+# define F_DUPFD_CLOEXEC 1030	/* Duplicate file descriptor with
+				   close-on-exit set.  */
+#endif
+
+/* For F_[GET|SET]FD.  */
+#define FD_CLOEXEC	1	/* Actually anything with low bit set goes */
+
+#ifndef F_RDLCK
+/* For posix fcntl() and `l_type' field of a `struct flock' for lockf().  */
+# define F_RDLCK		0	/* Read lock.  */
+# define F_WRLCK		1	/* Write lock.  */
+# define F_UNLCK		2	/* Remove lock.  */
+#endif
+
+
+/* For old implementation of BSD flock.  */
+#ifndef F_EXLCK
+# define F_EXLCK		4	/* or 3 */
+# define F_SHLCK		8	/* or 4 */
+#endif
+
+#ifdef __USE_MISC
+/* Operations for BSD flock, also used by the kernel implementation.  */
+# define LOCK_SH	1	/* Shared lock.  */
+# define LOCK_EX	2	/* Exclusive lock.  */
+# define LOCK_NB	4	/* Or'd with one of the above to prevent
+				   blocking.  */
+# define LOCK_UN	8	/* Remove lock.  */
+#endif
+
+#ifdef __USE_GNU
+# define LOCK_MAND	32	/* This is a mandatory flock:  */
+# define LOCK_READ	64	/* ... which allows concurrent read operations.  */
+# define LOCK_WRITE	128	/* ... which allows concurrent write operations.  */
+# define LOCK_RW	192	/* ... Which allows concurrent read & write operations.  */
+#endif
+
+#ifdef __USE_GNU
+/* Types of directory notifications that may be requested with F_NOTIFY.  */
+# define DN_ACCESS	0x00000001	/* File accessed.  */
+# define DN_MODIFY	0x00000002	/* File modified.  */
+# define DN_CREATE	0x00000004	/* File created.  */
+# define DN_DELETE	0x00000008	/* File removed.  */
+# define DN_RENAME	0x00000010	/* File renamed.  */
+# define DN_ATTRIB	0x00000020	/* File changed attributes.  */
+# define DN_MULTISHOT	0x80000000	/* Don't remove notifier.  */
+#endif
+
+
+#ifdef __USE_GNU
+/* Owner types.  */
+enum __pid_type
+  {
+    F_OWNER_TID = 0,		/* Kernel thread.  */
+    F_OWNER_PID,		/* Process.  */
+    F_OWNER_PGRP,		/* Process group.  */
+    F_OWNER_GID = F_OWNER_PGRP	/* Alternative, obsolete name.  */
+  };
+
+/* Structure to use with F_GETOWN_EX and F_SETOWN_EX.  */
+struct f_owner_ex
+  {
+    enum __pid_type type;	/* Owner type of ID.  */
+    __pid_t pid;		/* ID of owner.  */
+  };
+#endif
+
+#ifdef __USE_GNU
+/* Types of seals.  */
+# define F_SEAL_SEAL	0x0001	/* Prevent further seals from being set.  */
+# define F_SEAL_SHRINK	0x0002	/* Prevent file from shrinking.  */
+# define F_SEAL_GROW	0x0004	/* Prevent file from growing.  */
+# define F_SEAL_WRITE	0x0008	/* Prevent writes.  */
+# define F_SEAL_FUTURE_WRITE	0x0010	/* Prevent future writes while
+					   mapped.  */
+#endif
+
+#ifdef __USE_GNU
+/* Hint values for F_{GET,SET}_RW_HINT.  */
+# define RWH_WRITE_LIFE_NOT_SET	0
+# define RWF_WRITE_LIFE_NOT_SET	RWH_WRITE_LIFE_NOT_SET
+# define RWH_WRITE_LIFE_NONE	1
+# define RWH_WRITE_LIFE_SHORT	2
+# define RWH_WRITE_LIFE_MEDIUM	3
+# define RWH_WRITE_LIFE_LONG	4
+# define RWH_WRITE_LIFE_EXTREME	5
+#endif
+
+/* Define some more compatibility macros to be backward compatible with
+   BSD systems which did not managed to hide these kernel macros.  */
+#ifdef	__USE_MISC
+# define FAPPEND	O_APPEND
+# define FFSYNC		O_FSYNC
+# define FASYNC		O_ASYNC
+# define FNONBLOCK	O_NONBLOCK
+# define FNDELAY	O_NDELAY
+#endif /* Use misc.  */
+
+#ifndef __POSIX_FADV_DONTNEED
+#  define __POSIX_FADV_DONTNEED	4
+#  define __POSIX_FADV_NOREUSE	5
+#endif
+/* Advise to `posix_fadvise'.  */
+#ifdef __USE_XOPEN2K
+# define POSIX_FADV_NORMAL	0 /* No further special treatment.  */
+# define POSIX_FADV_RANDOM	1 /* Expect random page references.  */
+# define POSIX_FADV_SEQUENTIAL	2 /* Expect sequential page references.  */
+# define POSIX_FADV_WILLNEED	3 /* Will need these pages.  */
+# define POSIX_FADV_DONTNEED	__POSIX_FADV_DONTNEED /* Don't need these pages.  */
+# define POSIX_FADV_NOREUSE	__POSIX_FADV_NOREUSE /* Data will be accessed once.  */
+#endif
+
+
+#ifdef __USE_GNU
+/* Flags for SYNC_FILE_RANGE.  */
+# define SYNC_FILE_RANGE_WAIT_BEFORE	1 /* Wait upon writeout of all pages
+					     in the range before performing the
+					     write.  */
+# define SYNC_FILE_RANGE_WRITE		2 /* Initiate writeout of all those
+					     dirty pages in the range which are
+					     not presently under writeback.  */
+# define SYNC_FILE_RANGE_WAIT_AFTER	4 /* Wait upon writeout of all pages in
+					     the range after performing the
+					     write.  */
+/* SYNC_FILE_RANGE_WRITE_AND_WAIT ensures all pages in the range are
+   written to disk before returning.  */
+# define SYNC_FILE_RANGE_WRITE_AND_WAIT	(SYNC_FILE_RANGE_WRITE		\
+					 | SYNC_FILE_RANGE_WAIT_BEFORE	\
+					 | SYNC_FILE_RANGE_WAIT_AFTER)
+
+/* Flags for SPLICE and VMSPLICE.  */
+# define SPLICE_F_MOVE		1	/* Move pages instead of copying.  */
+# define SPLICE_F_NONBLOCK	2	/* Don't block on the pipe splicing
+					   (but we may still block on the fd
+					   we splice from/to).  */
+# define SPLICE_F_MORE		4	/* Expect more data.  */
+# define SPLICE_F_GIFT		8	/* Pages passed in are a gift.  */
+
+
+/* Flags for fallocate.  */
+# include <linux/falloc.h>
+
+
+/* File handle structure.  */
+struct file_handle
+{
+  unsigned int handle_bytes;
+  int handle_type;
+  /* File identifier.  */
+  unsigned char f_handle[0];
+};
+
+/* Maximum handle size (for now).  */
+# define MAX_HANDLE_SZ	128
+#endif
+
+__BEGIN_DECLS
+
+#ifdef __USE_GNU
+
+/* Provide kernel hint to read ahead.  */
+extern __ssize_t readahead (int __fd, __off64_t __offset, size_t __count)
+    __THROW;
+
+
+/* Selective file content synch'ing.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern int sync_file_range (int __fd, __off64_t __offset, __off64_t __count,
+			    unsigned int __flags);
+
+
+/* Splice address range into a pipe.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern __ssize_t vmsplice (int __fdout, const struct iovec *__iov,
+			   size_t __count, unsigned int __flags);
+
+/* Splice two files together.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern __ssize_t splice (int __fdin, __off64_t *__offin, int __fdout,
+			 __off64_t *__offout, size_t __len,
+			 unsigned int __flags);
+
+/* In-kernel implementation of tee for pipe buffers.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern __ssize_t tee (int __fdin, int __fdout, size_t __len,
+		      unsigned int __flags);
+
+/* Reserve storage for the data of the file associated with FD.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+# ifndef __USE_FILE_OFFSET64
+extern int fallocate (int __fd, int __mode, __off_t __offset, __off_t __len);
+# else
+#  ifdef __REDIRECT
+extern int __REDIRECT (fallocate, (int __fd, int __mode, __off64_t __offset,
+				   __off64_t __len),
+		       fallocate64);
+#  else
+#   define fallocate fallocate64
+#  endif
+# endif
+# ifdef __USE_LARGEFILE64
+extern int fallocate64 (int __fd, int __mode, __off64_t __offset,
+			__off64_t __len);
+# endif
+
+
+/* Map file name to file handle.  */
+extern int name_to_handle_at (int __dfd, const char *__name,
+			      struct file_handle *__handle, int *__mnt_id,
+			      int __flags) __THROW;
+
+/* Open file using the file handle.
+
+   This function is a possible cancellation point and therefore not
+   marked with __THROW.  */
+extern int open_by_handle_at (int __mountdirfd, struct file_handle *__handle,
+			      int __flags);
+
+#endif	/* use GNU */
+
+__END_DECLS
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              /* O_*, F_*, FD_* bit values for Linux / RISC-V.
+   Copyright (C) 2011-2021 Free Software Foundation, Inc.
+
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef	_FCNTL_H
+# error "Never use <bits/fcntl.h> directly; include <fcntl.h> instead."
+#endif
+
+#include <bits/wordsize.h>
+
+/* In 64-bit ISA files are always with 64bit off_t and F_*LK64 are the same as
+   non-64-bit versions.  It will need to be revised for 128-bit.  */
+#if __WORDSIZE == 64
+# define __O_LARGEFILE	0
+
+# define F_GETLK64	5	/* Get record locking info.  */
+# define F_SETLK64	6	/* Set record locking info (non-blocking).  */
+# define F_SETLKW64	7	/* Set record locking info (blocking).	*/
+#endif
+
+struct flock
+  {
+    short int l_type;   /* Type of lock: F_RDLCK, F_WRLCK, or F_UNLCK.  */
+    short int l_whence; /* Where `l_start' is relative to (like `lseek').  */
+#if __WORDSIZE == 64 || !defined __USE_FILE_OFFSET64
+    __off_t l_start;    /* Offset where the lock begins.  */
+    __off_t l_len;      /* Size of the locked area; zero means until EOF.  */
+#else
+    __off64_t l_start;  /* Offset where the lock begins.  */
+    __off64_t l_len;    /* Size of the locked area; zero means until EOF.  */
+#endif
+    __pid_t l_pid;      /* Process holding the lock.  */
+  };
+
+#ifdef __USE_LARGEFILE64
+struct flock64
+  {
+    short int l_type;   /* Type of lock: F_RDLCK, F_WRLCK, or F_UNLCK.  */
+    short int l_whence; /* Where `l_start' is relative to (like `lseek').  */
+    __off64_t l_start;  /* Offset where the lock begins.  */
+    __off64_t l_len;    /* Size of the locked area; zero means until EOF.  */
+    __pid_t l_pid;      /* Process holding the lock.  */
+  };
+#endif
+
+/* Include generic Linux declarations.  */
+#include <bits/fcntl-linux.h>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       /* Checking macros for fcntl functions.
+   Copyright (C) 2007-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef	_FCNTL_H
+# error "Never include <bits/fcntl2.h> directly; use <fcntl.h> instead."
+#endif
+
+/* Check that calls to open and openat with O_CREAT or O_TMPFILE set have an
+   appropriate third/fourth parameter.  */
+#ifndef __USE_FILE_OFFSET64
+extern int __open_2 (const char *__path, int __oflag) __nonnull ((1));
+extern int __REDIRECT (__open_alias, (const char *__path, int __oflag, ...),
+		       open) __nonnull ((1));
+#else
+extern int __REDIRECT (__open_2, (const char *__path, int __oflag),
+		       __open64_2) __nonnull ((1));
+extern int __REDIRECT (__open_alias, (const char *__path, int __oflag, ...),
+		       open64) __nonnull ((1));
+#endif
+__errordecl (__open_too_many_args,
+	     "open can be called either with 2 or 3 arguments, not more");
+__errordecl (__open_missing_mode,
+	     "open with O_CREAT or O_TMPFILE in second argument needs 3 arguments");
+
+__fortify_function int
+open (const char *__path, int __oflag, ...)
+{
+  if (__va_arg_pack_len () > 1)
+    __open_too_many_args ();
+
+  if (__builtin_constant_p (__oflag))
+    {
+      if (__OPEN_NEEDS_MODE (__oflag) && __va_arg_pack_len () < 1)
+	{
+	  __open_missing_mode ();
+	  return __open_2 (__path, __oflag);
+	}
+      return __open_alias (__path, __oflag, __va_arg_pack ());
+    }
+
+  if (__va_arg_pack_len () < 1)
+    return __open_2 (__path, __oflag);
+
+  return __open_alias (__path, __oflag, __va_arg_pack ());
+}
+
+
+#ifdef __USE_LARGEFILE64
+extern int __open64_2 (const char *__path, int __oflag) __nonnull ((1));
+extern int __REDIRECT (__open64_alias, (const char *__path, int __oflag,
+					...), open64) __nonnull ((1));
+__errordecl (__open64_too_many_args,
+	     "open64 can be called either with 2 or 3 arguments, not more");
+__errordecl (__open64_missing_mode,
+	     "open64 with O_CREAT or O_TMPFILE in second argument needs 3 arguments");
+
+__fortify_function int
+open64 (const char *__path, int __oflag, ...)
+{
+  if (__va_arg_pack_len () > 1)
+    __open64_too_many_args ();
+
+  if (__builtin_constant_p (__oflag))
+    {
+      if (__OPEN_NEEDS_MODE (__oflag) && __va_arg_pack_len () < 1)
+	{
+	  __open64_missing_mode ();
+	  return __open64_2 (__path, __oflag);
+	}
+      return __open64_alias (__path, __oflag, __va_arg_pack ());
+    }
+
+  if (__va_arg_pack_len () < 1)
+    return __open64_2 (__path, __oflag);
+
+  return __open64_alias (__path, __oflag, __va_arg_pack ());
+}
+#endif
+
+
+#ifdef __USE_ATFILE
+# ifndef __USE_FILE_OFFSET64
+extern int __openat_2 (int __fd, const char *__path, int __oflag)
+     __nonnull ((2));
+extern int __REDIRECT (__openat_alias, (int __fd, const char *__path,
+					int __oflag, ...), openat)
+     __nonnull ((2));
+# else
+extern int __REDIRECT (__openat_2, (int __fd, const char *__path,
+				    int __oflag), __openat64_2)
+     __nonnull ((2));
+extern int __REDIRECT (__openat_alias, (int __fd, const char *__path,
+					int __oflag, ...), openat64)
+     __nonnull ((2));
+# endif
+__errordecl (__openat_too_many_args,
+	     "openat can be called either with 3 or 4 arguments, not more");
+__errordecl (__openat_missing_mode,
+	     "openat with O_CREAT or O_TMPFILE in third argument needs 4 arguments");
+
+__fortify_function int
+openat (int __fd, const char *__path, int __oflag, ...)
+{
+  if (__va_arg_pack_len () > 1)
+    __openat_too_many_args ();
+
+  if (__builtin_constant_p (__oflag))
+    {
+      if (__OPEN_NEEDS_MODE (__oflag) && __va_arg_pack_len () < 1)
+	{
+	  __openat_missing_mode ();
+	  return __openat_2 (__fd, __path, __oflag);
+	}
+      return __openat_alias (__fd, __path, __oflag, __va_arg_pack ());
+    }
+
+  if (__va_arg_pack_len () < 1)
+    return __openat_2 (__fd, __path, __oflag);
+
+  return __openat_alias (__fd, __path, __oflag, __va_arg_pack ());
+}
+
+
+# ifdef __USE_LARGEFILE64
+extern int __openat64_2 (int __fd, const char *__path, int __oflag)
+     __nonnull ((2));
+extern int __REDIRECT (__openat64_alias, (int __fd, const char *__path,
+					  int __oflag, ...), openat64)
+     __nonnull ((2));
+__errordecl (__openat64_too_many_args,
+	     "openat64 can be called either with 3 or 4 arguments, not more");
+__errordecl (__openat64_missing_mode,
+	     "openat64 with O_CREAT or O_TMPFILE in third argument needs 4 arguments");
+
+__fortify_function int
+openat64 (int __fd, const char *__path, int __oflag, ...)
+{
+  if (__va_arg_pack_len () > 1)
+    __openat64_too_many_args ();
+
+  if (__builtin_constant_p (__oflag))
+    {
+      if (__OPEN_NEEDS_MODE (__oflag) && __va_arg_pack_len () < 1)
+	{
+	  __openat64_missing_mode ();
+	  return __openat64_2 (__fd, __path, __oflag);
+	}
+      return __openat64_alias (__fd, __path, __oflag, __va_arg_pack ());
+    }
+
+  if (__va_arg_pack_len () < 1)
+    return __openat64_2 (__fd, __path, __oflag);
+
+  return __openat64_alias (__fd, __path, __oflag, __va_arg_pack ());
+}
+# endif
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         /* Floating point environment, RISC-V version.
+   Copyright (C) 1998-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library.  If not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef _FENV_H
+# error "Never use <bits/fenv.h> directly; include <fenv.h> instead."
+#endif
+
+enum
+  {
+    FE_INEXACT   =
+#define FE_INEXACT	(0x01)
+      FE_INEXACT,
+    FE_UNDERFLOW =
+#define FE_UNDERFLOW	(0x02)
+      FE_UNDERFLOW,
+    FE_OVERFLOW  =
+#define FE_OVERFLOW	(0x04)
+      FE_OVERFLOW,
+    FE_DIVBYZERO =
+#define FE_DIVBYZERO	(0x08)
+      FE_DIVBYZERO,
+    FE_INVALID   =
+#define FE_INVALID	(0x10)
+      FE_INVALID
+  };
+
+#define FE_ALL_EXCEPT \
+	(FE_INEXACT | FE_DIVBYZERO | FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)
+
+enum
+  {
+    FE_TONEAREST  =
+#define FE_TONEAREST	(0x0)
+      FE_TONEAREST,
+    FE_TOWARDZERO =
+#define FE_TOWARDZERO	(0x1)
+      FE_TOWARDZERO,
+    FE_DOWNWARD   =
+#define FE_DOWNWARD	(0x2)
+      FE_DOWNWARD,
+    FE_UPWARD     =
+#define FE_UPWARD	(0x3)
+      FE_UPWARD
+  };
+
+
+typedef unsigned int fexcept_t;
+typedef unsigned int fenv_t;
+
+/* If the default argument is used we use this value.  */
+#define FE_DFL_ENV	((__const fenv_t *) -1)
+
+#if __GLIBC_USE (IEC_60559_BFP_EXT_C2X)
+/* Type representing floating-point control modes.  */
+typedef unsigned int femode_t;
+
+/* Default floating-point control modes.  */
+# define FE_DFL_MODE	((const femode_t *) -1L)
+#endif
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               /* Macros to control TS 18661-3 glibc features where the same
+   definitions are appropriate for all platforms.
+   Copyright (C) 2017-2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
+
+#ifndef _BITS_FLOATN_COMMON_H
+#define _BITS_FLOATN_COMMON_H
+
+#include <features.h>
+#include <bits/long-double.h>
+
+/* This header should be included at the bottom of each bits/floatn.h.
+   It defines the following macros for each _FloatN and _FloatNx type,
+   where the same definitions, or definitions based only on the macros
+   in bits/floatn.h, are appropriate for all glibc configurations.  */
+
+/* Defined to 1 if the current compiler invocation provides a
+   floating-point type with the right format for this type, and this
+   glibc includes corresponding *fN or *fNx interfaces for it.  */
+#define __HAVE_FLOAT16 0
+#define __HAVE_FLOAT32 1
+#define __HAVE_FLOAT64 1
+#define __HAVE_FLOAT32X 1
+#define __HAVE_FLOAT128X 0
+
+/* Defined to 1 if the corresponding __HAVE_<type> macro is 1 and the
+   type is the first with its format in the sequence of (the default
+   choices for) float, double, long double, _Float16, _Float32,
+   _Float64, _Float128, _Float32x, _Float64x, _Float128x for this
+   glibc; that is, if functions present once per floating-point format
+   rather than once per type are present for this type.
+
+   All configurations supported by glibc have _Float32 the same format
+   as float, _Float64 and _Float32x the same format as double, the
+   _Float64x the same format as either long double or _Float128.  No
+   configurations support _Float128x or, as of GCC 7, have compiler
+   support for a type meeting the requirements for _Float128x.  */
+#define __HAVE_DISTINCT_FLOAT16 __HAVE_FLOAT16
+#define __HAVE_DISTINCT_FLOAT32 0
+#define __HAVE_DISTINCT_FLOAT64 0
+#define __HAVE_DISTINCT_FLOAT32X 0
+#define __HAVE_DISTINCT_FLOAT64X 0
+#define __HAVE_DISTINCT_FLOAT128X __HAVE_FLOAT128X
+
+/* Defined to 1 if the corresponding _FloatN type is not binary compatible
+   with the corresponding ISO C type in the current compilation unit as
+   opposed to __HAVE_DISTINCT_FLOATN, which indicates the default types built
+   in glibc.  */
+#define __HAVE_FLOAT128_UNLIKE_LDBL (__HAVE_DISTINCT_FLOAT128	\
+				     && __LDBL_MANT_DIG__ != 113)
+
+/* Defined to 1 if any _FloatN or _FloatNx types that are not
+   ABI-distinct are however distinct types at the C language level (so
+   for the purposes of __builtin_types_compatible_p and _Generic).  */
+#if __GNUC_PREREQ (7, 0) && !defined __cplusplus
+# define __HAVE_FLOATN_NOT_TYPEDEF 1
+#else
+# define __HAVE_FLOATN_NOT_TYPEDEF 0
+#endif
+
+#ifndef __ASSEMBLER__
+
+/* Defined to concatenate the literal suffix to be used with _FloatN
+   or _FloatNx types, if __HAVE_<type> is 1.  The corresponding
+   literal suffixes exist since GCC 7, for C only.  */
+# if __HAVE_FLOAT16
+#  if !__GNUC_PREREQ (7, 0) || defined __cplusplus
+/* No corresponding suffix available for this type.  */
+#   define __f16(x) ((_Float16) x##f)
+#  else
+#   define __f16(x) x##f16
+#  endif
+# endif
+
+# if __HAVE_FLOAT32
+#  if !__GNUC_PREREQ (7, 0) || defined __cplusplus
+#   define __f32(x) x##f
+#  else
+#   define __f32(x) x##f32
+#  endif
+# endif
+
+# if __HAVE_FLOAT64
+#  if !__GNUC_PREREQ (7, 0) || defined __cplusplus
+#   ifdef __NO_LONG_DOUBLE_MATH
+#    define __f64(x) x##l
+#   else
+#    define __f64(x) x
+#   endif
+#  else
+#   define __f64(x) x##f64
+#  endif
+# endif
+
+# if

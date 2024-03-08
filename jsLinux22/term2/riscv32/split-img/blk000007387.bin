@@ -1,0 +1,882 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+#ifndef __LINUX_KEYBOARD_H
+#define __LINUX_KEYBOARD_H
+
+#include <linux/wait.h>
+
+#define KG_SHIFT	0
+#define KG_CTRL		2
+#define KG_ALT		3
+#define KG_ALTGR	1
+#define KG_SHIFTL	4
+#define KG_KANASHIFT	4
+#define KG_SHIFTR	5
+#define KG_CTRLL	6
+#define KG_CTRLR	7
+#define KG_CAPSSHIFT	8
+
+#define NR_SHIFT	9
+
+#define NR_KEYS		256
+#define MAX_NR_KEYMAPS	256
+/* This means 128Kb if all keymaps are allocated. Only the superuser
+	may increase the number of keymaps beyond MAX_NR_OF_USER_KEYMAPS. */
+#define MAX_NR_OF_USER_KEYMAPS 256 	/* should be at least 7 */
+
+
+#define MAX_NR_FUNC	256	/* max nr of strings assigned to keys */
+
+#define KT_LATIN	0	/* we depend on this being zero */
+#define KT_LETTER	11	/* symbol that can be acted upon by CapsLock */
+#define KT_FN		1
+#define KT_SPEC		2
+#define KT_PAD		3
+#define KT_DEAD		4
+#define KT_CONS		5
+#define KT_CUR		6
+#define KT_SHIFT	7
+#define KT_META		8
+#define KT_ASCII	9
+#define KT_LOCK		10
+#define KT_SLOCK	12
+#define KT_DEAD2	13
+#define KT_BRL		14
+
+#define K(t,v)		(((t)<<8)|(v))
+#define KTYP(x)		((x) >> 8)
+#define KVAL(x)		((x) & 0xff)
+
+#define K_F1		K(KT_FN,0)
+#define K_F2		K(KT_FN,1)
+#define K_F3		K(KT_FN,2)
+#define K_F4		K(KT_FN,3)
+#define K_F5		K(KT_FN,4)
+#define K_F6		K(KT_FN,5)
+#define K_F7		K(KT_FN,6)
+#define K_F8		K(KT_FN,7)
+#define K_F9		K(KT_FN,8)
+#define K_F10		K(KT_FN,9)
+#define K_F11		K(KT_FN,10)
+#define K_F12		K(KT_FN,11)
+#define K_F13		K(KT_FN,12)
+#define K_F14		K(KT_FN,13)
+#define K_F15		K(KT_FN,14)
+#define K_F16		K(KT_FN,15)
+#define K_F17		K(KT_FN,16)
+#define K_F18		K(KT_FN,17)
+#define K_F19		K(KT_FN,18)
+#define K_F20		K(KT_FN,19)
+#define K_FIND		K(KT_FN,20)
+#define K_INSERT	K(KT_FN,21)
+#define K_REMOVE	K(KT_FN,22)
+#define K_SELECT	K(KT_FN,23)
+#define K_PGUP		K(KT_FN,24) /* PGUP is a synonym for PRIOR */
+#define K_PGDN		K(KT_FN,25) /* PGDN is a synonym for NEXT */
+#define K_MACRO	 	K(KT_FN,26)
+#define K_HELP		K(KT_FN,27)
+#define K_DO		K(KT_FN,28)
+#define K_PAUSE	 	K(KT_FN,29)
+#define K_F21		K(KT_FN,30)
+#define K_F22		K(KT_FN,31)
+#define K_F23		K(KT_FN,32)
+#define K_F24		K(KT_FN,33)
+#define K_F25		K(KT_FN,34)
+#define K_F26		K(KT_FN,35)
+#define K_F27		K(KT_FN,36)
+#define K_F28		K(KT_FN,37)
+#define K_F29		K(KT_FN,38)
+#define K_F30		K(KT_FN,39)
+#define K_F31		K(KT_FN,40)
+#define K_F32		K(KT_FN,41)
+#define K_F33		K(KT_FN,42)
+#define K_F34		K(KT_FN,43)
+#define K_F35		K(KT_FN,44)
+#define K_F36		K(KT_FN,45)
+#define K_F37		K(KT_FN,46)
+#define K_F38		K(KT_FN,47)
+#define K_F39		K(KT_FN,48)
+#define K_F40		K(KT_FN,49)
+#define K_F41		K(KT_FN,50)
+#define K_F42		K(KT_FN,51)
+#define K_F43		K(KT_FN,52)
+#define K_F44		K(KT_FN,53)
+#define K_F45		K(KT_FN,54)
+#define K_F46		K(KT_FN,55)
+#define K_F47		K(KT_FN,56)
+#define K_F48		K(KT_FN,57)
+#define K_F49		K(KT_FN,58)
+#define K_F50		K(KT_FN,59)
+#define K_F51		K(KT_FN,60)
+#define K_F52		K(KT_FN,61)
+#define K_F53		K(KT_FN,62)
+#define K_F54		K(KT_FN,63)
+#define K_F55		K(KT_FN,64)
+#define K_F56		K(KT_FN,65)
+#define K_F57		K(KT_FN,66)
+#define K_F58		K(KT_FN,67)
+#define K_F59		K(KT_FN,68)
+#define K_F60		K(KT_FN,69)
+#define K_F61		K(KT_FN,70)
+#define K_F62		K(KT_FN,71)
+#define K_F63		K(KT_FN,72)
+#define K_F64		K(KT_FN,73)
+#define K_F65		K(KT_FN,74)
+#define K_F66		K(KT_FN,75)
+#define K_F67		K(KT_FN,76)
+#define K_F68		K(KT_FN,77)
+#define K_F69		K(KT_FN,78)
+#define K_F70		K(KT_FN,79)
+#define K_F71		K(KT_FN,80)
+#define K_F72		K(KT_FN,81)
+#define K_F73		K(KT_FN,82)
+#define K_F74		K(KT_FN,83)
+#define K_F75		K(KT_FN,84)
+#define K_F76		K(KT_FN,85)
+#define K_F77		K(KT_FN,86)
+#define K_F78		K(KT_FN,87)
+#define K_F79		K(KT_FN,88)
+#define K_F80		K(KT_FN,89)
+#define K_F81		K(KT_FN,90)
+#define K_F82		K(KT_FN,91)
+#define K_F83		K(KT_FN,92)
+#define K_F84		K(KT_FN,93)
+#define K_F85		K(KT_FN,94)
+#define K_F86		K(KT_FN,95)
+#define K_F87		K(KT_FN,96)
+#define K_F88		K(KT_FN,97)
+#define K_F89		K(KT_FN,98)
+#define K_F90		K(KT_FN,99)
+#define K_F91		K(KT_FN,100)
+#define K_F92		K(KT_FN,101)
+#define K_F93		K(KT_FN,102)
+#define K_F94		K(KT_FN,103)
+#define K_F95		K(KT_FN,104)
+#define K_F96		K(KT_FN,105)
+#define K_F97		K(KT_FN,106)
+#define K_F98		K(KT_FN,107)
+#define K_F99		K(KT_FN,108)
+#define K_F100		K(KT_FN,109)
+#define K_F101		K(KT_FN,110)
+#define K_F102		K(KT_FN,111)
+#define K_F103		K(KT_FN,112)
+#define K_F104		K(KT_FN,113)
+#define K_F105		K(KT_FN,114)
+#define K_F106		K(KT_FN,115)
+#define K_F107		K(KT_FN,116)
+#define K_F108		K(KT_FN,117)
+#define K_F109		K(KT_FN,118)
+#define K_F110		K(KT_FN,119)
+#define K_F111		K(KT_FN,120)
+#define K_F112		K(KT_FN,121)
+#define K_F113		K(KT_FN,122)
+#define K_F114		K(KT_FN,123)
+#define K_F115		K(KT_FN,124)
+#define K_F116		K(KT_FN,125)
+#define K_F117		K(KT_FN,126)
+#define K_F118		K(KT_FN,127)
+#define K_F119		K(KT_FN,128)
+#define K_F120		K(KT_FN,129)
+#define K_F121		K(KT_FN,130)
+#define K_F122		K(KT_FN,131)
+#define K_F123		K(KT_FN,132)
+#define K_F124		K(KT_FN,133)
+#define K_F125		K(KT_FN,134)
+#define K_F126		K(KT_FN,135)
+#define K_F127		K(KT_FN,136)
+#define K_F128		K(KT_FN,137)
+#define K_F129		K(KT_FN,138)
+#define K_F130		K(KT_FN,139)
+#define K_F131		K(KT_FN,140)
+#define K_F132		K(KT_FN,141)
+#define K_F133		K(KT_FN,142)
+#define K_F134		K(KT_FN,143)
+#define K_F135		K(KT_FN,144)
+#define K_F136		K(KT_FN,145)
+#define K_F137		K(KT_FN,146)
+#define K_F138		K(KT_FN,147)
+#define K_F139		K(KT_FN,148)
+#define K_F140		K(KT_FN,149)
+#define K_F141		K(KT_FN,150)
+#define K_F142		K(KT_FN,151)
+#define K_F143		K(KT_FN,152)
+#define K_F144		K(KT_FN,153)
+#define K_F145		K(KT_FN,154)
+#define K_F146		K(KT_FN,155)
+#define K_F147		K(KT_FN,156)
+#define K_F148		K(KT_FN,157)
+#define K_F149		K(KT_FN,158)
+#define K_F150		K(KT_FN,159)
+#define K_F151		K(KT_FN,160)
+#define K_F152		K(KT_FN,161)
+#define K_F153		K(KT_FN,162)
+#define K_F154		K(KT_FN,163)
+#define K_F155		K(KT_FN,164)
+#define K_F156		K(KT_FN,165)
+#define K_F157		K(KT_FN,166)
+#define K_F158		K(KT_FN,167)
+#define K_F159		K(KT_FN,168)
+#define K_F160		K(KT_FN,169)
+#define K_F161		K(KT_FN,170)
+#define K_F162		K(KT_FN,171)
+#define K_F163		K(KT_FN,172)
+#define K_F164		K(KT_FN,173)
+#define K_F165		K(KT_FN,174)
+#define K_F166		K(KT_FN,175)
+#define K_F167		K(KT_FN,176)
+#define K_F168		K(KT_FN,177)
+#define K_F169		K(KT_FN,178)
+#define K_F170		K(KT_FN,179)
+#define K_F171		K(KT_FN,180)
+#define K_F172		K(KT_FN,181)
+#define K_F173		K(KT_FN,182)
+#define K_F174		K(KT_FN,183)
+#define K_F175		K(KT_FN,184)
+#define K_F176		K(KT_FN,185)
+#define K_F177		K(KT_FN,186)
+#define K_F178		K(KT_FN,187)
+#define K_F179		K(KT_FN,188)
+#define K_F180		K(KT_FN,189)
+#define K_F181		K(KT_FN,190)
+#define K_F182		K(KT_FN,191)
+#define K_F183		K(KT_FN,192)
+#define K_F184		K(KT_FN,193)
+#define K_F185		K(KT_FN,194)
+#define K_F186		K(KT_FN,195)
+#define K_F187		K(KT_FN,196)
+#define K_F188		K(KT_FN,197)
+#define K_F189		K(KT_FN,198)
+#define K_F190		K(KT_FN,199)
+#define K_F191		K(KT_FN,200)
+#define K_F192		K(KT_FN,201)
+#define K_F193		K(KT_FN,202)
+#define K_F194		K(KT_FN,203)
+#define K_F195		K(KT_FN,204)
+#define K_F196		K(KT_FN,205)
+#define K_F197		K(KT_FN,206)
+#define K_F198		K(KT_FN,207)
+#define K_F199		K(KT_FN,208)
+#define K_F200		K(KT_FN,209)
+#define K_F201		K(KT_FN,210)
+#define K_F202		K(KT_FN,211)
+#define K_F203		K(KT_FN,212)
+#define K_F204		K(KT_FN,213)
+#define K_F205		K(KT_FN,214)
+#define K_F206		K(KT_FN,215)
+#define K_F207		K(KT_FN,216)
+#define K_F208		K(KT_FN,217)
+#define K_F209		K(KT_FN,218)
+#define K_F210		K(KT_FN,219)
+#define K_F211		K(KT_FN,220)
+#define K_F212		K(KT_FN,221)
+#define K_F213		K(KT_FN,222)
+#define K_F214		K(KT_FN,223)
+#define K_F215		K(KT_FN,224)
+#define K_F216		K(KT_FN,225)
+#define K_F217		K(KT_FN,226)
+#define K_F218		K(KT_FN,227)
+#define K_F219		K(KT_FN,228)
+#define K_F220		K(KT_FN,229)
+#define K_F221		K(KT_FN,230)
+#define K_F222		K(KT_FN,231)
+#define K_F223		K(KT_FN,232)
+#define K_F224		K(KT_FN,233)
+#define K_F225		K(KT_FN,234)
+#define K_F226		K(KT_FN,235)
+#define K_F227		K(KT_FN,236)
+#define K_F228		K(KT_FN,237)
+#define K_F229		K(KT_FN,238)
+#define K_F230		K(KT_FN,239)
+#define K_F231		K(KT_FN,240)
+#define K_F232		K(KT_FN,241)
+#define K_F233		K(KT_FN,242)
+#define K_F234		K(KT_FN,243)
+#define K_F235		K(KT_FN,244)
+#define K_F236		K(KT_FN,245)
+#define K_F237		K(KT_FN,246)
+#define K_F238		K(KT_FN,247)
+#define K_F239		K(KT_FN,248)
+#define K_F240		K(KT_FN,249)
+#define K_F241		K(KT_FN,250)
+#define K_F242		K(KT_FN,251)
+#define K_F243		K(KT_FN,252)
+#define K_F244		K(KT_FN,253)
+#define K_F245		K(KT_FN,254)
+#define K_UNDO		K(KT_FN,255)
+
+
+#define K_HOLE		K(KT_SPEC,0)
+#define K_ENTER		K(KT_SPEC,1)
+#define K_SH_REGS	K(KT_SPEC,2)
+#define K_SH_MEM	K(KT_SPEC,3)
+#define K_SH_STAT	K(KT_SPEC,4)
+#define K_BREAK		K(KT_SPEC,5)
+#define K_CONS		K(KT_SPEC,6)
+#define K_CAPS		K(KT_SPEC,7)
+#define K_NUM		K(KT_SPEC,8)
+#define K_HOLD		K(KT_SPEC,9)
+#define K_SCROLLFORW	K(KT_SPEC,10)
+#define K_SCROLLBACK	K(KT_SPEC,11)
+#define K_BOOT		K(KT_SPEC,12)
+#define K_CAPSON	K(KT_SPEC,13)
+#define K_COMPOSE	K(KT_SPEC,14)
+#define K_SAK		K(KT_SPEC,15)
+#define K_DECRCONSOLE	K(KT_SPEC,16)
+#define K_INCRCONSOLE	K(KT_SPEC,17)
+#define K_SPAWNCONSOLE	K(KT_SPEC,18)
+#define K_BARENUMLOCK	K(KT_SPEC,19)
+
+#define K_ALLOCATED	K(KT_SPEC,126) /* dynamically allocated keymap */
+#define K_NOSUCHMAP	K(KT_SPEC,127) /* returned by KDGKBENT */
+
+#define K_P0		K(KT_PAD,0)
+#define K_P1		K(KT_PAD,1)
+#define K_P2		K(KT_PAD,2)
+#define K_P3		K(KT_PAD,3)
+#define K_P4		K(KT_PAD,4)
+#define K_P5		K(KT_PAD,5)
+#define K_P6		K(KT_PAD,6)
+#define K_P7		K(KT_PAD,7)
+#define K_P8		K(KT_PAD,8)
+#define K_P9		K(KT_PAD,9)
+#define K_PPLUS		K(KT_PAD,10)	/* key-pad plus */
+#define K_PMINUS	K(KT_PAD,11)	/* key-pad minus */
+#define K_PSTAR		K(KT_PAD,12)	/* key-pad asterisk (star) */
+#define K_PSLASH	K(KT_PAD,13)	/* key-pad slash */
+#define K_PENTER	K(KT_PAD,14)	/* key-pad enter */
+#define K_PCOMMA	K(KT_PAD,15)	/* key-pad comma: kludge... */
+#define K_PDOT		K(KT_PAD,16)	/* key-pad dot (period): kludge... */
+#define K_PPLUSMINUS	K(KT_PAD,17)	/* key-pad plus/minus */
+#define K_PPARENL	K(KT_PAD,18)	/* key-pad left parenthesis */
+#define K_PPARENR	K(KT_PAD,19)	/* key-pad right parenthesis */
+
+#define NR_PAD		20
+
+#define K_DGRAVE	K(KT_DEAD,0)
+#define K_DACUTE	K(KT_DEAD,1)
+#define K_DCIRCM	K(KT_DEAD,2)
+#define K_DTILDE	K(KT_DEAD,3)
+#define K_DDIERE	K(KT_DEAD,4)
+#define K_DCEDIL	K(KT_DEAD,5)
+#define K_DMACRON	K(KT_DEAD,6)
+#define K_DBREVE	K(KT_DEAD,7)
+#define K_DABDOT	K(KT_DEAD,8)
+#define K_DABRING	K(KT_DEAD,9)
+#define K_DDBACUTE	K(KT_DEAD,10)
+#define K_DCARON	K(KT_DEAD,11)
+#define K_DOGONEK	K(KT_DEAD,12)
+#define K_DIOTA		K(KT_DEAD,13)
+#define K_DVOICED	K(KT_DEAD,14)
+#define K_DSEMVOICED	K(KT_DEAD,15)
+#define K_DBEDOT	K(KT_DEAD,16)
+#define K_DHOOK		K(KT_DEAD,17)
+#define K_DHORN		K(KT_DEAD,18)
+#define K_DSTROKE	K(KT_DEAD,19)
+#define K_DABCOMMA	K(KT_DEAD,20)
+#define K_DABREVCOMMA	K(KT_DEAD,21)
+#define K_DDBGRAVE	K(KT_DEAD,22)
+#define K_DINVBREVE	K(KT_DEAD,23)
+#define K_DBECOMMA	K(KT_DEAD,24)
+#define K_DCURRENCY	K(KT_DEAD,25)
+#define K_DGREEK	K(KT_DEAD,26)
+
+#define NR_DEAD		27
+
+#define K_DOWN		K(KT_CUR,0)
+#define K_LEFT		K(KT_CUR,1)
+#define K_RIGHT		K(KT_CUR,2)
+#define K_UP		K(KT_CUR,3)
+
+#define K_SHIFT		K(KT_SHIFT,KG_SHIFT)
+#define K_CTRL		K(KT_SHIFT,KG_CTRL)
+#define K_ALT		K(KT_SHIFT,KG_ALT)
+#define K_ALTGR		K(KT_SHIFT,KG_ALTGR)
+#define K_SHIFTL	K(KT_SHIFT,KG_SHIFTL)
+#define K_SHIFTR	K(KT_SHIFT,KG_SHIFTR)
+#define K_CTRLL	 	K(KT_SHIFT,KG_CTRLL)
+#define K_CTRLR	 	K(KT_SHIFT,KG_CTRLR)
+#define K_CAPSSHIFT	K(KT_SHIFT,KG_CAPSSHIFT)
+
+#define K_ASC0		K(KT_ASCII,0)
+#define K_ASC1		K(KT_ASCII,1)
+#define K_ASC2		K(KT_ASCII,2)
+#define K_ASC3		K(KT_ASCII,3)
+#define K_ASC4		K(KT_ASCII,4)
+#define K_ASC5		K(KT_ASCII,5)
+#define K_ASC6		K(KT_ASCII,6)
+#define K_ASC7		K(KT_ASCII,7)
+#define K_ASC8		K(KT_ASCII,8)
+#define K_ASC9		K(KT_ASCII,9)
+#define K_HEX0		K(KT_ASCII,10)
+#define K_HEX1		K(KT_ASCII,11)
+#define K_HEX2		K(KT_ASCII,12)
+#define K_HEX3		K(KT_ASCII,13)
+#define K_HEX4		K(KT_ASCII,14)
+#define K_HEX5		K(KT_ASCII,15)
+#define K_HEX6		K(KT_ASCII,16)
+#define K_HEX7		K(KT_ASCII,17)
+#define K_HEX8		K(KT_ASCII,18)
+#define K_HEX9		K(KT_ASCII,19)
+#define K_HEXa		K(KT_ASCII,20)
+#define K_HEXb		K(KT_ASCII,21)
+#define K_HEXc		K(KT_ASCII,22)
+#define K_HEXd		K(KT_ASCII,23)
+#define K_HEXe		K(KT_ASCII,24)
+#define K_HEXf		K(KT_ASCII,25)
+
+#define NR_ASCII	26
+
+#define K_SHIFTLOCK	K(KT_LOCK,KG_SHIFT)
+#define K_CTRLLOCK	K(KT_LOCK,KG_CTRL)
+#define K_ALTLOCK	K(KT_LOCK,KG_ALT)
+#define K_ALTGRLOCK	K(KT_LOCK,KG_ALTGR)
+#define K_SHIFTLLOCK	K(KT_LOCK,KG_SHIFTL)
+#define K_SHIFTRLOCK	K(KT_LOCK,KG_SHIFTR)
+#define K_CTRLLLOCK	K(KT_LOCK,KG_CTRLL)
+#define K_CTRLRLOCK	K(KT_LOCK,KG_CTRLR)
+#define K_CAPSSHIFTLOCK	K(KT_LOCK,KG_CAPSSHIFT)
+
+#define K_SHIFT_SLOCK	K(KT_SLOCK,KG_SHIFT)
+#define K_CTRL_SLOCK	K(KT_SLOCK,KG_CTRL)
+#define K_ALT_SLOCK	K(KT_SLOCK,KG_ALT)
+#define K_ALTGR_SLOCK	K(KT_SLOCK,KG_ALTGR)
+#define K_SHIFTL_SLOCK	K(KT_SLOCK,KG_SHIFTL)
+#define K_SHIFTR_SLOCK	K(KT_SLOCK,KG_SHIFTR)
+#define K_CTRLL_SLOCK	K(KT_SLOCK,KG_CTRLL)
+#define K_CTRLR_SLOCK	K(KT_SLOCK,KG_CTRLR)
+#define K_CAPSSHIFT_SLOCK	K(KT_SLOCK,KG_CAPSSHIFT)
+
+#define NR_LOCK		9
+
+#define K_BRL_BLANK     K(KT_BRL, 0)
+#define K_BRL_DOT1      K(KT_BRL, 1)
+#define K_BRL_DOT2      K(KT_BRL, 2)
+#define K_BRL_DOT3      K(KT_BRL, 3)
+#define K_BRL_DOT4      K(KT_BRL, 4)
+#define K_BRL_DOT5      K(KT_BRL, 5)
+#define K_BRL_DOT6      K(KT_BRL, 6)
+#define K_BRL_DOT7      K(KT_BRL, 7)
+#define K_BRL_DOT8      K(KT_BRL, 8)
+#define K_BRL_DOT9      K(KT_BRL, 9)
+#define K_BRL_DOT10     K(KT_BRL, 10)
+
+#define NR_BRL		11
+
+#define MAX_DIACR	256
+#endif /* __LINUX_KEYBOARD_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+/* keyctl.h: keyctl command IDs
+ *
+ * Copyright (C) 2004, 2008 Red Hat, Inc. All Rights Reserved.
+ * Written by David Howells (dhowells@redhat.com)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
+ */
+
+#ifndef _LINUX_KEYCTL_H
+#define _LINUX_KEYCTL_H
+
+#include <linux/types.h>
+
+/* special process keyring shortcut IDs */
+#define KEY_SPEC_THREAD_KEYRING		-1	/* - key ID for thread-specific keyring */
+#define KEY_SPEC_PROCESS_KEYRING	-2	/* - key ID for process-specific keyring */
+#define KEY_SPEC_SESSION_KEYRING	-3	/* - key ID for session-specific keyring */
+#define KEY_SPEC_USER_KEYRING		-4	/* - key ID for UID-specific keyring */
+#define KEY_SPEC_USER_SESSION_KEYRING	-5	/* - key ID for UID-session keyring */
+#define KEY_SPEC_GROUP_KEYRING		-6	/* - key ID for GID-specific keyring */
+#define KEY_SPEC_REQKEY_AUTH_KEY	-7	/* - key ID for assumed request_key auth key */
+#define KEY_SPEC_REQUESTOR_KEYRING	-8	/* - key ID for request_key() dest keyring */
+
+/* request-key default keyrings */
+#define KEY_REQKEY_DEFL_NO_CHANGE		-1
+#define KEY_REQKEY_DEFL_DEFAULT			0
+#define KEY_REQKEY_DEFL_THREAD_KEYRING		1
+#define KEY_REQKEY_DEFL_PROCESS_KEYRING		2
+#define KEY_REQKEY_DEFL_SESSION_KEYRING		3
+#define KEY_REQKEY_DEFL_USER_KEYRING		4
+#define KEY_REQKEY_DEFL_USER_SESSION_KEYRING	5
+#define KEY_REQKEY_DEFL_GROUP_KEYRING		6
+#define KEY_REQKEY_DEFL_REQUESTOR_KEYRING	7
+
+/* keyctl commands */
+#define KEYCTL_GET_KEYRING_ID		0	/* ask for a keyring's ID */
+#define KEYCTL_JOIN_SESSION_KEYRING	1	/* join or start named session keyring */
+#define KEYCTL_UPDATE			2	/* update a key */
+#define KEYCTL_REVOKE			3	/* revoke a key */
+#define KEYCTL_CHOWN			4	/* set ownership of a key */
+#define KEYCTL_SETPERM			5	/* set perms on a key */
+#define KEYCTL_DESCRIBE			6	/* describe a key */
+#define KEYCTL_CLEAR			7	/* clear contents of a keyring */
+#define KEYCTL_LINK			8	/* link a key into a keyring */
+#define KEYCTL_UNLINK			9	/* unlink a key from a keyring */
+#define KEYCTL_SEARCH			10	/* search for a key in a keyring */
+#define KEYCTL_READ			11	/* read a key or keyring's contents */
+#define KEYCTL_INSTANTIATE		12	/* instantiate a partially constructed key */
+#define KEYCTL_NEGATE			13	/* negate a partially constructed key */
+#define KEYCTL_SET_REQKEY_KEYRING	14	/* set default request-key keyring */
+#define KEYCTL_SET_TIMEOUT		15	/* set key timeout */
+#define KEYCTL_ASSUME_AUTHORITY		16	/* assume request_key() authorisation */
+#define KEYCTL_GET_SECURITY		17	/* get key security label */
+#define KEYCTL_SESSION_TO_PARENT	18	/* apply session keyring to parent process */
+#define KEYCTL_REJECT			19	/* reject a partially constructed key */
+#define KEYCTL_INSTANTIATE_IOV		20	/* instantiate a partially constructed key */
+#define KEYCTL_INVALIDATE		21	/* invalidate a key */
+#define KEYCTL_GET_PERSISTENT		22	/* get a user's persistent keyring */
+#define KEYCTL_DH_COMPUTE		23	/* Compute Diffie-Hellman values */
+#define KEYCTL_PKEY_QUERY		24	/* Query public key parameters */
+#define KEYCTL_PKEY_ENCRYPT		25	/* Encrypt a blob using a public key */
+#define KEYCTL_PKEY_DECRYPT		26	/* Decrypt a blob using a public key */
+#define KEYCTL_PKEY_SIGN		27	/* Create a public key signature */
+#define KEYCTL_PKEY_VERIFY		28	/* Verify a public key signature */
+#define KEYCTL_RESTRICT_KEYRING		29	/* Restrict keys allowed to link to a keyring */
+#define KEYCTL_MOVE			30	/* Move keys between keyrings */
+#define KEYCTL_CAPABILITIES		31	/* Find capabilities of keyrings subsystem */
+#define KEYCTL_WATCH_KEY		32	/* Watch a key or ring of keys for changes */
+
+/* keyctl structures */
+struct keyctl_dh_params {
+	union {
+#ifndef __cplusplus
+		__s32 private;
+#endif
+		__s32 priv;
+	};
+	__s32 prime;
+	__s32 base;
+};
+
+struct keyctl_kdf_params {
+	char *hashname;
+	char *otherinfo;
+	__u32 otherinfolen;
+	__u32 __spare[8];
+};
+
+#define KEYCTL_SUPPORTS_ENCRYPT		0x01
+#define KEYCTL_SUPPORTS_DECRYPT		0x02
+#define KEYCTL_SUPPORTS_SIGN		0x04
+#define KEYCTL_SUPPORTS_VERIFY		0x08
+
+struct keyctl_pkey_query {
+	__u32		supported_ops;	/* Which ops are supported */
+	__u32		key_size;	/* Size of the key in bits */
+	__u16		max_data_size;	/* Maximum size of raw data to sign in bytes */
+	__u16		max_sig_size;	/* Maximum size of signature in bytes */
+	__u16		max_enc_size;	/* Maximum size of encrypted blob in bytes */
+	__u16		max_dec_size;	/* Maximum size of decrypted blob in bytes */
+	__u32		__spare[10];
+};
+
+struct keyctl_pkey_params {
+	__s32		key_id;		/* Serial no. of public key to use */
+	__u32		in_len;		/* Input data size */
+	union {
+		__u32		out_len;	/* Output buffer size (encrypt/decrypt/sign) */
+		__u32		in2_len;	/* 2nd input data size (verify) */
+	};
+	__u32		__spare[7];
+};
+
+#define KEYCTL_MOVE_EXCL	0x00000001 /* Do not displace from the to-keyring */
+
+/*
+ * Capabilities flags.  The capabilities list is an array of 8-bit integers;
+ * each integer can carry up to 8 flags.
+ */
+#define KEYCTL_CAPS0_CAPABILITIES	0x01 /* KEYCTL_CAPABILITIES supported */
+#define KEYCTL_CAPS0_PERSISTENT_KEYRINGS 0x02 /* Persistent keyrings enabled */
+#define KEYCTL_CAPS0_DIFFIE_HELLMAN	0x04 /* Diffie-Hellman computation enabled */
+#define KEYCTL_CAPS0_PUBLIC_KEY		0x08 /* Public key ops enabled */
+#define KEYCTL_CAPS0_BIG_KEY		0x10 /* big_key-type enabled */
+#define KEYCTL_CAPS0_INVALIDATE		0x20 /* KEYCTL_INVALIDATE supported */
+#define KEYCTL_CAPS0_RESTRICT_KEYRING	0x40 /* KEYCTL_RESTRICT_KEYRING supported */
+#define KEYCTL_CAPS0_MOVE		0x80 /* KEYCTL_MOVE supported */
+#define KEYCTL_CAPS1_NS_KEYRING_NAME	0x01 /* Keyring names are per-user_namespace */
+#define KEYCTL_CAPS1_NS_KEY_TAG		0x02 /* Key indexing can include a namespace tag */
+#define KEYCTL_CAPS1_NOTIFICATIONS	0x04 /* Keys generate watchable notifications */
+
+#endif /*  _LINUX_KEYCTL_H */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    /*
+ * Copyright 2014 Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#ifndef KFD_IOCTL_H_INCLUDED
+#define KFD_IOCTL_H_INCLUDED
+
+#include <drm/drm.h>
+#include <linux/ioctl.h>
+
+#define KFD_IOCTL_MAJOR_VERSION 1
+#define KFD_IOCTL_MINOR_VERSION 1
+
+struct kfd_ioctl_get_version_args {
+	__u32 major_version;	/* from KFD */
+	__u32 minor_version;	/* from KFD */
+};
+
+/* For kfd_ioctl_create_queue_args.queue_type. */
+#define KFD_IOC_QUEUE_TYPE_COMPUTE		0x0
+#define KFD_IOC_QUEUE_TYPE_SDMA			0x1
+#define KFD_IOC_QUEUE_TYPE_COMPUTE_AQL		0x2
+#define KFD_IOC_QUEUE_TYPE_SDMA_XGMI		0x3
+
+#define KFD_MAX_QUEUE_PERCENTAGE	100
+#define KFD_MAX_QUEUE_PRIORITY		15
+
+struct kfd_ioctl_create_queue_args {
+	__u64 ring_base_address;	/* to KFD */
+	__u64 write_pointer_address;	/* from KFD */
+	__u64 read_pointer_address;	/* from KFD */
+	__u64 doorbell_offset;	/* from KFD */
+
+	__u32 ring_size;		/* to KFD */
+	__u32 gpu_id;		/* to KFD */
+	__u32 queue_type;		/* to KFD */
+	__u32 queue_percentage;	/* to KFD */
+	__u32 queue_priority;	/* to KFD */
+	__u32 queue_id;		/* from KFD */
+
+	__u64 eop_buffer_address;	/* to KFD */
+	__u64 eop_buffer_size;	/* to KFD */
+	__u64 ctx_save_restore_address; /* to KFD */
+	__u32 ctx_save_restore_size;	/* to KFD */
+	__u32 ctl_stack_size;		/* to KFD */
+};
+
+struct kfd_ioctl_destroy_queue_args {
+	__u32 queue_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_ioctl_update_queue_args {
+	__u64 ring_base_address;	/* to KFD */
+
+	__u32 queue_id;		/* to KFD */
+	__u32 ring_size;		/* to KFD */
+	__u32 queue_percentage;	/* to KFD */
+	__u32 queue_priority;	/* to KFD */
+};
+
+struct kfd_ioctl_set_cu_mask_args {
+	__u32 queue_id;		/* to KFD */
+	__u32 num_cu_mask;		/* to KFD */
+	__u64 cu_mask_ptr;		/* to KFD */
+};
+
+struct kfd_ioctl_get_queue_wave_state_args {
+	__u64 ctl_stack_address;	/* to KFD */
+	__u32 ctl_stack_used_size;	/* from KFD */
+	__u32 save_area_used_size;	/* from KFD */
+	__u32 queue_id;			/* to KFD */
+	__u32 pad;
+};
+
+/* For kfd_ioctl_set_memory_policy_args.default_policy and alternate_policy */
+#define KFD_IOC_CACHE_POLICY_COHERENT 0
+#define KFD_IOC_CACHE_POLICY_NONCOHERENT 1
+
+struct kfd_ioctl_set_memory_policy_args {
+	__u64 alternate_aperture_base;	/* to KFD */
+	__u64 alternate_aperture_size;	/* to KFD */
+
+	__u32 gpu_id;			/* to KFD */
+	__u32 default_policy;		/* to KFD */
+	__u32 alternate_policy;		/* to KFD */
+	__u32 pad;
+};
+
+/*
+ * All counters are monotonic. They are used for profiling of compute jobs.
+ * The profiling is done by userspace.
+ *
+ * In case of GPU reset, the counter should not be affected.
+ */
+
+struct kfd_ioctl_get_clock_counters_args {
+	__u64 gpu_clock_counter;	/* from KFD */
+	__u64 cpu_clock_counter;	/* from KFD */
+	__u64 system_clock_counter;	/* from KFD */
+	__u64 system_clock_freq;	/* from KFD */
+
+	__u32 gpu_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_process_device_apertures {
+	__u64 lds_base;		/* from KFD */
+	__u64 lds_limit;		/* from KFD */
+	__u64 scratch_base;		/* from KFD */
+	__u64 scratch_limit;		/* from KFD */
+	__u64 gpuvm_base;		/* from KFD */
+	__u64 gpuvm_limit;		/* from KFD */
+	__u32 gpu_id;		/* from KFD */
+	__u32 pad;
+};
+
+/*
+ * AMDKFD_IOC_GET_PROCESS_APERTURES is deprecated. Use
+ * AMDKFD_IOC_GET_PROCESS_APERTURES_NEW instead, which supports an
+ * unlimited number of GPUs.
+ */
+#define NUM_OF_SUPPORTED_GPUS 7
+struct kfd_ioctl_get_process_apertures_args {
+	struct kfd_process_device_apertures
+			process_apertures[NUM_OF_SUPPORTED_GPUS];/* from KFD */
+
+	/* from KFD, should be in the range [1 - NUM_OF_SUPPORTED_GPUS] */
+	__u32 num_of_nodes;
+	__u32 pad;
+};
+
+struct kfd_ioctl_get_process_apertures_new_args {
+	/* User allocated. Pointer to struct kfd_process_device_apertures
+	 * filled in by Kernel
+	 */
+	__u64 kfd_process_device_apertures_ptr;
+	/* to KFD - indicates amount of memory present in
+	 *  kfd_process_device_apertures_ptr
+	 * from KFD - Number of entries filled by KFD.
+	 */
+	__u32 num_of_nodes;
+	__u32 pad;
+};
+
+#define MAX_ALLOWED_NUM_POINTS    100
+#define MAX_ALLOWED_AW_BUFF_SIZE 4096
+#define MAX_ALLOWED_WAC_BUFF_SIZE  128
+
+struct kfd_ioctl_dbg_register_args {
+	__u32 gpu_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_ioctl_dbg_unregister_args {
+	__u32 gpu_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_ioctl_dbg_address_watch_args {
+	__u64 content_ptr;		/* a pointer to the actual content */
+	__u32 gpu_id;		/* to KFD */
+	__u32 buf_size_in_bytes;	/*including gpu_id and buf_size */
+};
+
+struct kfd_ioctl_dbg_wave_control_args {
+	__u64 content_ptr;		/* a pointer to the actual content */
+	__u32 gpu_id;		/* to KFD */
+	__u32 buf_size_in_bytes;	/*including gpu_id and buf_size */
+};
+
+/* Matching HSA_EVENTTYPE */
+#define KFD_IOC_EVENT_SIGNAL			0
+#define KFD_IOC_EVENT_NODECHANGE		1
+#define KFD_IOC_EVENT_DEVICESTATECHANGE		2
+#define KFD_IOC_EVENT_HW_EXCEPTION		3
+#define KFD_IOC_EVENT_SYSTEM_EVENT		4
+#define KFD_IOC_EVENT_DEBUG_EVENT		5
+#define KFD_IOC_EVENT_PROFILE_EVENT		6
+#define KFD_IOC_EVENT_QUEUE_EVENT		7
+#define KFD_IOC_EVENT_MEMORY			8
+
+#define KFD_IOC_WAIT_RESULT_COMPLETE		0
+#define KFD_IOC_WAIT_RESULT_TIMEOUT		1
+#define KFD_IOC_WAIT_RESULT_FAIL		2
+
+#define KFD_SIGNAL_EVENT_LIMIT			4096
+
+/* For kfd_event_data.hw_exception_data.reset_type. */
+#define KFD_HW_EXCEPTION_WHOLE_GPU_RESET	0
+#define KFD_HW_EXCEPTION_PER_ENGINE_RESET	1
+
+/* For kfd_event_data.hw_exception_data.reset_cause. */
+#define KFD_HW_EXCEPTION_GPU_HANG	0
+#define KFD_HW_EXCEPTION_ECC		1
+
+/* For kfd_hsa_memory_exception_data.ErrorType */
+#define KFD_MEM_ERR_NO_RAS		0
+#define KFD_MEM_ERR_SRAM_ECC		1
+#define KFD_MEM_ERR_POISON_CONSUMED	2
+#define KFD_MEM_ERR_GPU_HANG		3
+
+struct kfd_ioctl_create_event_args {
+	__u64 event_page_offset;	/* from KFD */
+	__u32 event_trigger_data;	/* from KFD - signal events only */
+	__u32 event_type;		/* to KFD */
+	__u32 auto_reset;		/* to KFD */
+	__u32 node_id;		/* to KFD - only valid for certain
+							event types */
+	__u32 event_id;		/* from KFD */
+	__u32 event_slot_index;	/* from KFD */
+};
+
+struct kfd_ioctl_destroy_event_args {
+	__u32 event_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_ioctl_set_event_args {
+	__u32 event_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_ioctl_reset_event_args {
+	__u32 event_id;		/* to KFD */
+	__u32 pad;
+};
+
+struct kfd_memory_exception_failure {
+	__u32 NotPresent;	/* Page not present or supervisor privilege */
+	__u32 ReadOnly;	/* Write access to a read-only page */
+	__u32 NoExecute;	/* Execute access to a page marked NX */
+	__u32 imprecise;	/* Can't determine the	exact fault address */
+};
+
+/* memory exception data */
+struct kfd_hsa_memory_exception_data {
+	struct kfd_memory_exception_failure failure;
+	__u64 va;
+	__u32 gpu_id;
+	__u32 ErrorType; /* 0 = no RAS error,
+			  * 1 = ECC_SRAM,
+			  * 2 = Link_SYNFLOOD (poison),
+			  * 3 = GPU hang (not attributable to a specific cause),
+			  * other values reserved
+			  */
+};
+
+/* hw exception data */
+struct kfd_hsa_hw_exception_data {
+	__u32 reset_type;
+	__u32 reset_cause;
+	__u32 memory_lost;
+	__u32 gpu_id;
+};
+
+/* Event data */
+struct kfd_event_data {
+	union {
+		struct kfd_hsa_memory_exception_data memory_exception_data;
+		struct kfd_hsa_hw_exception_data hw_exception_data;
+	};				/* From KFD */
+	__u64 kfd_event_data_ext;	/* pointer to an exte

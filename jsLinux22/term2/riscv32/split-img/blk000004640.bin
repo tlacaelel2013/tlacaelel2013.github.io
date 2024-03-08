@@ -1,0 +1,1166 @@
+ublic _Rope_char_consumer<_CharT>
+    {
+    private:
+      _CharT* _M_buf_ptr;
+    public:
+      
+      _Rope_flatten_char_consumer(_CharT* __buffer)
+      { _M_buf_ptr = __buffer; }
+
+      ~_Rope_flatten_char_consumer() {}
+      
+      bool
+      operator()(const _CharT* __leaf, size_t __n)
+      {
+	uninitialized_copy_n(__leaf, __n, _M_buf_ptr);
+	_M_buf_ptr += __n;
+	return true;
+      }
+    };
+
+  template<class _CharT>
+    class _Rope_find_char_char_consumer
+    : public _Rope_char_consumer<_CharT>
+    {
+    private:
+      _CharT _M_pattern;
+    public:
+      size_t _M_count;  // Number of nonmatching characters
+      
+      _Rope_find_char_char_consumer(_CharT __p)
+      : _M_pattern(__p), _M_count(0) {}
+	
+      ~_Rope_find_char_char_consumer() {}
+      
+      bool
+      operator()(const _CharT* __leaf, size_t __n)
+      {
+	size_t __i;
+	for (__i = 0; __i < __n; __i++)
+	  {
+	    if (__leaf[__i] == _M_pattern)
+	      {
+		_M_count += __i;
+		return false;
+	      }
+	  }
+	_M_count += __n; return true;
+      }
+    };
+
+  template<class _CharT, class _Traits>
+  // Here _CharT is both the stream and rope character type.
+    class _Rope_insert_char_consumer
+    : public _Rope_char_consumer<_CharT>
+    {
+    private:
+      typedef basic_ostream<_CharT,_Traits> _Insert_ostream;
+      _Insert_ostream& _M_o;
+    public:
+      _Rope_insert_char_consumer(_Insert_ostream& __writer)
+	: _M_o(__writer) {}
+      ~_Rope_insert_char_consumer() { }
+      // Caller is presumed to own the ostream
+      bool operator() (const _CharT* __leaf, size_t __n);
+      // Returns true to continue traversal.
+    };
+
+  template<class _CharT, class _Traits>
+    bool
+    _Rope_insert_char_consumer<_CharT, _Traits>::
+    operator()(const _CharT* __leaf, size_t __n)
+    {
+      size_t __i;
+      //  We assume that formatting is set up correctly for each element.
+      for (__i = 0; __i < __n; __i++)
+	_M_o.put(__leaf[__i]);
+      return true;
+    }
+
+  template <class _CharT, class _Alloc>
+    bool
+    rope<_CharT, _Alloc>::
+    _S_apply_to_pieces(_Rope_char_consumer<_CharT>& __c,
+		       const _RopeRep* __r, size_t __begin, size_t __end)
+    {
+      if (0 == __r)
+	return true;
+      switch(__r->_M_tag)
+	{
+	case __detail::_S_concat:
+	  {
+	    _RopeConcatenation* __conc = (_RopeConcatenation*)__r;
+	    _RopeRep* __left =  __conc->_M_left;
+	    size_t __left_len = __left->_M_size;
+	    if (__begin < __left_len)
+	      {
+		size_t __left_end = std::min(__left_len, __end);
+		if (!_S_apply_to_pieces(__c, __left, __begin, __left_end))
+		  return false;
+	      }
+	    if (__end > __left_len)
+	      {
+		_RopeRep* __right =  __conc->_M_right;
+		size_t __right_start = std::max(__left_len, __begin);
+		if (!_S_apply_to_pieces(__c, __right,
+					__right_start - __left_len,
+					__end - __left_len))
+		  return false;
+	      }
+	  }
+	  return true;
+	case __detail::_S_leaf:
+	  {
+	    _RopeLeaf* __l = (_RopeLeaf*)__r;
+	    return __c(__l->_M_data + __begin, __end - __begin);
+	  }
+	case __detail::_S_function:
+	case __detail::_S_substringfn:
+	    {
+	      _RopeFunction* __f = (_RopeFunction*)__r;
+	      size_t __len = __end - __begin;
+	      bool __result;
+	      _CharT* __buffer =
+		(_CharT*)_Alloc().allocate(__len * sizeof(_CharT));
+	      __try
+		{
+		  (*(__f->_M_fn))(__begin, __len, __buffer);
+		  __result = __c(__buffer, __len);
+                  _Alloc().deallocate(__buffer, __len * sizeof(_CharT));
+                }
+	      __catch(...)
+		{
+		  _Alloc().deallocate(__buffer, __len * sizeof(_CharT));
+		  __throw_exception_again;
+		}
+	      return __result;
+	    }
+	default:
+	  return false;
+	}
+    }
+
+  template<class _CharT, class _Traits>
+    inline void
+    _Rope_fill(basic_ostream<_CharT, _Traits>& __o, size_t __n)
+    {
+      char __f = __o.fill();
+      size_t __i;
+      
+      for (__i = 0; __i < __n; __i++)
+	__o.put(__f);
+    }
+
+
+  template <class _CharT>
+    inline bool
+    _Rope_is_simple(_CharT*)
+    { return false; }
+
+  inline bool
+  _Rope_is_simple(char*)
+  { return true; }
+
+  inline bool
+  _Rope_is_simple(wchar_t*)
+  { return true; }
+
+  template<class _CharT, class _Traits, class _Alloc>
+    basic_ostream<_CharT, _Traits>&
+    operator<<(basic_ostream<_CharT, _Traits>& __o,
+	       const rope<_CharT, _Alloc>& __r)
+    {
+      size_t __w = __o.width();
+      bool __left = bool(__o.flags() & std::ios::left);
+      size_t __pad_len;
+      size_t __rope_len = __r.size();
+      _Rope_insert_char_consumer<_CharT, _Traits> __c(__o);
+      bool __is_simple = _Rope_is_simple((_CharT*)0);
+      
+      if (__rope_len < __w)
+	__pad_len = __w - __rope_len;
+      else
+	__pad_len = 0;
+
+      if (!__is_simple)
+	__o.width(__w / __rope_len);
+      __try
+	{
+	  if (__is_simple && !__left && __pad_len > 0)
+	    _Rope_fill(__o, __pad_len);
+	  __r.apply_to_pieces(0, __r.size(), __c);
+	  if (__is_simple && __left && __pad_len > 0)
+	    _Rope_fill(__o, __pad_len);
+	  if (!__is_simple)
+	    __o.width(__w);
+	}
+      __catch(...)
+	{
+	  if (!__is_simple)
+	    __o.width(__w);
+	  __throw_exception_again;
+	}
+      return __o;
+    }
+
+  template <class _CharT, class _Alloc>
+    _CharT*
+    rope<_CharT, _Alloc>::
+    _S_flatten(_RopeRep* __r, size_t __start, size_t __len,
+	       _CharT* __buffer)
+    {
+      _Rope_flatten_char_consumer<_CharT> __c(__buffer);
+      _S_apply_to_pieces(__c, __r, __start, __start + __len);
+      return(__buffer + __len);
+    }
+
+  template <class _CharT, class _Alloc>
+    size_t
+    rope<_CharT, _Alloc>::
+    find(_CharT __pattern, size_t __start) const
+    {
+      _Rope_find_char_char_consumer<_CharT> __c(__pattern);
+      _S_apply_to_pieces(__c, this->_M_tree_ptr, __start, size());
+      size_type __result_pos = __start + __c._M_count;
+#ifndef __STL_OLD_ROPE_SEMANTICS
+      if (__result_pos == size())
+	__result_pos = npos;
+#endif
+      return __result_pos;
+    }
+
+  template <class _CharT, class _Alloc>
+    _CharT*
+    rope<_CharT, _Alloc>::
+    _S_flatten(_RopeRep* __r, _CharT* __buffer)
+    {
+      if (0 == __r)
+	return __buffer;
+      switch(__r->_M_tag)
+	{
+	case __detail::_S_concat:
+	  {
+	    _RopeConcatenation* __c = (_RopeConcatenation*)__r;
+	    _RopeRep* __left = __c->_M_left;
+	    _RopeRep* __right = __c->_M_right;
+	    _CharT* __rest = _S_flatten(__left, __buffer);
+	    return _S_flatten(__right, __rest);
+	  }
+	case __detail::_S_leaf:
+	  {
+	    _RopeLeaf* __l = (_RopeLeaf*)__r;
+	    return copy_n(__l->_M_data, __l->_M_size, __buffer).second;
+	  }
+	case __detail::_S_function:
+	case __detail::_S_substringfn:
+	  // We don't yet do anything with substring nodes.
+	  // This needs to be fixed before ropefiles will work well.
+	  {
+	    _RopeFunction* __f = (_RopeFunction*)__r;
+	    (*(__f->_M_fn))(0, __f->_M_size, __buffer);
+	    return __buffer + __f->_M_size;
+	  }
+	default:
+	  return 0;
+	}
+    }
+
+  // This needs work for _CharT != char
+  template <class _CharT, class _Alloc>
+    void
+    rope<_CharT, _Alloc>::
+    _S_dump(_RopeRep* __r, int __indent)
+    {
+      for (int __i = 0; __i < __indent; __i++)
+	putchar(' ');
+      if (0 == __r)
+	{
+	  printf("NULL\n");
+	  return;
+	}
+      if (__detail::_S_concat == __r->_M_tag)
+	{
+	  _RopeConcatenation* __c = (_RopeConcatenation*)__r;
+	  _RopeRep* __left = __c->_M_left;
+	  _RopeRep* __right = __c->_M_right;
+	  
+#ifdef __GC
+	  printf("Concatenation %p (depth = %d, len = %ld, %s balanced)\n",
+		 __r, __r->_M_depth, __r->_M_size,
+		 __r->_M_is_balanced? "" : "not");
+#else
+	  printf("Concatenation %p (rc = %ld, depth = %d, "
+		 "len = %ld, %s balanced)\n",
+		 __r, __r->_M_ref_count, __r->_M_depth, __r->_M_size,
+		 __r->_M_is_balanced? "" : "not");
+#endif
+	  _S_dump(__left, __indent + 2);
+	  _S_dump(__right, __indent + 2);
+	  return;
+	}
+      else
+	{
+	  const char* __kind;
+	  
+	  switch (__r->_M_tag)
+	    {
+	    case __detail::_S_leaf:
+	      __kind = "Leaf";
+	      break;
+	    case __detail::_S_function:
+	      __kind = "Function";
+	      break;
+	    case __detail::_S_substringfn:
+	      __kind = "Function representing substring";
+	      break;
+	    default:
+	      __kind = "(corrupted kind field!)";
+	    }
+#ifdef __GC
+	  printf("%s %p (depth = %d, len = %ld) ",
+		 __kind, __r, __r->_M_depth, __r->_M_size);
+#else
+	  printf("%s %p (rc = %ld, depth = %d, len = %ld) ",
+		 __kind, __r, __r->_M_ref_count, __r->_M_depth, __r->_M_size);
+#endif
+	  if (_S_is_one_byte_char_type((_CharT*)0))
+	    {
+	      const int __max_len = 40;
+	      _Self_destruct_ptr __prefix(_S_substring(__r, 0, __max_len));
+	      _CharT __buffer[__max_len + 1];
+	      bool __too_big = __r->_M_size > __prefix->_M_size;
+	      
+	      _S_flatten(__prefix, __buffer);
+	      __buffer[__prefix->_M_size] = _S_eos((_CharT*)0);
+	      printf("%s%s\n", (char*)__buffer,
+		     __too_big? "...\n" : "\n");
+	    }
+	  else
+	    printf("\n");
+	}
+    }
+
+  template <class _CharT, class _Alloc>
+    const unsigned long
+    rope<_CharT, _Alloc>::
+    _S_min_len[int(__detail::_S_max_rope_depth) + 1] = {
+      /* 0 */1, /* 1 */2, /* 2 */3, /* 3 */5, /* 4 */8, /* 5 */13, /* 6 */21,
+      /* 7 */34, /* 8 */55, /* 9 */89, /* 10 */144, /* 11 */233, /* 12 */377,
+      /* 13 */610, /* 14 */987, /* 15 */1597, /* 16 */2584, /* 17 */4181,
+      /* 18 */6765, /* 19 */10946, /* 20 */17711, /* 21 */28657, /* 22 */46368,
+      /* 23 */75025, /* 24 */121393, /* 25 */196418, /* 26 */317811,
+      /* 27 */514229, /* 28 */832040, /* 29 */1346269, /* 30 */2178309,
+      /* 31 */3524578, /* 32 */5702887, /* 33 */9227465, /* 34 */14930352,
+      /* 35 */24157817, /* 36 */39088169, /* 37 */63245986, /* 38 */102334155,
+      /* 39 */165580141, /* 40 */267914296, /* 41 */433494437,
+      /* 42 */701408733, /* 43 */1134903170, /* 44 */1836311903,
+      /* 45 */2971215073u };
+  // These are Fibonacci numbers < 2**32.
+
+  template <class _CharT, class _Alloc>
+    typename rope<_CharT, _Alloc>::_RopeRep*
+    rope<_CharT, _Alloc>::
+    _S_balance(_RopeRep* __r)
+    {
+      _RopeRep* __forest[int(__detail::_S_max_rope_depth) + 1];
+      _RopeRep* __result = 0;
+      int __i;
+      // Invariant:
+      // The concatenation of forest in descending order is equal to __r.
+      // __forest[__i]._M_size >= _S_min_len[__i]
+      // __forest[__i]._M_depth = __i
+      // References from forest are included in refcount.
+      
+      for (__i = 0; __i <= int(__detail::_S_max_rope_depth); ++__i)
+	__forest[__i] = 0;
+      __try
+	{
+	  _S_add_to_forest(__r, __forest);
+	  for (__i = 0; __i <= int(__detail::_S_max_rope_depth); ++__i)
+	    if (0 != __forest[__i])
+	      {
+#ifndef __GC
+		_Self_destruct_ptr __old(__result);
+#endif
+		__result = _S_concat(__forest[__i], __result);
+		__forest[__i]->_M_unref_nonnil();
+#if !defined(__GC) && __cpp_exceptions
+		__forest[__i] = 0;
+#endif
+	      }
+	}
+      __catch(...)
+	{
+	  for(__i = 0; __i <= int(__detail::_S_max_rope_depth); __i++)
+	    _S_unref(__forest[__i]);
+	  __throw_exception_again;
+	}
+      
+      if (__result->_M_depth > int(__detail::_S_max_rope_depth))
+	__throw_length_error(__N("rope::_S_balance"));
+      return(__result);
+    }
+
+  template <class _CharT, class _Alloc>
+    void
+    rope<_CharT, _Alloc>::
+    _S_add_to_forest(_RopeRep* __r, _RopeRep** __forest)
+    {
+      if (__r->_M_is_balanced)
+	{
+	  _S_add_leaf_to_forest(__r, __forest);
+	  return;
+	}
+
+      {
+	_RopeConcatenation* __c = (_RopeConcatenation*)__r;
+	
+	_S_add_to_forest(__c->_M_left, __forest);
+	_S_add_to_forest(__c->_M_right, __forest);
+      }
+    }
+
+
+  template <class _CharT, class _Alloc>
+    void
+    rope<_CharT, _Alloc>::
+    _S_add_leaf_to_forest(_RopeRep* __r, _RopeRep** __forest)
+    {
+      _RopeRep* __insertee;		// included in refcount
+      _RopeRep* __too_tiny = 0;		// included in refcount
+      int __i;				// forest[0..__i-1] is empty
+      size_t __s = __r->_M_size;
+      
+      for (__i = 0; __s >= _S_min_len[__i+1]/* not this bucket */; ++__i)
+	{
+	  if (0 != __forest[__i])
+	    {
+#ifndef __GC
+	      _Self_destruct_ptr __old(__too_tiny);
+#endif
+	      __too_tiny = _S_concat_and_set_balanced(__forest[__i],
+						      __too_tiny);
+	      __forest[__i]->_M_unref_nonnil();
+	      __forest[__i] = 0;
+	    }
+	}
+      {
+#ifndef __GC
+	_Self_destruct_ptr __old(__too_tiny);
+#endif
+	__insertee = _S_concat_and_set_balanced(__too_tiny, __r);
+      }
+      // Too_tiny dead, and no longer included in refcount.
+      // Insertee is live and included.
+      for (;; ++__i)
+	{
+	  if (0 != __forest[__i])
+	    {
+#ifndef __GC
+	      _Self_destruct_ptr __old(__insertee);
+#endif
+	      __insertee = _S_concat_and_set_balanced(__forest[__i],
+						      __insertee);
+	      __forest[__i]->_M_unref_nonnil();
+	      __forest[__i] = 0;
+	    }
+	  if (__i == int(__detail::_S_max_rope_depth)
+	      || __insertee->_M_size < _S_min_len[__i+1])
+	    {
+	      __forest[__i] = __insertee;
+	      // refcount is OK since __insertee is now dead.
+	      return;
+	    }
+	}
+    }
+
+  template <class _CharT, class _Alloc>
+    _CharT
+    rope<_CharT, _Alloc>::
+    _S_fetch(_RopeRep* __r, size_type __i)
+    {
+      __GC_CONST _CharT* __cstr = __r->_M_c_string;
+      
+      if (0 != __cstr)
+	return __cstr[__i];
+      for(;;)
+	{
+	  switch(__r->_M_tag)
+	    {
+	    case __detail::_S_concat:
+	      {
+		_RopeConcatenation* __c = (_RopeConcatenation*)__r;
+		_RopeRep* __left = __c->_M_left;
+		size_t __left_len = __left->_M_size;
+		
+		if (__i >= __left_len)
+		  {
+		    __i -= __left_len;
+		    __r = __c->_M_right;
+		  } 
+		else
+		  __r = __left;
+	      }
+	      break;
+	    case __detail::_S_leaf:
+	      {
+		_RopeLeaf* __l = (_RopeLeaf*)__r;
+		return __l->_M_data[__i];
+	      }
+	    case __detail::_S_function:
+	    case __detail::_S_substringfn:
+	      {
+		_RopeFunction* __f = (_RopeFunction*)__r;
+		_CharT __result;
+		
+		(*(__f->_M_fn))(__i, 1, &__result);
+		return __result;
+	      }
+	    }
+	}
+    }
+  
+#ifndef __GC
+  // Return a uniquely referenced character slot for the given
+  // position, or 0 if that's not possible.
+  template <class _CharT, class _Alloc>
+    _CharT*
+    rope<_CharT, _Alloc>::
+    _S_fetch_ptr(_RopeRep* __r, size_type __i)
+    {
+      _RopeRep* __clrstack[__detail::_S_max_rope_depth];
+      size_t __csptr = 0;
+      
+      for(;;)
+	{
+	  if (__r->_M_ref_count > 1)
+	    return 0;
+	  switch(__r->_M_tag)
+	    {
+	    case __detail::_S_concat:
+	      {
+		_RopeConcatenation* __c = (_RopeConcatenation*)__r;
+		_RopeRep* __left = __c->_M_left;
+		size_t __left_len = __left->_M_size;
+		
+		if (__c->_M_c_string != 0)
+		  __clrstack[__csptr++] = __c;
+		if (__i >= __left_len)
+		  {
+		    __i -= __left_len;
+		    __r = __c->_M_right;
+		  } 
+		else
+		  __r = __left;
+	      }
+	      break;
+	    case __detail::_S_leaf:
+	      {
+		_RopeLeaf* __l = (_RopeLeaf*)__r;
+		if (__l->_M_c_string != __l->_M_data && __l->_M_c_string != 0)
+		  __clrstack[__csptr++] = __l;
+		while (__csptr > 0)
+		  {
+		    -- __csptr;
+		    _RopeRep* __d = __clrstack[__csptr];
+		    __d->_M_free_c_string();
+		    __d->_M_c_string = 0;
+		  }
+		return __l->_M_data + __i;
+	      }
+	    case __detail::_S_function:
+	    case __detail::_S_substringfn:
+	      return 0;
+	    }
+	}
+    }
+#endif /* __GC */
+
+  // The following could be implemented trivially using
+  // lexicographical_compare_3way.
+  // We do a little more work to avoid dealing with rope iterators for
+  // flat strings.
+  template <class _CharT, class _Alloc>
+    int
+    rope<_CharT, _Alloc>::
+    _S_compare (const _RopeRep* __left, const _RopeRep* __right)
+    {
+      size_t __left_len;
+      size_t __right_len;
+      
+      if (0 == __right)
+	return 0 != __left;
+      if (0 == __left)
+	return -1;
+      __left_len = __left->_M_size;
+      __right_len = __right->_M_size;
+      if (__detail::_S_leaf == __left->_M_tag)
+	{
+	  _RopeLeaf* __l = (_RopeLeaf*) __left;
+	  if (__detail::_S_leaf == __right->_M_tag)
+	    {
+	      _RopeLeaf* __r = (_RopeLeaf*) __right;
+	      return lexicographical_compare_3way(__l->_M_data,
+						  __l->_M_data + __left_len,
+						  __r->_M_data, __r->_M_data
+						  + __right_len);
+	    }
+	  else
+	    {
+	      const_iterator __rstart(__right, 0);
+	      const_iterator __rend(__right, __right_len);
+	      return lexicographical_compare_3way(__l->_M_data, __l->_M_data
+						  + __left_len,
+						  __rstart, __rend);
+	    }
+	}
+      else
+	{
+	  const_iterator __lstart(__left, 0);
+	  const_iterator __lend(__left, __left_len);
+	  if (__detail::_S_leaf == __right->_M_tag)
+	    {
+	      _RopeLeaf* __r = (_RopeLeaf*) __right;
+	      return lexicographical_compare_3way(__lstart, __lend,
+						  __r->_M_data, __r->_M_data
+						  + __right_len);
+	    }
+	  else
+	    {
+	      const_iterator __rstart(__right, 0);
+	      const_iterator __rend(__right, __right_len);
+	      return lexicographical_compare_3way(__lstart, __lend,
+						  __rstart, __rend);
+	    }
+	}
+    }
+
+  // Assignment to reference proxies.
+  template <class _CharT, class _Alloc>
+    _Rope_char_ref_proxy<_CharT, _Alloc>&
+    _Rope_char_ref_proxy<_CharT, _Alloc>::
+    operator=(_CharT __c)
+    {
+      _RopeRep* __old = _M_root->_M_tree_ptr;
+#ifndef __GC
+      // First check for the case in which everything is uniquely
+      // referenced.  In that case we can do this destructively.
+      _CharT* __ptr = _My_rope::_S_fetch_ptr(__old, _M_pos);
+      if (0 != __ptr)
+	{
+	  *__ptr = __c;
+	  return *this;
+	}
+#endif
+      _Self_destruct_ptr __left(_My_rope::_S_substring(__old, 0, _M_pos));
+      _Self_destruct_ptr __right(_My_rope::_S_substring(__old, _M_pos + 1,
+							__old->_M_size));
+      _Self_destruct_ptr __result_left(_My_rope::
+				       _S_destr_concat_char_iter(__left,
+								 &__c, 1));
+
+      _RopeRep* __result = _My_rope::_S_concat(__result_left, __right);
+#ifndef __GC
+      _RopeRep::_S_unref(__old);
+#endif
+      _M_root->_M_tree_ptr = __result;
+      return *this;
+    }
+
+  template <class _CharT, class _Alloc>
+    inline _Rope_char_ref_proxy<_CharT, _Alloc>::
+    operator _CharT() const
+    {
+      if (_M_current_valid)
+	return _M_current;
+      else
+	return _My_rope::_S_fetch(_M_root->_M_tree_ptr, _M_pos);
+    }
+
+  template <class _CharT, class _Alloc>
+    _Rope_char_ptr_proxy<_CharT, _Alloc>
+    _Rope_char_ref_proxy<_CharT, _Alloc>::
+    operator&() const
+    { return _Rope_char_ptr_proxy<_CharT, _Alloc>(*this); }
+
+  template <class _CharT, class _Alloc>
+    rope<_CharT, _Alloc>::
+    rope(size_t __n, _CharT __c, const allocator_type& __a)
+    : _Base(__a)
+    {
+      rope<_CharT,_Alloc> __result;
+      const size_t __exponentiate_threshold = 32;
+      size_t __exponent;
+      size_t __rest;
+      _CharT* __rest_buffer;
+      _RopeRep* __remainder;
+      rope<_CharT, _Alloc> __remainder_rope;
+
+      if (0 == __n)
+	return;
+
+      __exponent = __n / __exponentiate_threshold;
+      __rest = __n % __exponentiate_threshold;
+      if (0 == __rest)
+	__remainder = 0;
+      else
+	{
+	  __rest_buffer = this->_Data_allocate(_S_rounded_up_size(__rest));
+	  __uninitialized_fill_n_a(__rest_buffer, __rest, __c,
+				   _M_get_allocator());
+	  _S_cond_store_eos(__rest_buffer[__rest]);
+	  __try
+	    { __remainder = _S_new_RopeLeaf(__rest_buffer, __rest,
+					    _M_get_allocator()); }
+	  __catch(...)
+	    {
+	      _RopeRep::__STL_FREE_STRING(__rest_buffer, __rest,
+					  _M_get_allocator());
+	      __throw_exception_again;
+	    }
+	}
+      __remainder_rope._M_tree_ptr = __remainder;
+      if (__exponent != 0)
+	{
+	  _CharT* __base_buffer =
+	    this->_Data_allocate(_S_rounded_up_size(__exponentiate_threshold));
+	  _RopeLeaf* __base_leaf;
+	  rope __base_rope;
+	  __uninitialized_fill_n_a(__base_buffer, __exponentiate_threshold, __c,
+				   _M_get_allocator());
+	  _S_cond_store_eos(__base_buffer[__exponentiate_threshold]);
+	  __try
+	    {
+	      __base_leaf = _S_new_RopeLeaf(__base_buffer,
+					    __exponentiate_threshold,
+					    _M_get_allocator());
+	    }
+	  __catch(...)
+	    {
+	      _RopeRep::__STL_FREE_STRING(__base_buffer,
+					  __exponentiate_threshold,
+					  _M_get_allocator());
+	      __throw_exception_again;
+	    }
+	  __base_rope._M_tree_ptr = __base_leaf;
+	  if (1 == __exponent)
+	    __result = __base_rope;
+	  else
+	    __result = power(__base_rope, __exponent,
+			     _Rope_Concat_fn<_CharT, _Alloc>());
+	    
+	  if (0 != __remainder)
+	    __result += __remainder_rope;
+	}
+      else
+	__result = __remainder_rope;
+	  
+      this->_M_tree_ptr = __result._M_tree_ptr;
+      this->_M_tree_ptr->_M_ref_nonnil();
+    }
+      
+  template<class _CharT, class _Alloc>
+    _CharT
+    rope<_CharT, _Alloc>::_S_empty_c_str[1];
+      
+  template<class _CharT, class _Alloc>
+    const _CharT*
+    rope<_CharT, _Alloc>::
+    c_str() const
+    {
+      if (0 == this->_M_tree_ptr)
+	{
+	  _S_empty_c_str[0] = _S_eos((_CharT*)0);  // Possibly redundant,
+	                                           // but probably fast.
+	  return _S_empty_c_str;
+	}
+      __gthread_mutex_lock (&this->_M_tree_ptr->_M_c_string_lock);
+      __GC_CONST _CharT* __result = this->_M_tree_ptr->_M_c_string;
+      if (0 == __result)
+	{
+	  size_t __s = size();
+	  __result = this->_Data_allocate(__s + 1);
+	  _S_flatten(this->_M_tree_ptr, __result);
+	  __result[__s] = _S_eos((_CharT*)0);
+	  this->_M_tree_ptr->_M_c_string = __result;
+	}
+      __gthread_mutex_unlock (&this->_M_tree_ptr->_M_c_string_lock);
+      return(__result);
+    }
+  
+  template<class _CharT, class _Alloc>
+    const _CharT* rope<_CharT, _Alloc>::
+    replace_with_c_str()
+    {
+      if (0 == this->_M_tree_ptr)
+	{
+	  _S_empty_c_str[0] = _S_eos((_CharT*)0);
+	  return _S_empty_c_str;
+	}
+      __GC_CONST _CharT* __old_c_string = this->_M_tree_ptr->_M_c_string;
+      if (__detail::_S_leaf == this->_M_tree_ptr->_M_tag
+	  && 0 != __old_c_string)
+	return(__old_c_string);
+      size_t __s = size();
+      _CharT* __result = this->_Data_allocate(_S_rounded_up_size(__s));
+      _S_flatten(this->_M_tree_ptr, __result);
+      __result[__s] = _S_eos((_CharT*)0);
+      this->_M_tree_ptr->_M_unref_nonnil();
+      this->_M_tree_ptr = _S_new_RopeLeaf(__result, __s,
+					  this->_M_get_allocator());
+      return(__result);
+    }
+
+  // Algorithm specializations.  More should be added.
+  
+  template<class _Rope_iterator>  // was templated on CharT and Alloc
+    void		          // VC++ workaround
+    _Rope_rotate(_Rope_iterator __first,
+		 _Rope_iterator __middle,
+		 _Rope_iterator __last)
+    {
+      typedef typename _Rope_iterator::value_type _CharT;
+      typedef typename _Rope_iterator::_allocator_type _Alloc;
+      
+      rope<_CharT, _Alloc>& __r(__first.container());
+      rope<_CharT, _Alloc> __prefix = __r.substr(0, __first.index());
+      rope<_CharT, _Alloc> __suffix =
+	__r.substr(__last.index(), __r.size() - __last.index());
+      rope<_CharT, _Alloc> __part1 =
+	__r.substr(__middle.index(), __last.index() - __middle.index());
+      rope<_CharT, _Alloc> __part2 =
+	__r.substr(__first.index(), __middle.index() - __first.index());
+      __r = __prefix;
+      __r += __part1;
+      __r += __part2;
+      __r += __suffix;
+    }
+
+#if !defined(__GNUC__)
+  // Appears to confuse g++
+  inline void
+  rotate(_Rope_iterator<char, __STL_DEFAULT_ALLOCATOR(char)> __first,
+	 _Rope_iterator<char, __STL_DEFAULT_ALLOCATOR(char)> __middle,
+	 _Rope_iterator<char, __STL_DEFAULT_ALLOCATOR(char)> __last)
+  { _Rope_rotate(__first, __middle, __last); }
+#endif
+
+# if 0
+  // Probably not useful for several reasons:
+  // - for SGIs 7.1 compiler and probably some others,
+  //   this forces lots of rope<wchar_t, ...> instantiations, creating a
+  //   code bloat and compile time problem.  (Fixed in 7.2.)
+  // - wchar_t is 4 bytes wide on most UNIX platforms, making it
+  //   unattractive for unicode strings.  Unsigned short may be a better
+  //   character type.
+  inline void
+  rotate(_Rope_iterator<wchar_t, __STL_DEFAULT_ALLOCATOR(char)> __first,
+	 _Rope_iterator<wchar_t, __STL_DEFAULT_ALLOCATOR(char)> __middle,
+	 _Rope_iterator<wchar_t, __STL_DEFAULT_ALLOCATOR(char)> __last)
+  { _Rope_rotate(__first, __middle, __last); }
+# endif
+
+_GLIBCXX_END_NAMESPACE_VERSION
+} // namespace
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           // Singly-linked list implementation -*- C++ -*-
+
+// Copyright (C) 2001-2019 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/*
+ * Copyright (c) 1997
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Silicon Graphics makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ *
+ */
+
+/** @file ext/slist
+ *  This file is a GNU extension to the Standard C++ Library (possibly
+ *  containing extensions from the HP/SGI STL subset). 
+ */
+
+#ifndef _SLIST
+#define _SLIST 1
+
+#include <algorithm>
+#include <bits/allocator.h>
+#include <bits/stl_construct.h>
+#include <bits/stl_uninitialized.h>
+#include <bits/concept_check.h>
+
+namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
+{
+_GLIBCXX_BEGIN_NAMESPACE_VERSION
+
+  using std::size_t;
+  using std::ptrdiff_t;
+  using std::_Construct;
+  using std::_Destroy;
+  using std::allocator;
+  using std::__true_type;
+  using std::__false_type;
+
+  struct _Slist_node_base
+  {
+    _Slist_node_base* _M_next;
+  };
+  
+  inline _Slist_node_base*
+  __slist_make_link(_Slist_node_base* __prev_node,
+		    _Slist_node_base* __new_node)
+  {
+    __new_node->_M_next = __prev_node->_M_next;
+    __prev_node->_M_next = __new_node;
+    return __new_node;
+  }
+
+  inline _Slist_node_base*
+  __slist_previous(_Slist_node_base* __head,
+		   const _Slist_node_base* __node)
+  {
+    while (__head && __head->_M_next != __node)
+      __head = __head->_M_next;
+    return __head;
+  }
+
+  inline const _Slist_node_base*
+  __slist_previous(const _Slist_node_base* __head,
+		   const _Slist_node_base* __node)
+  {
+    while (__head && __head->_M_next != __node)
+      __head = __head->_M_next;
+    return __head;
+  }
+
+  inline void
+  __slist_splice_after(_Slist_node_base* __pos,
+		       _Slist_node_base* __before_first,
+		       _Slist_node_base* __before_last)
+  {
+    if (__pos != __before_first && __pos != __before_last)
+      {
+	_Slist_node_base* __first = __before_first->_M_next;
+	_Slist_node_base* __after = __pos->_M_next;
+	__before_first->_M_next = __before_last->_M_next;
+	__pos->_M_next = __first;
+	__before_last->_M_next = __after;
+      }
+  }
+
+  inline void
+  __slist_splice_after(_Slist_node_base* __pos, _Slist_node_base* __head)
+  {
+    _Slist_node_base* __before_last = __slist_previous(__head, 0);
+    if (__before_last != __head)
+      {
+	_Slist_node_base* __after = __pos->_M_next;
+	__pos->_M_next = __head->_M_next;
+	__head->_M_next = 0;
+	__before_last->_M_next = __after;
+      }
+  }
+
+  inline _Slist_node_base*
+  __slist_reverse(_Slist_node_base* __node)
+  {
+    _Slist_node_base* __result = __node;
+    __node = __node->_M_next;
+    __result->_M_next = 0;
+    while(__node)
+      {
+	_Slist_node_base* __next = __node->_M_next;
+	__node->_M_next = __result;
+	__result = __node;
+	__node = __next;
+      }
+    return __result;
+  }
+
+  inline size_t
+  __slist_size(_Slist_node_base* __node)
+  {
+    size_t __result = 0;
+    for (; __node != 0; __node = __node->_M_next)
+      ++__result;
+    return __result;
+  }
+
+  template <class _Tp>
+    struct _Slist_node : public _Slist_node_base
+    {
+      _Tp _M_data;
+    };
+
+  struct _Slist_iterator_base
+  {
+    typedef size_t                    size_type;
+    typedef ptrdiff_t                 difference_type;
+    typedef std::forward_iterator_tag iterator_category;
+
+    _Slist_node_base* _M_node;
+    
+    _Slist_iterator_base(_Slist_node_base* __x)
+    : _M_node(__x) {}
+
+    void
+    _M_incr()
+    { _M_node = _M_node->_M_next; }
+
+    bool
+    operator==(const _Slist_iterator_base& __x) const
+    { return _M_node == __x._M_node; }
+
+    bool
+    operator!=(const _Slist_iterator_base& __x) const
+    { return _M_node != __x._M_node; }
+  };
+
+  template <class _Tp, class _Ref, class _Ptr>
+    struct _Slist_iterator : public _Slist_iterator_base
+    {
+      typedef _Slist_iterator<_Tp, _Tp&, _Tp*>             iterator;
+      typedef _Slist_iterator<_Tp, const _Tp&, const _Tp*> const_iterator;
+      typedef _Slist_iterator<_Tp, _Ref, _Ptr>             _Self;
+
+      typedef _Tp              value_type;
+      typedef _Ptr             pointer;
+      typedef _Ref             reference;
+      typedef _Slist_node<_Tp> _Node;
+
+      explicit
+      _Slist_iterator(_Node* __x)
+      : _Slist_iterator_base(__x) {}
+
+      _Slist_iterator()
+      : _Slist_iterator_base(0) {}
+
+      _Slist_iterator(const iterator& __x)
+      : _Slist_iterator_base(__x._M_node) {}
+
+      reference
+      operator*() const
+      { return ((_Node*) _M_node)->_M_data; }
+
+      pointer
+      operator->() const
+      { return &(operator*()); }
+
+      _Self&
+      operator++()
+      {
+	_M_incr();
+	return *this;
+      }
+
+      _Self
+      operator++(int)
+      {
+	_Self __tmp = *this;
+	_M_incr();
+	return __tmp;
+      }
+    };
+
+  template <class _Tp, class _Alloc>
+    struct _Slist_base
+    : public _Alloc::template rebind<_Slist_node<_Tp> >::other
+    {
+      typedef typename _Alloc::template rebind<_Slist_node<_Tp> >::other
+        _Node_alloc;
+      typedef _Alloc allocator_type;
+
+      allocator_type
+      get_allocator() const
+      { return *static_cast<const _Node_alloc*>(this); }
+
+      _Slist_base(const allocator_type& __a)
+      : _Node_alloc(__a)
+      { this->_M_head._M_next = 0; }
+
+      ~_Slist_base()
+      { _M_erase_after(&this->_M_head, 0); }
+
+    protected:
+      _Slist_node_base _M_head;
+
+      _Slist_node<_Tp>*
+      _M_get_node()
+      { return _Node_alloc::allocate(1); }
+  
+      void
+      _M_put_node(_Slist_node<_Tp>* __p)
+      { _Node_alloc::deallocate(__p, 1); }
+
+    protected:
+      _Slist_node_base* _M_erase_after(_Slist_node_base* __pos)
+      {
+	_Slist_node<_Tp>* __next = (_Slist_node<_Tp>*) (__pos->_M_next);
+	_Slist_node_base* __next_next = __next->_M_next;
+	__pos->_M_next = __next_next;
+	get_allocator().destroy(&__next->_M_data);
+	_M_put_node(__next);
+	return __next_next;
+      }
+      _Slist_node_base* _M_erase_after(_Slist_node_base*, _Slist_node_base*);
+    };
+
+  template <class _Tp, class _Alloc>
+    _Slist_node_base*
+    _Slist_base<_Tp,_Alloc>::_M_erase_after(_Slist_node_base* __before_first,
+					    _Slist_node_base* __last_node)
+    {
+      _Slist_node<_Tp>* __cur = (_Slist_node<_Tp>*) (__before_first->_M_next);
+      while (__cur != __last_node)
+	{
+	  _Slist_node<_Tp>* __tmp = __cur;
+	  __cur = (_Slist_node<_Tp>*) __cur->_M_next;
+	  get_allocator().destroy(&__tmp->_M_data);
+	  _M_put_node(__tmp);
+	}
+      __before_first->_M_next = __last_node;
+      return __last_node;
+    }
+
+  /**
+   *  This is an SGI extension.
+   *  @ingroup SGIextensions
+   *  @doctodo
+   */
+  template <class _Tp, class _Alloc = allocator<_Tp> >
+    class slist : private _Slist_base<_Tp,_Alloc>
+    {
+      // concept requirements
+      __glibcxx_class_requires(_Tp, _SGIAssignableConcept)
+	
+    private:
+      typedef _Slist_base<_Tp,_Alloc> _Base;
+
+    public:
+      typedef _Tp               value_type;
+      typedef va
