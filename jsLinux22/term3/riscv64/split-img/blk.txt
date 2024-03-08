@@ -1,4 +1,4 @@
 {
-  block_size: 256,
-  n_block: 4096,
+  block_size: 4096,
+  n_block: 256,
 }
