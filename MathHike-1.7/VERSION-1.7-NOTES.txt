@@ -1,0 +1,6 @@
+MathHike GitHub 1.7 — Local Tutor + Python Graphics
+
+• Bundles the official @wllama/wllama 3.4.0 ES module and WebAssembly engine locally.
+• Loads a browser-selected GGUF without depending on jsDelivr or esm.sh.
+• Captures Matplotlib PNG bytes inside the same Python execution that creates the figure.
+• Preserves the working R, Algebra, and TinyEMU paths from 1.6.

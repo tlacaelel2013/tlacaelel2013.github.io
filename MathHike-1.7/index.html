@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MathHike GitHub Edition</title>
+<link rel="stylesheet" href="styles.css"></head><body>
+<header><div><div class="brand">🥾🎒 MathHike</div><div class="sub">GitHub Pages · Scientific Notebook + TinyEMU</div></div><span class="pill">1.7.0 Local Tutor</span></header>
+<div class="tabs">
+<button class="tab active" data-room="homeRoom">🖥 Dashboard</button><button class="tab" data-room="chatRoom">🤖 Tutor</button>
+<button class="tab" data-room="rRoom">📊 R</button><button class="tab" data-room="pyRoom">🐍 Python</button>
+<button class="tab" data-room="algRoom">∑ Algebra</button><button class="tab" data-room="linuxRoom">🐧 TinyEMU</button></div>
+
+<section id="homeRoom" class="room active"><div class="dashboard">
+<h2>MathHike Browser Scientific Dashboard</h2><p class="status">Compute → visualize → typeset → report → ask the tutor.</p>
+<div class="monitorbank"><div class="monitor"><b>TUTOR</b><br><span class="muted">browser-local GGUF / Wllama tutor</span></div>
+<div class="monitor"><b>SCIENTIFIC PYTHON</b><br><span class="muted">NumPy · SciPy · pandas · Matplotlib · SymPy</span></div>
+<div class="monitor"><b>ALGEBRA</b><br><span class="muted">Symbolic · LaTeX · native browser MathML</span></div>
+<div class="monitor"><b>LINUX</b><br><span class="muted">TinyEMU WASM · whole root image picker</span></div></div>
+<div class="stations">
+<button class="station" data-jump="chatRoom">🤖<strong>Tutor</strong><small>browser-local GGUF / Wllama tutor</small></button>
+<button class="station" data-jump="rRoom">📊<strong>R Trail</strong><small>webR / WASM</small></button>
+<button class="station" data-jump="pyRoom">🐍<strong>Python Trail</strong><small>scientific Pyodide</small></button>
+<button class="station" data-jump="algRoom">∑<strong>Algebra Trail</strong><small>SymPy + MathML</small></button>
+<button class="station" data-jump="linuxRoom">🐧<strong>Linux Trail</strong><small>real TinyEMU WASM</small></button></div></div></section>
+
+<section id="chatRoom" class="room"><div class="trailwrap"><div id="tutorMount"><div class="card"><h2>🤖 Browser-local Tutor</h2><p class="status">Choose a GGUF file from this device. The model is not uploaded to MathHike.</p><div class="row"><input id="localGGUF" type="file" accept=".gguf"><button id="loadLocalGGUF" class="primary">LOAD LOCAL GGUF</button></div><div id="tutorStatus" class="status">Bundled Wllama 3.4.0 is ready to load your local GGUF.</div><div class="status">For this test, use qwen2-0.5b-instruct-q4_k_m.gguf. The Tutor engine now loads from MathHike itself.</div><div id="chat" class="chat"></div><textarea id="prompt" placeholder="Ask MathHike Tutor…"></textarea><div class="row"><button id="ask" class="primary">Send</button><button id="newchat">NEW CHAT</button><button id="listen">🔊 Listen</button></div></div></div></section>
+
+<section id="rRoom" class="room"><div class="trailwrap"><div class="card">
+<h2>📊 R Trail — webR</h2><div id="rStatus" class="status">R not initialized.</div>
+<textarea id="rCode">x <- rnorm(222)
+hist(x, col="steelblue", main="MathHike webR Histogram")</textarea>
+<div class="row"><button id="initR" class="primary">START R</button><button id="runR">RUN R</button><button id="demoRPlot">DEMO HISTOGRAM</button></div>
+<div class="twomon"><div><b>R Terminal — interactive</b><pre id="rOut" class="terminal">Type an R command below, then press Enter.
+</pre><div class="input"><span>&gt;</span><input id="rCmd" placeholder="R command, e.g. mean(c(1,2,3))"><button id="sendR">Enter</button></div></div>
+<div><b>R Graphical Display</b><div class="graph"><span id="rGraphEmpty" class="muted">R plots appear here.</span><canvas id="rCanvas" hidden></canvas></div>
+<div class="row"><button id="shareRPlot" disabled>Share Plot</button><button id="downloadRPlot" disabled>Download PNG</button></div></div></div>
+</div></div></section>
+
+<section id="pyRoom" class="room"><div class="trailwrap"><div class="card">
+<h2>🐍 Scientific Python Trail</h2><div id="pyStatus" class="status">Python not initialized. MathHike will use ./Python_for_MathHike/ first.</div>
+<textarea id="pyCode">import numpy as np
+import pandas as pd
+from scipy.integrate import quad
+print("∫x² dx from 0 to 1 =", quad(lambda x:x*x,0,1)[0])
+print(pd.DataFrame({"x":[1,2,3],"x²":[1,4,9]}))</textarea>
+<div class="row"><button id="initPy" class="primary">START SCIENTIFIC PYTHON</button><button id="runPy">RUN SCRIPT</button><button id="demoPyPlot">DEMO PLOT</button></div>
+<div class="twomon"><div><b>Python Terminal — interactive</b><pre id="pyOut" class="terminal">Start Scientific Python, then type a command below.
+</pre><div class="input"><span>&gt;&gt;&gt;</span><input id="pyCmd" placeholder="Python command, e.g. 2+2"><button id="sendPy">Enter</button></div></div>
+<div><b>Graphical Display</b><div class="graph"><span id="pyGraphEmpty" class="muted">Matplotlib figures appear here.</span><img id="pyGraphImg" hidden></div>
+<div class="row"><button id="sharePyPlot" disabled>Share Plot</button><button id="downloadPyPlot" disabled>Download PNG</button></div></div></div></div></div></section>
+
+<section id="algRoom" class="room"><div class="trailwrap"><div class="card">
+<h2>∑ Algebra Trail — SymPy</h2><div id="algStatus" class="status">Uses the Scientific Python engine.</div>
+<textarea id="algCode">diff(sin(x)^2, x)</textarea><div class="row"><button id="runAlg" class="primary">SOLVE</button>
+<button data-alg="integrate(x^2 * exp(x), x)">Integrate</button><button data-alg="solve(x^2 - 5*x + 6, x)">Solve equation</button><button data-alg="Matrix([[1,2],[3,4]]).det()">Matrix</button><button id="tutorAlg">Ask Tutor</button></div>
+<div class="twomon"><div><b>Symbolic Monitor</b><pre id="algOut" class="terminal"></pre><b>Raw LaTeX Source</b><div id="algLatex" class="latexsrc"></div></div>
+<div><b>Typeset Math — browser-native MathML</b><div id="algMath" class="mathml"><span class="muted">Run a computation.</span></div></div></div>
+<div class="row"><button data-report="txt">TXT Report</button><button data-report="html">HTML Report</button><button data-report="tex">LaTeX Report</button><button id="printAlg">Print / Save PDF</button></div><div id="algSave" class="saveinfo"></div></div></div></section>
+
+<section id="linuxRoom" class="room"><div class="trailwrap"><div class="card">
+<h2>🐧 NeuraLinux / TinyEMU Browser Trail</h2><p>This is TinyEMU's JavaScript/WebAssembly path. Choose a complete RISC-V 64 root image inside the lab; MathHike virtualizes TinyEMU's block requests so you do not manually split the image.</p>
+<iframe id="linuxFrame" src="tinyemu/tinyemu.html" title="MathHike TinyEMU"></iframe></div></div></section>
+
+<script type="module" src="main.js"></script>
+<script type="module" src="trails.js"></script><script src="library.js"></script>
+<div style="position:fixed;right:10px;bottom:10px;background:#172033;color:white;padding:6px 9px;border-radius:9px;font:12px sans-serif;opacity:.8">MathHike 1.7 GitHub Local Tutor</div></body></html>

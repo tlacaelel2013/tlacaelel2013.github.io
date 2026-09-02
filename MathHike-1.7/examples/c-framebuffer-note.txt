@@ -1,0 +1,1 @@
+Direct framebuffer C demo belongs to a Linux guest that exposes /dev/fb0. Compile inside that guest; do not assume browser JavaScript itself exposes /dev/fb0.

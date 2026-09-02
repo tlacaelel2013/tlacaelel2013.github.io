@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MathHike TinyEMU</title><link rel="stylesheet" href="tinyemu.css"></head>
+<body>
+<header><div><b>🐧 MathHike TinyEMU Trail</b><div id="status">Choose one complete RISC-V 64 root image.</div></div>
+<button id="reset">♻️ Reset Lab</button></header>
+<section class="controls">
+<label>Architecture <select id="arch"><option value="riscv64" selected>RISC-V 64 (recommended)</option><option value="riscv32">RISC-V 32</option></select></label>\n<label>Whole root image (.img / .bin)<input id="disk" type="file" accept=".img,.bin,application/octet-stream"></label>
+<div class="row"><button id="boot" disabled>BOOT LINUX</button><span id="diskInfo"></span></div>
+<p class="note">MathHike presents the selected whole file to TinyEMU through a virtual HTTP block device. You do not have to split the image manually.</p>
+</section>
+<pre id="term" tabindex="0">MathHike TinyEMU browser terminal
+</pre>
+<div class="input"><span>#</span><input id="cmd" placeholder="Linux command"><button id="send">Send</button></div>
+<script src="tinyemu-ui.js"></script>
+</body></html>
