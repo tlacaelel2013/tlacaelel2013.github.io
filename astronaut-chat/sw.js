@@ -1,0 +1,4 @@
+const CACHE='astronaut-chat-u3-v1',BASE='https://cdn.jsdelivr.net/npm/@wllama/wllama@4.0.0/esm/';
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./index.html','./chat.js','./cache.js'])).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||!(u.href.startsWith(self.registration.scope)||u.href.startsWith(BASE)))return;e.respondWith((async()=>{const c=await caches.open(CACHE);const key=e.request.mode==='navigate'?new URL('index.html',self.registration.scope).href:e.request;const hit=await c.match(key);if(hit)return hit;const r=await fetch(e.request);if(r.ok)await c.put(key,r.clone());return r})())});
